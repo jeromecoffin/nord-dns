@@ -27,3 +27,8 @@ helm upgrade owdev .\openwhisk -n openwhisk -f mycluster.yaml
 ```bash 
 wsk property set --apihost 192.168.65.3:31001
 ```
+
+- Test Deployment
+```bash
+helm test owdev -n openwhisk
+```
