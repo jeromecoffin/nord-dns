@@ -6,7 +6,3 @@ whisk:
 
 nginx:
   httpsNodePort: 31001
-
-controller:
-  imageName: "whisk/controller"
-  imageTag: "latest"
