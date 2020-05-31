@@ -1,0 +1,12 @@
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: 192.168.65.3
+    apiHostPort: 31001
+
+nginx:
+  httpsNodePort: 31001
+
+controller:
+  imageName: "whisk/controller"
+  imageTag: "latest"
