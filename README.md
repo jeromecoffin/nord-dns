@@ -1,11 +1,27 @@
 # NordDNS
 > NordDNS encrypts your DNS traffic and hides your IP and physical location. Works on any devices at once, on every major platform.
 
+## Technical Architecture
+Our project relies on [OpenWhisk](https://openwhisk.apache.org/), the Open Source Serverless Cloud Platform by the Apache fundation.
 
-## Prerequisites
-- Kubernetes
-- Helm
+![OpenWhisk Architecture](./artefacts/openwhisk-architecture.png)
 
+
+## Deployment
+Thanks to the large variety of deployments options comming with OpenWhisk, our project can be deployed under a various set of platforms such as Kubernetes, Mesos and docker-compose:
+
+![OpenWhisk Deployments Options](./artefacts/openwhisk-deployments-options.png)
+
+### Production deployment
+The production deployment will be done into a Kubernetes cluster, on a Cloud Provider. The exact target should be provided by the school.
+
+### Development deployment
+The dev deployment will be done under Kubernetes in DOcker for Windows, complete installation procedure can be found here: https://github.com/apache/openwhisk-deploy-kube/blob/master/docs/k8s-docker-for-windows.md
+
+For our folks here on mac we got you, here is the documentation: https://github.com/apache/openwhisk-deploy-kube/blob/master/docs/k8s-docker-for-mac.md
+
+---
+(old doc, to be removed)
 ## Installation
 ### Installation of OpenWhisk
 - Create the openwhisk namespace
