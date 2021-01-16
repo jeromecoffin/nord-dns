@@ -1,6 +1,12 @@
 # NordDNS
 > NordDNS encrypts your DNS traffic and hides your IP and physical location. Works on any devices at once, on every major platform.
 
+> NordDNS is an advanced [recursive DNS](https://www.cloudflare.com/learning/dns/what-is-recursive-dns/) that support DNS-over-HTTPS ([DoH - RFC 8484](https://tools.ietf.org/html/rfc8484)) and DNS-over-TLS ([DoT - RFC 7858](https://tools.ietf.org/html/rfc7858)).
+
+> NordDNS enhance your privacy by filtering advertising host from well-know filtering host-lists such as [1Hosts](https://badmojr.github.io/1Hosts/) & [EasyList](https://easylist.to/).
+
+> NordDNS is user oriented, and therefore provide a beautiful Dashboard that includes wonderful graphs and metrics.
+
 ## Technical Architecture
 Our project relies on [OpenWhisk](https://openwhisk.apache.org/), the Open Source Serverless Cloud Platform by the Apache fundation.
 
