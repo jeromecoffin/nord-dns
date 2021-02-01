@@ -26,6 +26,8 @@
     "moleculer-repl": "^0.6.4"
   },
   "dependencies": {
+    "base64url": "^3.0.1",
+    "dohdec": "^3.1.0",
     "dohjs": "^0.3.1",
     "moleculer": "^0.14.10",
     "moleculer-db": "^0.8.4",

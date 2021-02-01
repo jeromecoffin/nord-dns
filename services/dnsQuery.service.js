@@ -5,9 +5,10 @@
  */
 
 const dohClient = require('dohjs');
+const base64url = require('base64url');
 
 module.exports = {
-	name: "doh",
+	name: "dnsQuery",
 
 	/**
 	 * Settings
@@ -25,51 +26,25 @@ module.exports = {
 	 * Actions
 	 */
 	actions: {
-
-		/**
-		 * Say a 'Hello' action.
-		 *
-		 * @returns
-		 */
-		hello: {
-			rest: {
-				method: "GET",
-				path: "/hello"
-			},
-			async handler() {
-				return "Hello Moleculer";
-			}
-		},
-
-		/**
-		 * Welcome, a username
-		 *
-		 * @param {String} name - User name
-		 */
-		welcome: {
-			rest: "/welcome",
-			params: {
-				name: "string"
-			},
-			/** @param {Context} ctx  */
-			async handler(ctx) {
-				return `Welcome, ${ctx.params.name}`;
-			}
-		},
 		/**
 		 * Welcome, a username
 		 *
 		 * @param {String} name - User name
 		 */
 		lookup: {
-			rest: "/lookup",
+			rest: {
+				method: "GET",
+				path: "/lookup"
+			},
 			params: {
-				domain: "string"
+        		dns: "string"
 			},
 			/** @param {Context} ctx  */
 			async handler(ctx) {
+				const decodedDomain = base64url.decode(ctx.params.dns);
+				console.log(decodedDomain)
 				const resolver = new dohClient.DohResolver('https://1.1.1.1/dns-query');
-        const res = await resolver.query(ctx.params.domain, 'A');
+				const res = await resolver.query(ctx.params.dns, 'A');
 				return res;
 			}
 		},
