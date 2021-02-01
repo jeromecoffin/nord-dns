@@ -1,0 +1,14 @@
+apiVersion: v1
+data:
+  LOGGER: "true"
+  LOGLEVEL: info
+  MONGO_URI: mongodb://mongo/nord-dns
+  NAMESPACE: ""
+  SERVICEDIR: services
+  TRANSPORTER: nats://nats:4222
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: api-docker-compose-env
+  name: docker-compose-env

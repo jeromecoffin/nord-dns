@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: default
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          io.kompose.network/default: "true"
+  podSelector:
+    matchLabels:
+      io.kompose.network/default: "true"

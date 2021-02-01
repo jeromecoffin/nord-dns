@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\Program Files\kompose\kompose.exe convert
+    kompose.version: 1.21.0 (992df58d8)
+    traefik.enable: "true"
+    traefik.http.routers.api-gw.rule: PathPrefix(`/`)
+    traefik.http.services.api-gw.loadbalancer.server.port: "3000"
+  creationTimestamp: null
+  labels:
+    io.kompose.service: api
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: api
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\Program Files\kompose\kompose.exe convert
+        kompose.version: 1.21.0 (992df58d8)
+        traefik.enable: "true"
+        traefik.http.routers.api-gw.rule: PathPrefix(`/`)
+        traefik.http.services.api-gw.loadbalancer.server.port: "3000"
+      creationTimestamp: null
+      labels:
+        io.kompose.network/internal: "true"
+        io.kompose.service: api
+    spec:
+      containers:
+      - env:
+        - name: LOGGER
+          valueFrom:
+            configMapKeyRef:
+              key: LOGGER
+              name: docker-compose-env
+        - name: LOGLEVEL
+          valueFrom:
+            configMapKeyRef:
+              key: LOGLEVEL
+              name: docker-compose-env
+        - name: MONGO_URI
+          valueFrom:
+            configMapKeyRef:
+              key: MONGO_URI
+              name: docker-compose-env
+        - name: NAMESPACE
+          valueFrom:
+            configMapKeyRef:
+              key: NAMESPACE
+              name: docker-compose-env
+        - name: PORT
+          value: "3000"
+        - name: SERVICEDIR
+          valueFrom:
+            configMapKeyRef:
+              key: SERVICEDIR
+              name: docker-compose-env
+        - name: SERVICES
+          value: api
+        - name: TRANSPORTER
+          valueFrom:
+            configMapKeyRef:
+              key: TRANSPORTER
+              name: docker-compose-env
+        image: nord-dns
+        imagePullPolicy: Never
+        name: api
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}
