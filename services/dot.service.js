@@ -6,9 +6,11 @@
 
 const dohClient = require('dohjs');
 const base64url = require('base64url');
+const { DNSoverTLS } = require('dohdec');
+
 
 module.exports = {
-	name: "dnsQuery",
+	name: "DoT",
 
 	/**
 	 * Settings
@@ -27,24 +29,27 @@ module.exports = {
 	 */
 	actions: {
 		/**
-		 * Welcome, a username
+		 * Lookup a domain
 		 *
-		 * @param {String} name - User name
+		 * @param {String} dns - base64url of the domain
 		 */
 		lookup: {
 			rest: {
 				method: "GET",
-				path: "/lookup"
+				path: "/dns-query"
 			},
 			params: {
         		dns: "string"
 			},
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				const decodedDomain = base64url.decode(ctx.params.dns);
-				console.log(decodedDomain)
-				const resolver = new dohClient.DohResolver('https://1.1.1.1/dns-query');
-				const res = await resolver.query(ctx.params.dns, 'A');
+				const decoded = Buffer.from(ctx.params.dns, 'base64').toString()
+				console.log("base64 decode: ", decoded)
+				const decoded2 = base64url.decode(ctx.params.dns)
+				console.log("base64url decode: ", decoded2)
+				console.log("Google.com encoded: ",base64url.encode('google.com'))
+				
+				const res = await new DNSoverTLS({host: '1.1.1.1'}).lookup(ctx.params.dns)
 				return res;
 			}
 		},

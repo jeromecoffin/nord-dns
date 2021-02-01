@@ -27,7 +27,7 @@
  */
 module.exports = {
 	// Namespace of nodes to segment your nodes on the same network.
-	namespace: "",
+	namespace: "com.nord-dns",
 	// Unique node identifier. Must be unique in a namespace.
 	nodeID: null,
 	// Custom metadata store. Store here what you want. Accessing: `this.broker.metadata`
@@ -47,7 +47,7 @@ module.exports = {
 			// Custom object printer. If not defined, it uses the `util.inspect` method.
 			objectPrinter: null,
 			// Auto-padding the module name in order to messages begin at the same column.
-			autoPadding: false
+			autoPadding: true
 		}
 	},
 	// Default log level for built-in console logger. It can be overwritten in logger options above.
