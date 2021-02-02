@@ -1,6 +1,7 @@
 "use strict";
 
 const ApiGateway = require("moleculer-web");
+const fs = require("fs");
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -15,7 +16,16 @@ module.exports = {
 	// More info about settings: https://moleculer.services/docs/0.14/moleculer-web.html
 	settings: {
 		// Exposed port
-		port: process.env.PORT || 3000,
+		port: process.env.PORT || 8443,
+
+		// HTTPS server with certificate
+		https: {
+			key: fs.readFileSync("./certificates/local.ndns.cf/private.key"),
+			cert: fs.readFileSync("./certificates/local.ndns.cf/certificate.crt")
+		},
+
+		// Use HTTP2 server
+		http2: true,
 
 		// Exposed IP
 		ip: "0.0.0.0",
