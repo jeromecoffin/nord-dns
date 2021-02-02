@@ -29,7 +29,7 @@ module.exports = {
 		 * https://doh.opendns.com/dns-query
 		 * https://dns.quad9.net/dns-query
 		 */
-		resolver: "https://1.1.1.1/dns-query"
+		resolver: "https://dns.google/dns-query"
 	},
 
 	/**
