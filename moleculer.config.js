@@ -64,7 +64,7 @@ module.exports = {
 
 	// Define a cacher.
 	// More info: https://moleculer.services/docs/0.14/caching.html
-	cacher: "redis://192.168.0.104:6379",
+	cacher: "redis://172.17.0.1:6379",
 
 	/*cacher: {
 		type = "redis://redisDB:6379",
