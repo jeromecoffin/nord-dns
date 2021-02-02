@@ -26,8 +26,7 @@
     "moleculer-repl": "^0.6.4"
   },
   "dependencies": {
-    "base64url": "^3.0.1",
-    "dohdec": "^3.1.0",
+    "dns-packet": "^5.2.1",
     "dohjs": "^0.3.1",
     "ioredis": "^4.19.4",
     "moleculer": "^0.14.10",

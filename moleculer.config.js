@@ -31,7 +31,7 @@ module.exports = {
 	// Namespace of nodes to segment your nodes on the same network.
 	namespace: "com.nord-dns",
 	// Unique node identifier. Must be unique in a namespace.
-	nodeID: null,
+	nodeID: process.env.HOSTNAME || null,
 	// Custom metadata store. Store here what you want. Accessing: `this.broker.metadata`
 	metadata: {},
 
@@ -134,7 +134,7 @@ module.exports = {
 	registry: {
 		// Define balancing strategy. More info: https://moleculer.services/docs/0.14/balancing.html
 		// Available values: "RoundRobin", "Random", "CpuUsage", "Latency", "Shard"
-		strategy: "RoundRobin",
+		strategy: "Latency",
 		// Enable local action call preferring. Always call the local action instance if available.
 		preferLocal: true
 	},
