@@ -46,6 +46,35 @@ module.exports = {
 		 *
 		 * @param {String} dns - base64url of the domain
 		 */
+		resolve: {
+			rest: {
+				method: "GET",
+				path: "/resolve"
+			},
+			params: {
+				dns: "string"
+			},
+			cache: {
+				ttl: 1
+			},
+			meta: {
+				ttl: 10
+			},
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				console.log("QUERY PARAMS: ", ctx.params.dns);
+				const query = await this.decodeQueryMessage(ctx.params.dns);
+				const response = await this.lookup(query);
+				ctx.meta.ttl = query.ttl;
+				return response;
+			}
+		},
+
+		/**
+		 * Get DoH handler
+		 *
+		 * @param {String} dns - base64url of the domain
+		 */
 		getDoH: {
 			rest: {
 				method: "GET",
@@ -55,18 +84,14 @@ module.exports = {
 				dns: "string"
 			},
 			cache: {
-				//ttl: this.meta.ttl
-			},
-			meta: {
-				ttl: 0
+				ttl: 1
 			},
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				console.log("QUERY PARAMS: ", ctx.params.dns);
-				const query = await this.decodeQueryMessage(ctx.params.dns);
-				const response = await this.lookup(query);
-				ctx.meta.ttl = query.ttl;
-				return response;
+				const response = await ctx.call("v1.doh.resolve", {dns: ctx.params.dns});
+				const responseMessage = await dnsPacket.encode(response);
+				ctx.meta.$responseType = "application/dns-message";
+				return responseMessage;
 			}
 		},
 
@@ -126,7 +151,6 @@ module.exports = {
 			 *	}
 			 */
 			const response = await this.resolver.query(question.name, question.type, "GET", {Accept: "application/dns-message"});
-			console.log("RESPONSE: ", response);
 			return response;
 		}
 	},
