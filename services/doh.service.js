@@ -12,7 +12,7 @@ module.exports = {
 	 * DNS-over-HTTPS (DoH)
 	 * RFC 8484 (GET and POST)
 	 */
-	name: "DoT",
+	name: "doh",
 
 	/**
 	 * Settings
@@ -31,7 +31,7 @@ module.exports = {
 	 */
 	actions: {
 		/**
-		 * Lookup a domain
+		 * Get DoH handler
 		 *
 		 * @param {String} dns - base64url of the domain
 		 */
@@ -52,6 +52,12 @@ module.exports = {
 
 			}
 		},
+
+		/**
+		 * Post DoH handler
+		 *
+		 * @param {String} dns - base64url of the domain
+		 */
 		postDoH: {
 			rest: {
 				method: "POST",
