@@ -13,12 +13,23 @@ module.exports = {
 	 * RFC 8484 (GET and POST)
 	 */
 	name: "doh",
+	version: 1,
 
 	/**
 	 * Settings
 	 */
 	settings: {
-
+		/**
+		 * Resolver
+		 * 
+		 * Where to send the DNS query
+		 * 
+		 * https://dns.google/dns-query
+		 * https://cloudflare-dns.com/dns-query
+		 * https://doh.opendns.com/dns-query
+		 * https://dns.quad9.net/dns-query
+		 */
+		resolver: "https://1.1.1.1/dns-query"
 	},
 
 	/**
@@ -124,7 +135,7 @@ module.exports = {
 	 * Service started lifecycle event handler
 	 */
 	async started() {
-		this.resolver = new doh.DohResolver("https://1.1.1.1/dns-query");
+		this.resolver = new doh.DohResolver(this.settings.resolver);
 	},
 
 	/**
