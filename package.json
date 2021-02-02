@@ -29,6 +29,7 @@
     "base64url": "^3.0.1",
     "dohdec": "^3.1.0",
     "dohjs": "^0.3.1",
+    "ioredis": "^4.19.4",
     "moleculer": "^0.14.10",
     "moleculer-db": "^0.8.4",
     "moleculer-db-adapter-mongo": "^0.4.7",

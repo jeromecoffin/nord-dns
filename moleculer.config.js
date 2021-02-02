@@ -1,5 +1,7 @@
 "use strict";
 
+const { ServiceBroker } = require("moleculer");
+
 /**
  * Moleculer ServiceBroker configuration file
  *
@@ -62,7 +64,25 @@ module.exports = {
 
 	// Define a cacher.
 	// More info: https://moleculer.services/docs/0.14/caching.html
-	cacher: null,
+	cacher: "redis://192.168.0.104:6379",
+
+	/*cacher: {
+		type = "redis://redisDB:6379",
+		options :{
+			prefixe: "MOL",
+
+			ttl: 30,
+
+			redis: {
+				host: "redisDB",
+				port: 6379
+					
+			}
+		}
+	},*/
+
+
+	
 
 	// Define a serializer.
 	// Available values: "JSON", "Avro", "ProtoBuf", "MsgPack", "Notepack", "Thrift".
