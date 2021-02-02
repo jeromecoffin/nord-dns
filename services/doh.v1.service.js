@@ -54,11 +54,18 @@ module.exports = {
 			params: {
 				dns: "string"
 			},
+			cache: {
+				//ttl: this.meta.ttl
+			},
+			meta: {
+				ttl: 0
+			},
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				console.log("QUERY PARAMS: ", ctx.params.dns);
 				const query = await this.decodeQueryMessage(ctx.params.dns);
 				const response = await this.lookup(query);
+				ctx.meta.ttl = query.ttl;
 				return response;
 			}
 		},
