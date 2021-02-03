@@ -55,9 +55,11 @@ module.exports = {
 				dns: "string"
 			},
 			cache: {
-				ttl: 1
+				// Cache TTL
+				ttl: 10
 			},
 			meta: {
+				// TTL of the response
 				ttl: 10
 			},
 			/** @param {Context} ctx  */

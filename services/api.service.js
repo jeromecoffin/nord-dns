@@ -6,6 +6,7 @@ const swStats = require("swagger-stats");
 const swMiddleware = swStats.getMiddleware();
 const bodyParser = require("body-parser");
 const rawParser = bodyParser.raw({ type: "application/dns-message" });
+const domain = process.env.DOMAIN || "local.ndns.cf";
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -22,10 +23,10 @@ module.exports = {
 		// Exposed port
 		port: process.env.PORT || 8443,
 
-		// HTTPS server with certificate
+		// HTTPS server with certificate		
 		https: {
-			key: fs.readFileSync("./certificates/local.ndns.cf/private.key"),
-			cert: fs.readFileSync("./certificates/local.ndns.cf/certificate.crt")
+			key: fs.readFileSync(`./certificates/${domain}/private.key`),
+			cert: fs.readFileSync(`./certificates/${domain}/certificate.crt`)
 		},
 
 		// Use HTTP2 server
