@@ -27,6 +27,21 @@ module.exports = {
 		// Use HTTP2 server
 		http2: true,
 
+		cors: {
+			// Configures the Access-Control-Allow-Origin CORS header.
+			origin: "*",
+			// Configures the Access-Control-Allow-Methods CORS header. 
+			methods: ["GET", "OPTIONS", "POST"],
+			// Configures the Access-Control-Allow-Headers CORS header.
+			// allowedHeaders: [],
+			// // Configures the Access-Control-Expose-Headers CORS header.
+			// exposedHeaders: [],
+			// // Configures the Access-Control-Allow-Credentials CORS header.
+			// credentials: false,
+			// // Configures the Access-Control-Max-Age CORS header.
+			// maxAge: 3600
+		},
+
 		// Exposed IP
 		ip: "0.0.0.0",
 
@@ -89,16 +104,16 @@ module.exports = {
 				// Calling options. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Calling-options
 				callingOptions: {},
 
-				bodyParsers: {
-					json: {
-						strict: false,
-						limit: "1MB"
-					},
-					urlencoded: {
-						extended: true,
-						limit: "1MB"
-					}
-				},
+				// bodyParsers: {
+				// 	json: {
+				// 		strict: false,
+				// 		limit: "1MB"
+				// 	},
+				// 	urlencoded: {
+				// 		extended: true,
+				// 		limit: "1MB"
+				// 	}
+				// },
 
 				// Mapping policy setting. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Mapping-policy
 				mappingPolicy: "all", // Available values: "all", "restrict"
