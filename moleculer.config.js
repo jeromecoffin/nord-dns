@@ -64,25 +64,7 @@ module.exports = {
 
 	// Define a cacher.
 	// More info: https://moleculer.services/docs/0.14/caching.html
-	cacher: "redis://172.17.0.1:6379",
-
-	/*cacher: {
-		type = "redis://redisDB:6379",
-		options :{
-			prefixe: "MOL",
-
-			ttl: 30,
-
-			redis: {
-				host: "redisDB",
-				port: 6379
-					
-			}
-		}
-	},*/
-
-
-	
+	cacher: "redis://172.17.0.1:6379",	
 
 	// Define a serializer.
 	// Available values: "JSON", "Avro", "ProtoBuf", "MsgPack", "Notepack", "Thrift".

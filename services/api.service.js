@@ -2,6 +2,10 @@
 
 const ApiGateway = require("moleculer-web");
 const fs = require("fs");
+const swStats = require("swagger-stats");
+const swMiddleware = swStats.getMiddleware();
+const bodyParser = require("body-parser");
+const rawParser = bodyParser.raw({ type: "application/dns-message" });
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -27,37 +31,51 @@ module.exports = {
 		// Use HTTP2 server
 		http2: true,
 
-		cors: {
-			// Configures the Access-Control-Allow-Origin CORS header.
-			origin: "*",
-			// Configures the Access-Control-Allow-Methods CORS header. 
-			methods: ["GET", "OPTIONS", "POST"],
-			// Configures the Access-Control-Allow-Headers CORS header.
-			// allowedHeaders: [],
-			// // Configures the Access-Control-Expose-Headers CORS header.
-			// exposedHeaders: [],
-			// // Configures the Access-Control-Allow-Credentials CORS header.
-			// credentials: false,
-			// // Configures the Access-Control-Max-Age CORS header.
-			// maxAge: 3600
-		},
-
 		// Exposed IP
 		ip: "0.0.0.0",
 
 		// Global Express middlewares. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Middlewares
-		use: [],
+		use: [rawParser, swMiddleware],
 
 		routes: [
 			{
+				path: "/swagger-stats/ui",
+				use: [swMiddleware],
+				cors: {
+					methods: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
+					origin: "*",
+				},
+			},
+			{
 				path: "/api",
+
+				// CORS headers. More info: https://moleculer.services/docs/0.14/moleculer-web.html#CORS-headers
+				cors: {
+					// Configures the Access-Control-Allow-Origin CORS header.
+					origin: "*",
+
+					// Configures the Access-Control-Allow-Methods CORS header. 
+					methods: ["GET", "OPTIONS", "POST"],
+
+					// Configures the Access-Control-Allow-Headers CORS header.
+					// allowedHeaders: [],
+
+					// // Configures the Access-Control-Expose-Headers CORS header.
+					// exposedHeaders: [],
+
+					// // Configures the Access-Control-Allow-Credentials CORS header.
+					// credentials: false,
+
+					// // Configures the Access-Control-Max-Age CORS header.
+					// maxAge: 3600
+				},
 
 				whitelist: [
 					"**"
 				],
 
 				// Route-level Express middlewares. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Middlewares
-				use: [],
+				//use: [rawParser],
 
 				// Enable/disable parameter merging method. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Disable-merging
 				mergeParams: true,
@@ -72,9 +90,7 @@ module.exports = {
 				// The gateway will dynamically build the full routes from service schema.
 				autoAliases: true,
 
-				aliases: {
-
-				},
+				aliases: {},
 
 				/** 
 				 * Before call hook. You can check the request.
@@ -83,11 +99,12 @@ module.exports = {
 				 * @param {IncomingRequest} req 
 				 * @param {ServerResponse} res 
 				 * @param {Object} data
-				 * 
-				onBeforeCall(ctx, route, req, res) {
-					// Set request headers to context meta
-					ctx.meta.userAgent = req.headers["user-agent"];
-				}, */
+				 */
+				// onBeforeCall(ctx, route, req, res) {
+				// 	// Set request headers to context meta
+				// 	ctx.meta.userAgent = req.headers["user-agent"];
+				// }, 
+
 
 				/**
 				 * After call hook. You can modify the data.
@@ -96,10 +113,11 @@ module.exports = {
 				 * @param {IncomingRequest} req 
 				 * @param {ServerResponse} res 
 				 * @param {Object} data
-				onAfterCall(ctx, route, req, res, data) {
-					// Async function which return with Promise
-					return doSomething(ctx, res, data);
-				}, */
+				 */
+				// onAfterCall(ctx, route, req, res, data) {
+				// 	// Async function which return with Promise
+				// 	return doSomething(ctx, res, data);
+				// },
 
 				// Calling options. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Calling-options
 				callingOptions: {},

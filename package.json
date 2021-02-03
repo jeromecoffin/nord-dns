@@ -26,6 +26,8 @@
     "moleculer-repl": "^0.6.4"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "busboy": "^0.3.1",
     "dns-packet": "^5.2.1",
     "dohjs": "^0.3.1",
     "ioredis": "^4.19.4",
@@ -33,7 +35,8 @@
     "moleculer-db": "^0.8.4",
     "moleculer-db-adapter-mongo": "^0.4.7",
     "moleculer-web": "^0.9.0",
-    "nats": "^1.4.12"
+    "nats": "^1.4.12",
+    "swagger-stats": "^0.95.18"
   },
   "engines": {
     "node": ">= 10.x.x"

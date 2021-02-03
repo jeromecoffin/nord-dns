@@ -88,6 +88,7 @@ module.exports = {
 			},
 			/** @param {Context} ctx  */
 			async handler(ctx) {
+				console.log("getDoH");
 				const response = await ctx.call("v1.doh.resolve", {dns: ctx.params.dns});
 				const responseMessage = await dnsPacket.encode(response);
 				ctx.meta.$responseType = "application/dns-message";
@@ -107,7 +108,24 @@ module.exports = {
 			},
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				return "no yet implemented";
+				if (ctx.options.parentCtx.params.req.headers["content-type"] == "application/dns-message") {
+					console.log("Params: ", ctx.params);
+					const bytesArray = Object.values(ctx.params);
+					console.log("Byte Array: ", bytesArray);
+					const buffer = new Buffer.from(bytesArray);
+					console.log("Buffer: ", buffer);
+					const base64Message = buffer.toString("base64");
+					console.log("base64Message: ", base64Message);
+					//const decodedMessage = dnsPacket.decode(buffer);
+					//console.log("decoded: ", decodedMessage);
+					//return true;
+					const response = await ctx.call("v1.doh.resolve", {dns: base64Message});
+					const responseMessage = await dnsPacket.encode(response);
+					ctx.meta.$responseType = "application/dns-message";
+					return responseMessage;
+				} else {
+					return false;
+				}
 			}
 		}
 	},
