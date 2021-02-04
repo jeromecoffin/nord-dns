@@ -31,6 +31,7 @@ module.exports = {
 
 		// Use HTTP2 server
 		http2: true,
+		allowHTTP1: true,
 
 		// Exposed IP
 		ip: "0.0.0.0",
