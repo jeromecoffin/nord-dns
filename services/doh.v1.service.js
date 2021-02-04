@@ -55,8 +55,8 @@ module.exports = {
 				dns: "string"
 			},
 			cache: {
-				// Cache TTL
-				ttl: 10
+				// Cache TTL in seconds
+				ttl: 120
 			},
 			meta: {
 				// TTL of the response
@@ -64,10 +64,11 @@ module.exports = {
 			},
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				console.log("[Resolve] QUERY PARAMS: ", ctx.params.dns);
+				// this.logger.info("QUERY PARAMS: ", ctx.params.dns);
 				const query = await this.decodeQueryMessage(ctx.params.dns);
 				const response = await this.lookup(query);
 				ctx.meta.ttl = query.ttl;
+				ctx.emit("doh.response", response);
 				return response;
 			}
 		},
@@ -85,12 +86,15 @@ module.exports = {
 			params: {
 				dns: "string"
 			},
-			cache: {
-				ttl: 1
-			},
+
+			/**
+			 * Disable action cache
+			 */
+			cache: false,
+
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				console.log("getDoH");
+				// this.logger.info("getDoH");
 				const response = await ctx.call("v1.doh.resolve", {dns: ctx.params.dns});
 				const responseMessage = await dnsPacket.encode(response);
 				ctx.meta.$responseType = "application/dns-message";
@@ -108,9 +112,15 @@ module.exports = {
 				method: "POST",
 				path: "/dns-query"
 			},
+
+			/**
+			 * Disable action cache
+			 */
+			cache: false,
+
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				console.log("postDoH");
+				// this.logger.info("postDoH");
 				if (ctx.options.parentCtx.params.req.headers["content-type"] == "application/dns-message") {
 					const bytesArray = Object.values(ctx.params);
 					const buffer = new Buffer.from(bytesArray);
@@ -130,7 +140,12 @@ module.exports = {
 	 * Events
 	 */
 	events: {
-
+		"doh.response"(ctx) {
+			// Add here a count
+			// Add counter here
+			// Add set cache here
+			this.logger.info("Response: ", ctx.params.answers[0]);
+		}
 	},
 
 	/**
@@ -152,7 +167,7 @@ module.exports = {
 			 *		name: 'google.com' // which record are you looking for
 			 *	}
 			 */
-			console.log("QUESTION:", question);
+			this.logger.info("Question:", question);
 
 			/**
 			 * Sample Response
