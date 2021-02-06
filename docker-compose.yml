@@ -18,36 +18,22 @@ services:
       - "traefik.http.services.api-gw.loadbalancer.server.port=3000"
     networks:
       - internal
+  
+  redis:
+    image: redis:alpine
+    entrypoint: redis-server
+    networks:
+      - internal
 
-  greeter:
+  doh:
     build:
       context: .
     image: nord-dns
     env_file: docker-compose.env
     environment:
-      SERVICES: greeter
+      SERVICES: doh
     depends_on:
       - nats
-    networks:
-      - internal
-
-  products:
-    build:
-      context: .
-    image: nord-dns
-    env_file: docker-compose.env
-    environment:
-      SERVICES: products
-    depends_on:
-      - mongo
-      - nats
-    networks:
-      - internal
-
-  mongo:
-    image: mongo:4
-    volumes:
-      - data:/data/db
     networks:
       - internal
 
@@ -63,8 +49,7 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
     ports:
-      - 3000:80
-      - 3001:8080
+      - 3001:8443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:

@@ -29,7 +29,7 @@ const { ServiceBroker } = require("moleculer");
  */
 module.exports = {
 	// Namespace of nodes to segment your nodes on the same network.
-	namespace: "com.nord-dns",
+	namespace: process.env.NAMESPACE || "com.nord-dns",
 	// Unique node identifier. Must be unique in a namespace.
 	nodeID: process.env.HOSTNAME || null,
 	// Custom metadata store. Store here what you want. Accessing: `this.broker.metadata`
@@ -64,7 +64,7 @@ module.exports = {
 
 	// Define a cacher.
 	// More info: https://moleculer.services/docs/0.14/caching.html
-	cacher: "redis://172.17.0.1:6379",	
+	cacher: process.env.REDIS_URI || "redis://172.17.0.1:6379",
 
 	// Define a serializer.
 	// Available values: "JSON", "Avro", "ProtoBuf", "MsgPack", "Notepack", "Thrift".

@@ -54,20 +54,22 @@ module.exports = {
 			params: {
 				dns: "string"
 			},
-			cache: {
-				// Cache TTL in seconds
-				ttl: 120
-			},
-			meta: {
-				// TTL of the response
-				ttl: 10
-			},
+			cache: false,
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				// this.logger.info("QUERY PARAMS: ", ctx.params.dns);
 				const query = await this.decodeQueryMessage(ctx.params.dns);
+				this.logger.info("Query:", query);
+				const key = `doh:q:${query.name}:${query.type}:${query.class}`;
+				const cachedResponse = await this.broker.cacher.get(key);
+				if (cachedResponse) {
+					this.logger.info("Cached Response");
+					ctx.emit("doh.cachedResponse");
+					this.logger.info("Response: ", cachedResponse.answers[0]);
+					return cachedResponse;
+				}
 				const response = await this.lookup(query);
-				ctx.meta.ttl = query.ttl;
+				this.logger.info("Response: ", response.answers[0]);
 				ctx.emit("doh.response", response);
 				return response;
 			}
@@ -140,12 +142,27 @@ module.exports = {
 	 * Events
 	 */
 	events: {
-		"doh.response"(ctx) {
+		"doh.response"(response) {
 			// Add here a count
 			// Add counter here
 			// Add set cache here
-			this.logger.info("Response: ", ctx.params.answers[0]);
+			const key = `doh:q:${response.answers[0].name}:${response.answers[0].type}:${response.answers[0].class}`;
+			this.broker.cacher.set(key, response, response.answers[0].ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
+			this.broker.emit("count.add");
+		},
+		"doh.cachedResponse"() {
+			this.broker.emit("count.add");
+		},
+		async "count.add"() {
+			const key = "doh:count";
+			const count = await this.broker.cacher.get(key);
+			let newCount = 1;
+			if (count) {
+				newCount = count + 1;
+			}
+			this.broker.cacher.set(key, newCount); // Doesn't expire
 		}
+
 	},
 
 	/**
