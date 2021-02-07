@@ -144,15 +144,16 @@ module.exports = {
 	events: {
 		"doh.response"(response) {
 			const key = `doh:q:${response.questions[0].name}:${response.questions[0].type}:${response.questions[0].class}`;
-			let ttl = response.answers[0].ttl; // By default use the first record ttl
+
+			// If NXDOMAIN or answers is empty then cache response for a hour, else set the default ttl to the ttl of the first answer
+			let ttl = (response.rcode == "NXDOMAIN" || response.answers.length == 0) ? 3600 : response.answers[0].ttl; 
 			for (const answer of response.answers) {
-				// Set the ttl based on the smallest answsers ttl
 				ttl = (answer.ttl < ttl) ? answer.ttl : ttl;
 			}
 			this.broker.cacher.set(key, response, ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
 			this.broker.emit("count.add");
 		},
-		
+
 		"doh.cachedResponse"() {
 			this.broker.emit("count.add");
 		},
@@ -165,7 +166,7 @@ module.exports = {
 				newCount = count + 1;
 			}
 			this.broker.cacher.set(key, newCount); // No ttl, doesn't expire
-			this.logger.info("number of queries: ", newCount);
+			this.logger.info("# of queries: ", newCount);
 		}
 	},
 
