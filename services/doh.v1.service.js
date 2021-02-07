@@ -143,16 +143,20 @@ module.exports = {
 	 */
 	events: {
 		"doh.response"(response) {
-			// Add here a count
-			// Add counter here
-			// Add set cache here
-			const key = `doh:q:${response.answers[0].name}:${response.answers[0].type}:${response.answers[0].class}`;
-			this.broker.cacher.set(key, response, response.answers[0].ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
+			const key = `doh:q:${response.questions[0].name}:${response.questions[0].type}:${response.questions[0].class}`;
+			let ttl = response.answers[0].ttl; // By default use the first record ttl
+			for (const answer of response.answers) {
+				// Set the ttl based on the smallest answsers ttl
+				ttl = (answer.ttl < ttl) ? answer.ttl : ttl;
+			}
+			this.broker.cacher.set(key, response, ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
 			this.broker.emit("count.add");
 		},
+		
 		"doh.cachedResponse"() {
 			this.broker.emit("count.add");
 		},
+
 		async "count.add"() {
 			const key = "doh:count";
 			const count = await this.broker.cacher.get(key);
@@ -160,9 +164,9 @@ module.exports = {
 			if (count) {
 				newCount = count + 1;
 			}
-			this.broker.cacher.set(key, newCount); // Doesn't expire
+			this.broker.cacher.set(key, newCount); // No ttl, doesn't expire
+			this.logger.info("number of queries: ", newCount);
 		}
-
 	},
 
 	/**
