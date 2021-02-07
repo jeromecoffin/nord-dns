@@ -73,6 +73,7 @@ module.exports = {
 				aliases: {
 					"GET /": "v1.doh.getDoH", // Default route, no filter what so ever
 					"POST /": "v1.doh.postDoH", // Default route, no filter what so ever
+					"GET /resolve": "v1.doh.resolve", // Default route, no filter, plain-text query
 					"GET l/:listId": "v1.doh.getListDoH", // Filter by list
 					"POST l/:listId": "v1.doh.postListDoH", // Filter by list
 					"GET u/:userId": "v1.doh.getUserDoH", // Filter by user list

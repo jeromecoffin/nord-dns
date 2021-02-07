@@ -44,13 +44,47 @@ module.exports = {
 		/**
 		 * Get DoH handler
 		 *
-		 * @param {String} dns - base64url of the domain
+		 * @param {String} name - domain
+		 * @param {String} type - Type (eg. A or AAAA)
+		 * 
 		 */
 		resolve: {
 			rest: {
 				method: "GET",
 				path: "/resolve"
 			},
+			params: {
+				name: "string",
+				type: "string"
+			},
+
+			/**
+			 * Disable action cache
+			 */
+			cache: false,
+
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				const packet = dnsPacket.encode({
+					type: "query",
+					id: 1,
+					flags: dnsPacket.RECURSION_DESIRED,
+					questions: [{
+						type: ctx.params.type,
+						name: ctx.params.name
+					}]
+				}).toString("base64");
+				return await ctx.call("v1.doh.resolveDoH", {dns: packet});
+			}
+		},
+
+		/**
+		 * DoH handler
+		 *
+		 * @param {String} dns - base64url of the domain
+		 */
+		resolveDoH: {
+			visibility: "protected", // Action visibility. More info: https://moleculer.services/docs/0.14/actions.html#Action-visibility
 
 			params: {
 				dns: "string"
@@ -103,8 +137,7 @@ module.exports = {
 
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				// this.logger.info("getDoH");
-				const response = await ctx.call("v1.doh.resolve", {dns: ctx.params.dns});
+				const response = await ctx.call("v1.doh.resolveDoH", {dns: ctx.params.dns});
 				const responseMessage = await dnsPacket.encode(response);
 				ctx.meta.$responseType = "application/dns-message";
 				return responseMessage;
@@ -263,7 +296,7 @@ module.exports = {
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				if (ctx.meta.contentType == "application/dns-message") {
-					const response = await ctx.call("v1.doh.resolve", {dns: ctx.meta.body});
+					const response = await ctx.call("v1.doh.resolveDoH", {dns: ctx.meta.body});
 					const responseMessage = await dnsPacket.encode(response);
 					ctx.meta.$responseType = "application/dns-message";
 					return responseMessage;
