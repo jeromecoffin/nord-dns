@@ -39,7 +39,7 @@ module.exports = {
 
 		routes: [
 			{
-				path: "/api",
+				path: "/",
 
 				// CORS headers. More info: https://moleculer.services/docs/0.14/moleculer-web.html#CORS-headers
 				cors: {
@@ -47,19 +47,7 @@ module.exports = {
 					origin: "*",
 
 					// Configures the Access-Control-Allow-Methods CORS header. 
-					methods: ["GET", "OPTIONS", "POST"],
-
-					// Configures the Access-Control-Allow-Headers CORS header.
-					// allowedHeaders: [],
-
-					// // Configures the Access-Control-Expose-Headers CORS header.
-					// exposedHeaders: [],
-
-					// // Configures the Access-Control-Allow-Credentials CORS header.
-					// credentials: false,
-
-					// // Configures the Access-Control-Max-Age CORS header.
-					// maxAge: 3600
+					methods: ["GET", "OPTIONS", "POST"]
 				},
 
 				whitelist: [
@@ -80,9 +68,16 @@ module.exports = {
 
 				// The auto-alias feature allows you to declare your route alias directly in your services.
 				// The gateway will dynamically build the full routes from service schema.
-				autoAliases: true,
+				autoAliases: false,
 
-				aliases: {},
+				aliases: {
+					"GET /": "v1.doh.getDoH", // Default route, no filter what so ever
+					"POST /": "v1.doh.postDoH", // Default route, no filter what so ever
+					"GET l/:listId": "v1.doh.getListDoH", // Filter by list
+					"POST l/:listId": "v1.doh.postListDoH", // Filter by list
+					"GET u/:userId": "v1.doh.getUserDoH", // Filter by user list
+					"POST u/:userId": "v1.doh.postUserDoH", // Filter by user list
+				},
 
 				/** 
 				 * Before call hook. You can check the request.
@@ -92,10 +87,22 @@ module.exports = {
 				 * @param {ServerResponse} res 
 				 * @param {Object} data
 				 */
-				// onBeforeCall(ctx, route, req, res) {
-				// 	// Set request headers to context meta
-				// 	ctx.meta.userAgent = req.headers["user-agent"];
-				// }, 
+				onBeforeCall(ctx, route, req, res) {
+					// Set request headers to context meta
+					ctx.meta.http2 = (req.httpVersionMajor == 2);
+					ctx.meta.method = req.method;
+					if (ctx.meta.method == "POST") {
+						ctx.meta.raw_body = req.body;
+						// console.log("typeof body: ", typeof req.body); // Object WTF ??? should be buffer, (logger return Buffer)
+						try {
+							ctx.meta.body = req.body.toString("base64");
+						} catch (error) {
+							this.logger.error("Can't parse body: ", req.body);
+						}
+						ctx.meta.contentType = req.headers["content-type"];
+					}
+					ctx.meta.userAgent = req.headers["user-agent"];
+				}, 
 
 
 				/**

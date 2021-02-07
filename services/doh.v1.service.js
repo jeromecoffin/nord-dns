@@ -51,10 +51,16 @@ module.exports = {
 				method: "GET",
 				path: "/resolve"
 			},
+
 			params: {
 				dns: "string"
 			},
+
+			/**
+			 * Disable action cache
+			 */
 			cache: false,
+
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				// this.logger.info("QUERY PARAMS: ", ctx.params.dns);
@@ -66,6 +72,7 @@ module.exports = {
 					this.logger.info("Cached Response");
 					ctx.emit("doh.cachedResponse");
 					this.logger.info("Response: ", cachedResponse.answers[0]);
+					ctx.cachedResult = true; // Display the action as yellow in Tracer
 					return cachedResponse;
 				}
 				const response = await this.lookup(query);
@@ -122,20 +129,150 @@ module.exports = {
 
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				// this.logger.info("postDoH");
-				if (ctx.options.parentCtx.params.req.headers["content-type"] == "application/dns-message") {
-					const bytesArray = Object.values(ctx.params);
-					const buffer = new Buffer.from(bytesArray);
-					const base64Message = buffer.toString("base64");
-					const response = await ctx.call("v1.doh.resolve", {dns: base64Message});
+				const response = await ctx.call("v1.doh.parsePostDoH");
+				return response;
+			}
+		},
+
+		/**
+		 * Get User DoH handler
+		 *
+		 * @param {String} dns - base64url of the domain
+		 */
+		getUserDoH: {
+			rest: {
+				method: "GET"
+			},
+			params: {
+				dns: "string",
+				userId: "string"
+			},
+
+			/**
+			 * Disable action cache
+			 */
+			cache: false,
+
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				const userId = ctx.params.userId;
+				this.logger.info("getUserDoH userId: ", userId);
+				return await ctx.call("v1.doh.getDoH", {dns: ctx.params.dns});
+			}
+		},
+
+		/**
+		 * Post User DoH handler
+		 *
+		 * @param {String} dns - base64url of the domain
+		 */
+		postUserDoH: {
+			rest: {
+				method: "POST"
+			},
+			params: {
+				userId: "string"
+			},
+
+			/**
+			 * Disable action cache
+			 */
+			cache: false,
+
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				const userId = ctx.params.userId;
+				this.logger.info("postUserDoH userId: ", userId);
+				return await ctx.call("v1.doh.parsePostDoH");
+			}
+		},
+
+		/**
+		 * Get List DoH handler
+		 *
+		 * @param {String} dns - base64url of the domain
+		 */
+		getListDoH: {
+			rest: {
+				method: "GET"
+			},
+			params: {
+				dns: "string",
+				listId: "string"
+			},
+
+			/**
+			 * Disable action cache
+			 */
+			cache: false,
+
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				const listId = ctx.params.listId;
+				this.logger.info("getListDoH listId: ", listId);
+				return await ctx.call("v1.doh.getDoH", {dns: ctx.params.dns});
+			}
+		},
+
+		/**
+		 * Post List DoH handler
+		 *
+		 * @param {String} dns - base64url of the domain
+		 */
+		postListDoH: {
+			rest: {
+				method: "POST"
+			},
+
+			params: {
+				listId: "string"
+			},
+
+			/**
+			 * Disable action cache
+			 */
+			cache: false,
+
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				const listId = ctx.params.listId;
+				this.logger.info("postListDoH listId: ", listId);
+				return await ctx.call("v1.doh.parsePostDoH", ctx);
+			}
+		},
+
+		/**
+		 * Post DoH handler
+		 * 
+		 * Check if the Content-Type is application/dns-message
+		 * and return a DNS response
+		 *
+		 * @param {String} dns - base64url of the domain
+		 */
+		parsePostDoH: {
+			rest: {
+				method: "POST",
+				path: "/dns-query"
+			},
+
+			/**
+			 * Disable action cache
+			 */
+			cache: false,
+
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				if (ctx.meta.contentType == "application/dns-message") {
+					const response = await ctx.call("v1.doh.resolve", {dns: ctx.meta.body});
 					const responseMessage = await dnsPacket.encode(response);
 					ctx.meta.$responseType = "application/dns-message";
 					return responseMessage;
 				} else {
+					this.logger.error("contentType is not valid, expected application/dns-message");
 					return false;
 				}
 			}
-		}
+		},
 	},
 
 	/**
