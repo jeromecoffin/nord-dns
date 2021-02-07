@@ -35,7 +35,7 @@ module.exports = {
 		ip: "0.0.0.0",
 
 		// Global Express middlewares. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Middlewares
-		use: [rawParser],
+		use: [],
 
 		routes: [
 			{
@@ -55,7 +55,7 @@ module.exports = {
 				],
 
 				// Route-level Express middlewares. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Middlewares
-				// use: [rawParser],
+				use: [rawParser],
 
 				// Enable/disable parameter merging method. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Disable-merging
 				mergeParams: true,
