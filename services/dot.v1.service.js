@@ -3,6 +3,7 @@
 
 
 const fs = require("fs");
+const dnsPacket = require("dns-packet");
 const tls = require("tls");
 const domain = process.env.DOMAIN || "alex.local.ndns.cf";
 
@@ -34,16 +35,22 @@ module.exports = {
 			key: fs.readFileSync("./certificates/local.ndns.cf/privkey1.pem"),
 			cert: fs.readFileSync("./certificates/local.ndns.cf/fullchain1.pem"),
 			checkServerIdentity: () => { return null; },
-
-			enableTrace: true,
+			// enableTrace: true,
 			rejectUnauthorized: false,
 			servername: domain,
 		}, (socket) => {
-			console.log("server connected", socket.authorized ? "authorized" : "unauthorized");
-			socket.write("welcome!\n");
-			// socket.setEncoding("utf8"); If set, data is a string instead of a buffer
 			socket.on("data", (data) => {
-				console.log("DATA", data);
+				const query = dnsPacket.streamDecode(data); // Decode TCP packet to json object
+				const packet = dnsPacket.encode(query); // Encode the UDP packet to base64
+				const base64Message = packet.toString("base64"); // Create the base64 query message
+				this.logger.info("TCP query: ", query.questions[0]);
+				this.broker.call(
+					"v1.doh.resolveDoH", 
+					{dns: base64Message}
+				).then((response) => {
+					const responseBuffer = dnsPacket.streamEncode(response);
+					socket.write(responseBuffer);
+				});
 			});
 		});
 		this.server.on("error", (err) => {

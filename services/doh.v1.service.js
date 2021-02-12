@@ -84,7 +84,7 @@ module.exports = {
 		 * @param {String} dns - base64url of the domain
 		 */
 		resolveDoH: {
-			visibility: "protected", // Action visibility. More info: https://moleculer.services/docs/0.14/actions.html#Action-visibility
+			// visibility: "protected", // Action visibility. More info: https://moleculer.services/docs/0.14/actions.html#Action-visibility
 
 			params: {
 				dns: "string"
