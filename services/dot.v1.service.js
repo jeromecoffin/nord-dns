@@ -29,8 +29,10 @@ module.exports = {
 			port: 853,
 
 			// Necessary only if the server requires client certificate authentication.
-			key: fs.readFileSync(`./certificates/${domain}/private.key`),
-			cert: fs.readFileSync(`./certificates/${domain}/certificate.crt`),
+			// key: fs.readFileSync(`./certificates/${domain}/private.key`),
+			// cert: fs.readFileSync(`./certificates/${domain}/certificate.crt`),
+			key: fs.readFileSync("./certificates/local.ndns.cf/privkey1.pem"),
+			cert: fs.readFileSync("./certificates/local.ndns.cf/fullchain1.pem"),
 			checkServerIdentity: () => { return null; },
 
 			enableTrace: true,
@@ -39,9 +41,9 @@ module.exports = {
 		}, (socket) => {
 			console.log("server connected", socket.authorized ? "authorized" : "unauthorized");
 			socket.write("welcome!\n");
-			socket.setEncoding("utf8");
+			// socket.setEncoding("utf8"); If set, data is a string instead of a buffer
 			socket.on("data", (data) => {
-				console.log(data);
+				console.log("DATA", data);
 			});
 		});
 		this.server.on("error", (err) => {
