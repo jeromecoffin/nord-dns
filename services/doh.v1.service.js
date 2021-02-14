@@ -87,7 +87,7 @@ module.exports = {
 			// visibility: "protected", // Action visibility. More info: https://moleculer.services/docs/0.14/actions.html#Action-visibility
 
 			params: {
-				dns: "string"
+				dns: "string" // base64 query
 			},
 
 			/**
@@ -97,7 +97,6 @@ module.exports = {
 
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				// this.logger.info("QUERY PARAMS: ", ctx.params.dns);
 				const query = await this.decodeQueryMessage(ctx.params.dns);
 				this.logger.info("Query:", query);
 				const key = `doh:q:${query.name}:${query.type}:${query.class}`;
@@ -335,7 +334,7 @@ module.exports = {
 			if (count) {
 				newCount = count + 1;
 			}
-			this.broker.cacher.set(key, newCount); // No ttl, doesn't expire
+			await this.broker.cacher.set(key, newCount); // No ttl, doesn't expire
 			this.logger.info("# of queries: ", newCount);
 		}
 	},
@@ -371,8 +370,7 @@ module.exports = {
 			 *		(record specific data, see below): https://www.npmjs.com/package/dns-packet#supported-record-types
 			 *	}
 			 */
-			const response = await this.resolver.query(question.name, question.type, "GET", {Accept: "application/dns-message"});
-			return response;
+			return await this.resolver.query(question.name, question.type, "GET", {Accept: "application/dns-message"});
 		}
 	},
 
