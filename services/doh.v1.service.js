@@ -95,16 +95,9 @@ module.exports = {
 			 */
 			cache: false,
 
-			// tracing: {
-			// 	tags: {
-			// 		meta: ["queryName", "queryType", "queryClass"]
-			// 	}
-			// },
-
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				const query = await this.decodeQueryMessage(ctx.params.dns);
-				ctx.meta.query = query;
 				ctx.meta.queryName = query.name;
 				ctx.meta.queryType = query.type;
 				ctx.meta.queryClass = query.class;
@@ -333,12 +326,17 @@ module.exports = {
 		"doh.response"(response) {
 			const key = `doh:q:${response.questions[0].name}:${response.questions[0].type}:${response.questions[0].class}`;
 
-			// If NXDOMAIN or answers is empty then cache response for a hour, else set the default ttl to the ttl of the first answer
-			let ttl = (response.rcode == "NXDOMAIN" || response.answers.length == 0) ? 3600 : response.answers[0].ttl; 
+			// If NXDOMAIN or answers is empty then cache response for a hour (3600 seconds), else set the default ttl to the ttl of the first answer
+			let ttl = (response.rcode == "NXDOMAIN" || response.answers.length == 0) ? 3600 : response.answers[0].ttl;
+
+			// Then loop to find the smallest TTL among responses
 			for (const answer of response.answers) {
 				ttl = (answer.ttl < ttl) ? answer.ttl : ttl;
 			}
-			this.broker.cacher.set(key, response, ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
+			if (ttl > 0) {
+				// Cache only the response if TTL is greater than 0
+				this.broker.cacher.set(key, response, ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
+			}
 			this.broker.emit("count.add");
 		},
 
