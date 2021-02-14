@@ -311,6 +311,15 @@ module.exports = {
 	 * Events
 	 */
 	events: {
+		/**
+		 * doh.response
+		 * 
+		 * Event Triggered when a response is retrived from the main dns server (recursive)
+		 * This event will add to the cache the pre-formatted response (json format)
+		 * Finally, this event trigger count.add event
+		 * 
+		 * @param {*} response 
+		 */
 		"doh.response"(response) {
 			const key = `doh:q:${response.questions[0].name}:${response.questions[0].type}:${response.questions[0].class}`;
 
@@ -323,10 +332,22 @@ module.exports = {
 			this.broker.emit("count.add");
 		},
 
+		/**
+		 * doh.cachedResponse
+		 * 
+		 * Cached response, simply trigger count.add event
+		 */
 		"doh.cachedResponse"() {
 			this.broker.emit("count.add");
 		},
 
+
+		/**
+		 * count.add
+		 * 
+		 * Count the number of response
+		 * Save this number onto redis cache
+		 */
 		async "count.add"() {
 			const key = "doh:count";
 			const count = await this.broker.cacher.get(key);
@@ -343,6 +364,14 @@ module.exports = {
 	 * Methods
 	 */
 	methods: {
+		/**
+		 * decodeQueryMessage
+		 * 
+		 * This method take a UDP packet (as a string) and
+		 * return the first question of the request
+		 * 
+		 * @param {*} msg 
+		 */
 		async decodeQueryMessage(msg) {
 			const buf = await Buffer.from(msg, "base64");
 			const decoded = await dnsPacket.decode(buf);
