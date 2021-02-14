@@ -113,7 +113,7 @@ module.exports = {
 				}
 				const response = await this.lookup(query);
 				this.logger.info("Response: ", response.answers[0]);
-				ctx.emit("doh.response", response);
+				ctx.emit("doh.response", {response: response});
 				return response;
 			}
 		},
@@ -320,24 +320,28 @@ module.exports = {
 		 * Event Triggered when a response is retrived from the main dns server (recursive)
 		 * This event will add to the cache the pre-formatted response (json format)
 		 * Finally, this event trigger count.add event
-		 * 
-		 * @param {*} response 
 		 */
-		"doh.response"(response) {
-			const key = `doh:q:${response.questions[0].name}:${response.questions[0].type}:${response.questions[0].class}`;
+		"doh.response": {
+			params: {
+				response: "object",
+			},
+			handler(ctx) {
+				const response = ctx.params.response;
+				const key = `doh:q:${response.questions[0].name}:${response.questions[0].type}:${response.questions[0].class}`;
 
-			// If NXDOMAIN or answers is empty then cache response for a hour (3600 seconds), else set the default ttl to the ttl of the first answer
-			let ttl = (response.rcode == "NXDOMAIN" || response.answers.length == 0) ? 3600 : response.answers[0].ttl;
+				// If NXDOMAIN or answers is empty then cache response for a hour (3600 seconds), else set the default ttl to the ttl of the first answer
+				let ttl = (response.rcode == "NXDOMAIN" || response.answers.length == 0) ? 3600 : response.answers[0].ttl;
 
-			// Then loop to find the smallest TTL among responses
-			for (const answer of response.answers) {
-				ttl = (answer.ttl < ttl) ? answer.ttl : ttl;
+				// Then loop to find the smallest TTL among responses
+				for (const answer of response.answers) {
+					ttl = (answer.ttl < ttl) ? answer.ttl : ttl;
+				}
+				if (ttl > 0) {
+					// Cache only the response if TTL is greater than 0
+					this.broker.cacher.set(key, response, ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
+				}
+				ctx.emit("count.add");
 			}
-			if (ttl > 0) {
-				// Cache only the response if TTL is greater than 0
-				this.broker.cacher.set(key, response, ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
-			}
-			this.broker.emit("count.add");
 		},
 
 		/**
@@ -345,8 +349,8 @@ module.exports = {
 		 * 
 		 * Cached response, simply trigger count.add event
 		 */
-		"doh.cachedResponse"() {
-			this.broker.emit("count.add");
+		"doh.cachedResponse"(ctx) {
+			ctx.emit("count.add");
 		},
 
 
@@ -356,9 +360,9 @@ module.exports = {
 		 * Count the number of response
 		 * Save this number onto redis cache
 		 */
-		async "count.add"() {
+		async "count.add"(ctx) {
 			const key = "doh:count";
-			const count = await this.broker.cacher.get(key);
+			const count = await ctx.broker.cacher.get(key);
 			let newCount = 1;
 			if (count) {
 				newCount = count + 1;
