@@ -78,9 +78,18 @@ module.exports = {
 	},
 
 	created() {
+		// Create a span to measure the initialization
+		const host = "0.0.0.0";
+		const port = 853;
+        const span = this.broker.tracer.startSpan("initializing TLS socket", {
+            tags: {
+                host: host,
+				port: port
+            }
+        });
 		this.server = tls.createServer({
-			host: "0.0.0.0",
-			port: 853,
+			host: host,
+			port: port,
 
 			// Necessary only if the server requires client certificate authentication.
 			// key: fs.readFileSync(`./certificates/${domain}/private.key`),
@@ -106,6 +115,8 @@ module.exports = {
 		});
 		this.server.listen(853, () => {
 			this.logger.info(`DoT server listening on tls://0.0.0.0:853, (servername: ${domain})`);
+			// Finish the main span.
+			span.finish();
 		});		
 	}
 };

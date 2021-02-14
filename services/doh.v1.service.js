@@ -95,9 +95,19 @@ module.exports = {
 			 */
 			cache: false,
 
+			// tracing: {
+			// 	tags: {
+			// 		meta: ["queryName", "queryType", "queryClass"]
+			// 	}
+			// },
+
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				const query = await this.decodeQueryMessage(ctx.params.dns);
+				ctx.meta.query = query;
+				ctx.meta.queryName = query.name;
+				ctx.meta.queryType = query.type;
+				ctx.meta.queryClass = query.class;
 				this.logger.info("Query:", query);
 				const key = `doh:q:${query.name}:${query.type}:${query.class}`;
 				const cachedResponse = await this.broker.cacher.get(key);

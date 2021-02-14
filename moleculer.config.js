@@ -72,7 +72,7 @@ module.exports = {
 	serializer: "JSON",
 
 	// Number of milliseconds to wait before reject a request with a RequestTimeout error. Disabled: 0
-	requestTimeout: 10 * 1000,
+	requestTimeout: 1 * 1000,
 
 	// Retry policy settings. More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Retry
 	retryPolicy: {
@@ -176,19 +176,55 @@ module.exports = {
 	tracing: {
 		enabled: true,
 		// Available built-in exporters: "Console", "Datadog", "Event", "EventLegacy", "Jaeger", "Zipkin"
-		exporter: {
-			type: "Console", // Console exporter is only for development!
-			options: {
-				// Custom logger
-				logger: null,
-				// Using colors
-				colors: true,
-				// Width of row
-				width: 100,
-				// Gauge width in the row
-				gaugeWidth: 40
+		exporter:  [
+			{
+				type: "Console", // Console exporter is only for development!
+				options: {
+					// Custom logger
+					logger: null,
+					// Using colors
+					colors: true,
+					// Width of row
+					width: 100,
+					// Gauge width in the row
+					gaugeWidth: 40
+				}
+			},
+			{
+				type: "Jaeger",
+				options: {
+					// HTTP Reporter endpoint. If set, HTTP Reporter will be used.
+					endpoint: null,
+					// UDP Sender host option.
+					host: process.env.JAEGER_HOST || "172.17.0.1",
+					// UDP Sender port option.
+					port: process.env.JAEGER_HOST || 6832,
+					// Jaeger Sampler configuration.
+					sampler: {
+						// Sampler type. More info: https://www.jaegertracing.io/docs/1.14/sampling/#client-sampling-configuration
+						type: "Const",
+						// Sampler specific options.
+						options: {}
+					},
+					// Additional options for `Jaeger.Tracer`
+					tracerOptions: {},
+					// Default tags. They will be added into all span tags.
+					defaultTags: null
+				}
 			}
-		}
+		],
+		tags: {
+			action: {
+				// Never add params
+				params: true,
+				// Add `loggedIn.username` value from `ctx.meta`
+				meta: true,
+				// Always add the response
+				response: false,
+			}
+		},
+		events: true,
+		stackTrace: true
 	},
 
 	// Register custom middlewares
