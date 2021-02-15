@@ -11,42 +11,61 @@ const domain = process.env.DOMAIN || "local.ndns.cf";
  * @typedef {import('http').IncomingMessage} IncomingRequest Incoming HTTP Request
  * @typedef {import('http').ServerResponse} ServerResponse HTTP Server Response
  */
-
 module.exports = {
 	name: "api",
 	mixins: [ApiGateway],
 
-	// More info about settings: https://moleculer.services/docs/0.14/moleculer-web.html
+	/**
+	 * More info about settings: https://moleculer.services/docs/0.14/moleculer-web.html
+	 */
 	settings: {
-		// Exposed port
+		/**
+		 * Exposed port
+		 */
 		port: process.env.PORT || 8443,
 
-		// HTTPS server with certificate		
+		/**
+		 * HTTPS server with certificate
+		 */
 		https: {
 			key: fs.readFileSync(`./certificates/${domain}/private.key`),
 			cert: fs.readFileSync(`./certificates/${domain}/certificate.crt`),
 			allowHTTP1: true,
 		},
 
-		// Use HTTP2 server
+		/**
+		 * API Gateway provides an experimental support for HTTP2.
+		 * You can turn it on with http2: true in service settings.
+		 * more info: https://moleculer.services/docs/0.14/moleculer-web.html#HTTP2-Server
+		 */
 		http2: true,
 
 		// Exposed IP
 		ip: "0.0.0.0",
 
-		// Global Express middlewares. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Middlewares
+		/**
+		 * Global Express middlewares.
+		 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#Middlewares
+		 */
 		use: [],
 
 		routes: [
 			{
 				path: "/",
 
-				// CORS headers. More info: https://moleculer.services/docs/0.14/moleculer-web.html#CORS-headers
+				/**
+				 * CORS headers.
+				 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#CORS-headers
+				 */
 				cors: {
-					// Configures the Access-Control-Allow-Origin CORS header.
+					/**
+					 * Configures the Access-Control-Allow-Origin CORS header.
+					 */
 					origin: "*",
 
-					// Configures the Access-Control-Allow-Methods CORS header. 
+					/**
+					 * Configures the Access-Control-Allow-Methods CORS header. 
+					 */
 					methods: ["GET", "OPTIONS", "POST"]
 				},
 
@@ -54,22 +73,45 @@ module.exports = {
 					"**"
 				],
 
-				// Route-level Express middlewares. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Middlewares
+				/**
+				 * Route-level Express middlewares.
+				 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#Middlewares
+				 */
 				use: [rawParser],
 
-				// Enable/disable parameter merging method. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Disable-merging
+				/**
+				 * Enable/disable parameter merging method.
+				 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#Disable-merging
+				 */
 				mergeParams: true,
 
-				// Enable authentication. Implement the logic into `authenticate` method. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Authentication
+				/**
+				 * Enable authentication.
+				 * Implement the logic into `authenticate` method.
+				 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#Authentication
+				 */
 				authentication: false,
 
-				// Enable authorization. Implement the logic into `authorize` method. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Authorization
+				/**
+				 * Enable authorization.
+				 * Implement the logic into `authorize` method.
+				 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#Authorization
+				 */
 				authorization: false,
 
-				// The auto-alias feature allows you to declare your route alias directly in your services.
-				// The gateway will dynamically build the full routes from service schema.
+				/**
+				 * The auto-alias feature allows you to declare your route alias directly in your services.
+				 * The gateway will dynamically build the full routes from service schema.
+				 */
 				autoAliases: false,
 
+				/**
+				 * Use alias names.
+				 * You can also specify the method. Otherwise it will handle every method types.
+				 * Using named parameters in aliases is possible. 
+				 * Named parameters are defined by prefixing a colon to the parameter name (:name).
+				 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#Aliases
+				 */
 				aliases: {
 					"GET /": "v1.doh.getDoH", // Default route, no filter what so ever
 					"POST /": "v1.doh.postDoH", // Default route, no filter what so ever
@@ -119,7 +161,10 @@ module.exports = {
 				// 	return doSomething(ctx, res, data);
 				// },
 
-				// Calling options. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Calling-options
+				/**
+				 * Calling options.
+				 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#Calling-options
+				 */
 				callingOptions: {},
 
 				// bodyParsers: {
@@ -133,19 +178,35 @@ module.exports = {
 				// 	}
 				// },
 
-				// Mapping policy setting. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Mapping-policy
-				mappingPolicy: "all", // Available values: "all", "restrict"
+				/**
+				 * Mapping policy setting.
+				 * The route has a mappingPolicy property to handle routes without aliases.
+				 * - all - enable to request all routes with or without aliases (default)
+				 * - restrict - enable to request only the routes with aliases.
+				 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#Mapping-policy
+				 */
+				mappingPolicy: "restrict",
 
-				// Enable/disable logging
+				/**
+				 * Enable/disable logging
+				 */
 				logging: true
 			}
 		],
 
-		// Do not log client side errors (does not log an error response when the error.code is 400<=X<500)
+		/**
+		 * Do not log client side errors (does not log an error response when the error.code is 400<=X<500)
+		 */
 		log4XXResponses: false,
-		// Logging the request parameters. Set to any log level to enable it. E.g. "info"
+
+		/**
+		 * Logging the request parameters. Set to any log level to enable it. E.g. "info"
+		 */
 		logRequestParams: null,
-		// Logging the response data. Set to any log level to enable it. E.g. "info"
+
+		/**
+		 * Logging the response data. Set to any log level to enable it. E.g. "info"
+		 */
 		logResponseData: null,
 	},
 
