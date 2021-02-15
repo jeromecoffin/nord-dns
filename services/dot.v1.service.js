@@ -7,6 +7,9 @@ const dnsPacket = require("dns-packet");
 const tls = require("tls");
 const domain = process.env.DOMAIN || "alex.local.ndns.cf";
 
+/**
+ * @typedef {import('moleculer').Context} Context Moleculer's Context
+ */
 module.exports = {
 	name: "dot",
 	version: 1,
@@ -15,6 +18,7 @@ module.exports = {
 	settings: {
 
 	},
+
 	actions: {
 
 		/**

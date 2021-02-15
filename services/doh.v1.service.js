@@ -6,7 +6,9 @@
 const dnsPacket = require("dns-packet");
 const doh = require("dohjs");
 
-
+/**
+ * @typedef {import('moleculer').Context} Context Moleculer's Context
+ */
 module.exports = {
 	/**
 	 * DNS-over-HTTPS (DoH)
