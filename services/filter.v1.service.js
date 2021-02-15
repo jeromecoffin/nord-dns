@@ -31,7 +31,7 @@ module.exports = {
             params: {
 				uri: "string",
                 name: "string",
-                cachePrefix: "string!optional"
+                cachePrefix: "string|optional"
 			},
 			
 			async handler(ctx) {
