@@ -274,7 +274,7 @@ module.exports = {
 			async handler(ctx) {
 				const listId = ctx.params.listId;
 				this.logger.info("postListDoH listId: ", listId);
-				return await ctx.call("v1.doh.parsePostDoH", ctx);
+				return await ctx.call("v1.doh.parsePostDoH");
 			}
 		},
 
