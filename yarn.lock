@@ -3386,9 +3386,9 @@ module-deps@^6.2.3:
     through2 "^2.0.0"
     xtend "^4.0.0"
 
-moleculer-db-adapter-mongo@^0.4.7:
-  version "0.4.10"
-  resolved "https://registry.npmjs.org/moleculer-db-adapter-mongo/-/moleculer-db-adapter-mongo-0.4.10.tgz"
+moleculer-db-adapter-mongo@^0.4.11:
+  version "0.4.11"
+  resolved "https://registry.yarnpkg.com/moleculer-db-adapter-mongo/-/moleculer-db-adapter-mongo-0.4.11.tgz#dace737eb28e16d2f4553083ea59489dd7a65909"
   dependencies:
     bluebird "^3.7.2"
     fakerator "^0.3.1"
