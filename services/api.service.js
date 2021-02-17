@@ -113,13 +113,43 @@ module.exports = {
 				 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#Aliases
 				 */
 				aliases: {
-					"GET /": "v1.doh.getDoH", // Default route, no filter what so ever
-					"POST /": "v1.doh.postDoH", // Default route, no filter what so ever
-					"GET /resolve": "v1.doh.resolve", // Default route, no filter, plain-text query
-					"GET l/:listId": "v1.doh.getListDoH", // Filter by list
-					"POST l/:listId": "v1.doh.postListDoH", // Filter by list
-					"GET u/:userId": "v1.doh.getUserDoH", // Filter by user list
-					"POST u/:userId": "v1.doh.postUserDoH", // Filter by user list
+					/**
+					 * Default route, GET method
+					 * No filter what so ever
+					 */
+					"GET /": "v1.doh.getDoH",
+
+					/**
+					 * Default route, POST method
+					 * no filter what so ever
+					 */
+					"POST /": "v1.doh.postDoH",
+
+					/**
+					 * Default route, GET method
+					 * no filter, plain-text query
+					 */
+					"GET /resolve": "v1.doh.resolve",
+
+					/**
+					 * Filter by list, GET method
+					 */
+					"GET l/:listId": "v1.doh.getListDoH",
+
+					/**
+					 * Filter by list, POST method
+					 */
+					"POST l/:listId": "v1.doh.postListDoH",
+
+					/**
+					 * Filter by user list, GET method
+					 */
+					"GET u/:userId": "v1.doh.getUserDoH",
+
+					/**
+					 * Filter by user list, POST method
+					 */
+					"POST u/:userId": "v1.doh.postUserDoH",
 				},
 
 				/** 
@@ -131,20 +161,45 @@ module.exports = {
 				 * @param {Object} data
 				 */
 				onBeforeCall(ctx, route, req, res) {
-					// Set request headers to context meta
+					const span = ctx.startSpan("onBeforeCall");
+
+					/**
+					 * HTTP2
+					 * True if the request is made over HTTP2
+					 * False if not (HTTP1)
+					 */
 					ctx.meta.http2 = (req.httpVersionMajor == 2);
+
+					/**
+					 * Method
+					 * Method used to make the request
+					 * eg. POST, GET
+					 */
 					ctx.meta.method = req.method;
 					if (ctx.meta.method == "POST") {
+						/**
+						 * raw_body
+						 * Save the raw request (Buffer, save as object)
+						 */
 						ctx.meta.raw_body = req.body;
-						// console.log("typeof body: ", typeof req.body); // Object WTF ??? should be buffer, (logger return Buffer)
 						try {
+							/**
+							 * body
+							 * parsed body, base64 message
+							 */
 							ctx.meta.body = req.body.toString("base64");
 						} catch (error) {
 							this.logger.error("Can't parse body: ", req.body);
 						}
 						ctx.meta.contentType = req.headers["content-type"];
 					}
+
+					/**
+					 * userAgent
+					 * Save the user agent of the remote client making the request
+					 */
 					ctx.meta.userAgent = req.headers["user-agent"];
+					span.finish();
 				}, 
 
 

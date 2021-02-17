@@ -55,6 +55,7 @@ services:
     networks:
       - internal
       - default
+  
   jaeger:
     image: jaegertracing/all-in-one:1.21
     environment:
