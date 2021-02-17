@@ -327,6 +327,8 @@ module.exports = {
 			params: {
 				response: "object",
 			},
+
+			/** @param {Context} ctx  */
 			handler(ctx) {
 				const response = ctx.params.response;
 				const key = `doh:q:${response.questions[0].name}:${response.questions[0].type}:${response.questions[0].class}`;

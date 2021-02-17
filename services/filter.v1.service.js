@@ -38,8 +38,34 @@ module.exports = {
 	 * Actions
 	 */
 	actions: {
-		test(ctx) {
-			ctx.logger.info("Hello !");
+		/**
+		 * check
+		 *
+		 * This method is used to check if a domain belong to a list
+		 * If the domain belong to a list then this function return
+		 * restricted, if the domain is not found then pass is returned.
+		 * 
+		 * @param {String} domain - domain
+		 * @param {String} list - listname (in lowercase)
+		 * 
+		 * @returns {Object} action: restrict|pass
+		 * 
+		 */
+		check: {
+			params: {
+				domain: "string",
+				list: "string|optional"
+			},
+
+			/**
+			 * Enable action cache
+			 */
+			cache: true,
+
+			/** @param {Context} ctx  */
+			handler(ctx) {	
+				ctx.logger.info("Hello !");
+			}
 		}
 	},
 
@@ -55,6 +81,8 @@ module.exports = {
 				listName: "string",
 				ttl: "number|optional"
 			},
+
+			/** @param {Context} ctx  */
 			handler(ctx) {
 				const domain = ctx.params.domain;
 				const listName = ctx.params.domain;
@@ -65,6 +93,12 @@ module.exports = {
 	},
 
 	methods: {
+		/**
+		 * loadDefaultList
+		 * 
+		 * This internal method is used to load the default list (1Host)
+		 * After the list is downloaded, the list is saved into the service cache.
+		 */
 		async loadDefaultList() {
 			const uri = "https://cdn.jsdelivr.net/gh/badmojr/1Hosts@latest/Pro/domains.txt";
 			const name = "1Hosts";
@@ -79,7 +113,16 @@ module.exports = {
 			span.finish();
 		},
 
-
+		/**
+		 * loadList
+		 * 
+		 * This internal method is used to import a list to the filter service.
+		 * The list is then stored in the local cache for a limited time (TTL)
+		 * up to 24 hours.
+		 * 
+		 * @param {String} uri 
+		 * @param {String} name 
+		 */
 		async loadList(uri, name) {
 			const listMetas = await this.downloadList(uri, name);
 			const file = await readline.createInterface({
@@ -103,6 +146,16 @@ module.exports = {
 			});
 		},
 
+
+		/**
+		 * downloadList
+		 * 
+		 * This local method is used to download a list given a download url (uri)
+		 * and save it into a file in the lists directory.
+		 * 
+		 * @param {String} uri 
+		 * @param {String} name 
+		 */
 		async downloadList(uri, name) {
 			const filePath = `./lists/${name}.txt`;
 			const file = fs.createWriteStream(filePath, {flags : "w"});
@@ -122,6 +175,7 @@ module.exports = {
 
 				/**
 				 * Cache data for 1 full day
+				 * This may differ depending on the list metadata
 				 */
 				ttl: 24 * 3600
 			};

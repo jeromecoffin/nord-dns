@@ -38,6 +38,7 @@ module.exports = {
 			 */
 			cache: false,
 			
+			/** @param {Context} ctx  */
 			async handler(ctx) {
 				// Convert the TCP packet (buffer) to base64 UDP message
 				const messageQuery = await ctx.call(
@@ -67,6 +68,7 @@ module.exports = {
 			 */
 			cache: false,
 
+			/** @param {Context} ctx  */
 			handler(ctx) {
 				const query = dnsPacket.streamDecode(ctx.params.buffer); // Decode TCP packet to json object
 				const packet = dnsPacket.encode(query); // Encode the UDP packet to base64

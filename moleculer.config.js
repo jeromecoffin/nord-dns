@@ -28,11 +28,19 @@ const { ServiceBroker } = require("moleculer");
  *  }
  */
 module.exports = {
-	// Namespace of nodes to segment your nodes on the same network.
+	/**
+	 * Namespace of nodes to segment your nodes on the same network.
+	 */
 	namespace: process.env.NAMESPACE || "com.nord-dns",
-	// Unique node identifier. Must be unique in a namespace.
+	
+	/**
+	 * Unique node identifier. Must be unique in a namespace.
+	 */
 	nodeID: process.env.HOSTNAME || null,
-	// Custom metadata store. Store here what you want. Accessing: `this.broker.metadata`
+	
+	/**
+	 * Custom metadata store. Store here what you want. Accessing: `this.broker.metadata`
+	 */
 	metadata: {},
 
 	/**
@@ -42,89 +50,166 @@ module.exports = {
 	 */
 	hotReload: true,
 
-	// Enable/disable logging or use custom logger. More info: https://moleculer.services/docs/0.14/logging.html
-	// Available logger types: "Console", "File", "Pino", "Winston", "Bunyan", "debug", "Log4js", "Datadog"
+	/**
+	 * Enable/disable logging or use custom logger. 
+	 * More info: https://moleculer.services/docs/0.14/logging.html
+	 * Available logger types: "Console", "File", "Pino", "Winston", "Bunyan", "debug", "Log4js", "Datadog"
+	 */
 	logger: {
 		type: "Console",
 		options: {
-			// Using colors on the output
+			/**
+			 * Using colors on the output
+			 */
 			colors: true,
-			// Print module names with different colors (like docker-compose for containers)
+
+			/**
+			 * Print module names with different colors (like docker-compose for containers)
+			 */
 			moduleColors: false,
-			// Line formatter. It can be "json", "short", "simple", "full", a `Function` or a template string like "{timestamp} {level} {nodeID}/{mod}: {msg}"
+
+			/**
+			 * Line formatter. It can be "json", "short", "simple", "full", a `Function` or a template string like "{timestamp} {level} {nodeID}/{mod}: {msg}"
+			 */
 			formatter: "full",
-			// Custom object printer. If not defined, it uses the `util.inspect` method.
+
+			/**
+			 * Custom object printer. If not defined, it uses the `util.inspect` method.
+			 */
 			objectPrinter: null,
-			// Auto-padding the module name in order to messages begin at the same column.
+
+			/**
+			 * Auto-padding the module name in order to messages begin at the same column.
+			 */
 			autoPadding: true
 		}
 	},
-	// Default log level for built-in console logger. It can be overwritten in logger options above.
-	// Available values: trace, debug, info, warn, error, fatal
+
+	/**
+	 * Default log level for built-in console logger. It can be overwritten in logger options above.
+	 * Available values: trace, debug, info, warn, error, fatal
+	 */
 	logLevel: "info",
+	
+	/**
+	 * Define transporter.
+	 * More info: https://moleculer.services/docs/0.14/networking.html
+	 * Note: During the development, you don't need to define it because all services will be loaded locally.
+	 * In production you can set it via `TRANSPORTER=nats://localhost:4222` environment variable.
+	 */
+	transporter: process.env.TRANSPORTER || null, //"NATS"
 
-	// Define transporter.
-	// More info: https://moleculer.services/docs/0.14/networking.html
-	// Note: During the development, you don't need to define it because all services will be loaded locally.
-	// In production you can set it via `TRANSPORTER=nats://localhost:4222` environment variable.
-	transporter: null, //"NATS"
-
-	// Define a cacher.
-	// More info: https://moleculer.services/docs/0.14/caching.html
+	/**
+	 * Define a cacher.
+	 * More info: https://moleculer.services/docs/0.14/caching.html
+	 */
 	cacher: process.env.REDIS_URI || "redis://172.17.0.1:6379",
 
-	// Define a serializer.
-	// Available values: "JSON", "Avro", "ProtoBuf", "MsgPack", "Notepack", "Thrift".
-	// More info: https://moleculer.services/docs/0.14/networking.html#Serialization
+	/**
+	 * Define a serializer.
+	 * Available values: "JSON", "Avro", "ProtoBuf", "MsgPack", "Notepack", "Thrift".
+	 * More info: https://moleculer.services/docs/0.14/networking.html#Serialization
+	 */
 	serializer: "JSON",
 
-	// Number of milliseconds to wait before reject a request with a RequestTimeout error. Disabled: 0
+	/**
+	 * Number of milliseconds to wait before reject a request with a RequestTimeout error. Disabled: 0
+	 */
 	requestTimeout: 1 * 1000,
 
-	// Retry policy settings. More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Retry
+	/**
+	 * Retry policy settings.
+	 * More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Retry
+	 */
 	retryPolicy: {
-		// Enable feature
+		/**
+		 * Enable feature
+		 */
 		enabled: false,
-		// Count of retries
+
+		/**
+		 * Count of retries
+		 */
 		retries: 5,
-		// First delay in milliseconds.
+
+		/**
+		 * First delay in milliseconds.
+		 */
 		delay: 100,
-		// Maximum delay in milliseconds.
+
+		/**
+		 * Maximum delay in milliseconds.
+		 */
 		maxDelay: 1000,
-		// Backoff factor for delay. 2 means exponential backoff.
+
+		/**
+		 * Backoff factor for delay. 2 means exponential backoff.
+		 */
 		factor: 2,
-		// A function to check failed requests.
+
+		/**
+		 * A function to check failed requests.
+		 * @param {*} err 
+		 */
 		check: err => err && !!err.retryable
 	},
 
-	// Limit of calling level. If it reaches the limit, broker will throw an MaxCallLevelError error. (Infinite loop protection)
+	/**
+	 * Limit of calling level. If it reaches the limit, broker will throw an MaxCallLevelError error. (Infinite loop protection)
+	 */
 	maxCallLevel: 100,
 
-	// Number of seconds to send heartbeat packet to other nodes.
+	/**
+	 * Number of seconds to send heartbeat packet to other nodes.
+	 */
 	heartbeatInterval: 10,
-	// Number of seconds to wait before setting node to unavailable status.
+
+	/**
+	 * Number of seconds to wait before setting node to unavailable status.
+	 */
 	heartbeatTimeout: 30,
 
-	// Cloning the params of context if enabled. High performance impact, use it with caution!
+	/**
+	 * Cloning the params of context if enabled. High performance impact, use it with caution!
+	 */
 	contextParamsCloning: false,
 
-	// Tracking requests and waiting for running requests before shuting down. More info: https://moleculer.services/docs/0.14/context.html#Context-tracking
+	/**
+	 * Tracking requests and waiting for running requests before shuting down.
+	 * More info: https://moleculer.services/docs/0.14/context.html#Context-tracking
+	 */
 	tracking: {
-		// Enable feature
+		/**
+		 * Enable feature
+		 */
 		enabled: false,
-		// Number of milliseconds to wait before shuting down the process.
+
+		/**
+		 * Number of milliseconds to wait before shuting down the process.
+		 */
 		shutdownTimeout: 5000,
 	},
 
-	// Disable built-in request & emit balancer. (Transporter must support it, as well.). More info: https://moleculer.services/docs/0.14/networking.html#Disabled-balancer
+	/**
+	 * Disable built-in request & emit balancer. (Transporter must support it, as well.).
+	 * More info: https://moleculer.services/docs/0.14/networking.html#Disabled-balancer
+	 */
 	disableBalancer: false,
 
-	// Settings of Service Registry. More info: https://moleculer.services/docs/0.14/registry.html
+	/**
+	 * Settings of Service Registry.
+	 * More info: https://moleculer.services/docs/0.14/registry.html
+	 */
 	registry: {
-		// Define balancing strategy. More info: https://moleculer.services/docs/0.14/balancing.html
-		// Available values: "RoundRobin", "Random", "CpuUsage", "Latency", "Shard"
+		/**
+		 * Define balancing strategy. More info: https://moleculer.services/docs/0.14/balancing.html
+		 * Available values: "RoundRobin", "Random", "CpuUsage", "Latency", "Shard"
+		 */
 		strategy: "Latency",
-		// Enable local action call preferring. Always call the local action instance if available.
+
+		/**
+		 * Enable local action call preferring. Always call the local action instance if available.
+		 */
 		preferLocal: true
 	},
 
