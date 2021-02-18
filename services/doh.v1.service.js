@@ -104,18 +104,45 @@ module.exports = {
 				ctx.meta.queryType = query.type;
 				ctx.meta.queryClass = query.class;
 				this.logger.info("Query:", query);
+
+				/**
+				 * Check if there is a list id to pass by
+				 */
+				const listName = ctx.meta.listId;
+				const listResult = await ctx.call(
+					"v1.filter.checkDomain",
+					{
+						domain: query.name,
+						listName: listName,
+					}
+				);
+
+				this.logger.info("listResult", listResult);
+
+				
+
 				const key = `doh:q:${query.name}:${query.type}:${query.class}`;
 				const cachedResponse = await this.broker.cacher.get(key);
+				let response = {};
 				if (cachedResponse) {
 					this.logger.info("Cached Response");
 					ctx.emit("doh.cachedResponse");
 					this.logger.info("Response: ", cachedResponse.answers[0]);
 					ctx.cachedResult = true; // Display the action as yellow in Tracer
-					return cachedResponse;
+					response = cachedResponse;
+				} else {
+					response = await this.lookup(query);
+					this.logger.info("Response: ", response.answers[0]);
+					ctx.emit("doh.response", {response: response});
 				}
-				const response = await this.lookup(query);
-				this.logger.info("Response: ", response.answers[0]);
-				ctx.emit("doh.response", {response: response});
+				this.logger.info("Response: ", response);
+				if (listResult.action == "restrict") {
+					// We must HERE find a way to return NXDOMAIN with NO answers
+					response.rcode = "NXDOMAIN";
+					response.answers = [];
+					this.logger.info("Response: ", response);
+				}
+
 				return response;
 			}
 		},
@@ -246,6 +273,7 @@ module.exports = {
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				const listId = ctx.params.listId;
+				ctx.meta.listId = listId;
 				this.logger.info("getListDoH listId: ", listId);
 				return await ctx.call("v1.doh.getDoH", {dns: ctx.params.dns});
 			}
@@ -273,6 +301,7 @@ module.exports = {
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				const listId = ctx.params.listId;
+				ctx.meta.listId = listId;
 				this.logger.info("postListDoH listId: ", listId);
 				return await ctx.call("v1.doh.parsePostDoH");
 			}
@@ -344,7 +373,7 @@ module.exports = {
 					// Cache only the response if TTL is greater than 0
 					this.broker.cacher.set(key, response, ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
 				}
-				ctx.emit("count.add");
+				ctx.emit("v1.doh.count.add");
 			}
 		},
 
@@ -354,7 +383,7 @@ module.exports = {
 		 * Cached response, simply trigger count.add event
 		 */
 		"doh.cachedResponse"(ctx) {
-			ctx.emit("count.add");
+			ctx.emit("v1.doh.count.add");
 		},
 
 

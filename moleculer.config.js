@@ -125,7 +125,7 @@ module.exports = {
 		/**
 		 * Enable feature
 		 */
-		enabled: false,
+		enabled: true,
 
 		/**
 		 * Count of retries
