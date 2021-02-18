@@ -86,7 +86,10 @@ module.exports = {
 				const isListinCache = await ctx.call("v1.filter.checkList", {"name": listName});
 				this.logger.info(`isListinCache: ${isListinCache}`);
 				if (!isListinCache) {
-					ctx.emit("filter.loadList", {listName: listName});
+					
+
+					
+					//ctx.emit("filter.loadList", {listName: listName});
 					return {
 						action: "pass"
 					};
@@ -164,7 +167,173 @@ module.exports = {
 				const isInList = await this.broker.cacher.get(key);
 				return isInList ? true : false;
 			}
-		}
+		},
+
+
+		/**
+		 * Get the default list
+		 * Default list metadatas are set at the service level
+		 * Under settings.defaultList
+		 */
+		getDefaultList: {
+			timeout: 0,
+			async handler(ctx) {
+				const listName = this.settings.defaultList.name;
+				const uri = this.settings.defaultList.uri;
+				const ttl = this.settings.defaultList.ttl;
+				return await ctx.call("v1.filter.getAndSaveList", {
+					listName: listName,
+					uri: uri,
+					ttl: ttl
+				});
+			}
+		},
+
+
+
+		getAndSaveList: {
+			timeout: 0,
+			params: {
+				listName: "string",
+				uri: "string",
+				ttl: "number|optional"
+			},
+			async handler(ctx) {
+				const listName = ctx.params.listName;
+				const uri = ctx.params.uri;
+				const ttl = ctx.params.ttl;
+				/**
+				 * First we download the list
+				 */
+				const listMetas = await ctx.call("v1.filter.downloadList", {
+					listName: listName,
+					uri: uri,
+					ttl: ttl
+				});
+				this.logger.info("listMetas: ", listMetas);
+
+
+				/**
+				 * Then we load domains of the list into the service cache
+				 */
+				const imported = await ctx.call("v1.filter.importListDomains", {listMetas: listMetas});
+				this.logger.info("imported: ", imported);
+
+				return true;
+			}
+		},
+
+
+
+
+
+
+		/**
+		 * Download a list
+		 */
+		downloadList: {
+			/**
+			 * Retry to download the filter list file after 3 seconds
+			 */
+			timeout: 3000,
+			params: {
+				listName: "string",
+				uri: "string",
+				ttl: "number|optional"
+			},
+			handler(ctx) {
+				const name = ctx.params.listName;
+				const uri = ctx.params.uri;
+
+				this.logger.info(`getList: Downloading list ${name} from ${uri}`);
+				const filePath = `./lists/${name}.txt`;
+				const file = fs.createWriteStream(filePath, {flags : "w"});
+				https.get(uri, function(response) {
+					response.pipe(file);
+				});
+				this.logger.info("getList: Download completed!");
+
+				return {
+					/**
+					 * Name of the filter list
+					 */
+					name: name,
+
+					/**
+					 * Path of the filter list file
+					 */
+					filePath: filePath,
+
+					/**
+					 * Cache data for 1 full day
+					 * This may differ depending on the list metadata
+					 */
+					ttl: 24 * 3600
+				};
+			}
+		},
+
+
+		/**
+		 * Import domains in a list
+		 */
+		importListDomains: {
+			/**
+			 * Timeout of request in milliseconds. 
+			 * If the request is timed out and you don’t define fallbackResponse, broker will throw a RequestTimeout error. 
+			 * To disable set 0. If it’s not defined, the requestTimeout value from broker options will be used.
+			 * More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Timeout
+			 */
+			timeout: 0,
+			params: {
+				listMetas: "object",
+			},
+
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				await new Promise(resolve => setTimeout(resolve, 150));
+				const listMetas = ctx.params.listMetas;
+
+				/**
+				 * Then we read each line of the list and parse it.
+				 * Finally we import each domain in the list into the cache.
+				 */
+				this.logger.info("importListDomains: listMetas", listMetas);
+				const rl = readline.createInterface({
+					input: fs.createReadStream(listMetas.filePath),
+					//output: process.stdout,
+					//terminal: false,
+					crlfDelay: Infinity
+				});
+
+				
+				/**
+				 * Read line by line
+				 * More info: https://nodejs.org/api/readline.html#readline_example_read_file_stream_line_by_line
+				 * note: The for await...of wasn't working (it didn't read the full list)
+				 */
+				this.logger.info("importListDomains: Importing list to cache...");
+				rl.on("line", (line) => {
+					if (line && !line.startsWith("#")) {
+						const key = `filter:l:${listMetas.name}:${line}`;
+						this.broker.cacher.set(
+							key, 
+							{
+								listName: listMetas.name,
+								domain: line,
+								ttl: listMetas.ttl
+							},
+							listMetas.ttl
+						);
+					}
+				});
+
+				await once(rl, "close");
+				console.log("File processed.");
+			}
+		},
+
+
 	},
 
 	events: {
@@ -229,34 +398,50 @@ module.exports = {
 				/**
 				 * Unix timestamps in miliseconds
 				 */
-				lastUpdated: (new Date()).toString()
+				lastUpdated: Number(new Date())
 			};
 			if (index == -1) {
 				cachedLists.push(list);
 			} else {
 				cachedLists[index] = list;
 			}
-			await this.loadDefaultList();
+			
+			
+
+			this.logger.info(`loadDefaultList: loading default list (${listName}) from ${uri}`);
+			const span = ctx.startSpan("method 'loadDefaultList'", {
+				tags: {
+					uri: uri,
+					name: listName,
+					service: `v${this.version}.${this.name}`
+				}
+			});
+
+
+			await this.loadList(uri, listName);
+
+
+			span.finish();
+
+
+
 			this.broker.cacher.set(key, cachedLists);
 		},
 
 		/**
-		 * filter.loadDomain
+		 * filter.loadList
 		 * 
 		 * This event will load to redis store a domain based on a specific key
 		 */
 		"filter.loadList": {
 			params: {
-				listName: "string",
-				uri: "string|optional",
-				ttl: "number|optional"
+				listName: "string"
 			},
 
 			/** @param {Context} ctx  */
 			async handler(ctx) {
+				const domain = ctx.params.domain;
 				const listName = ctx.params.listName;
-				const uri = ctx.params.uri;
-				const ttl = ctx.params.ttl;
 
 				// Check if the requested list is the default list
 				if (listName == this.settings.defaultList.name) {
@@ -272,32 +457,10 @@ module.exports = {
 				this.logger.info(`filter.loadList: Importing list ${listName} from ${uri}`);
 				return true;
 			}
-		},
-		
+		},		
 	},
 
 	methods: {
-		/**
-		 * loadDefaultList
-		 * 
-		 * This internal method is used to load the default list (1Host)
-		 * After the list is downloaded, the list is saved into the service cache.
-		 */
-		async loadDefaultList() {
-			const uri = this.settings.defaultList.uri;
-			const name = this.settings.defaultList.name;
-			this.logger.info(`loadDefaultList: loading default list (${name}) from ${uri}`);
-			const span = this.broker.tracer.startSpan("method 'loadDefaultList'", {
-				tags: {
-					uri: uri,
-					name: name,
-					service: `v${this.version}.${this.name}`
-				}
-			});
-			await this.loadList(uri, name);
-			span.finish();
-		},
-
 		/**
 		 * loadList
 		 * 
@@ -313,94 +476,19 @@ module.exports = {
 			/**
 			 * First we download the list data and retrieve list metadata
 			 */
-			const listMetas = await this.downloadList(uri, name);
-
-			this.importList(listMetas, name);
+			const listMetas = await this.broker.call("v1.filter.getList", {listName: name, uri: uri});
+			const importListDomains = await this.broker.call("v1.filter.importListDomains", {listMetas: listMetas});
 
 			this.logger.info("loadList: Import completed!");
-		},
-
-		importList(listMetas, name) {
-			/**
-			 * Then we read each line of the list and parse it.
-			 * Finally we import each domain in the list into the cache.
-			 */
-			this.logger.info("importList: listMetas", listMetas);
-			const file = readline.createInterface({
-				input: fs.createReadStream(listMetas.filePath),
-				//output: process.stdout,
-				//terminal: false,
-				crlfDelay: Infinity
-			});
-
-			
-			/**
-			 * Read line by line
-			 * More info: https://nodejs.org/api/readline.html#readline_example_read_file_stream_line_by_line
-			 * note: The for await...of wasn't working (it didn't read the full list)
-			 */
-			this.logger.info("loadList: Importing list to cache...");
-			file.on("line", (line) => {
-				if (line && !line.startsWith("#")) {
-					const key = `filter:l:${name}:${line}`;
-					this.broker.cacher.set(
-						key, 
-						{
-							listName: name,
-							domain: line,
-							ttl: listMetas.ttl
-						},
-						listMetas.ttl
-					);
-				}
-			});
-		},
-
-
-		/**
-		 * downloadList
-		 * 
-		 * This local method is used to download a list given a download url (uri)
-		 * and save it into a file in the lists directory.
-		 * 
-		 * @param {String} uri 
-		 * @param {String} name 
-		 */
-		async downloadList(uri, name) {
-			this.logger.info(`downloadList: Downloading list ${name} from ${uri}`);
-			const filePath = `./lists/${name}.txt`;
-			const file = fs.createWriteStream(filePath, {flags : "w"});
-			https.get(uri, function(response) {
-				response.pipe(file);
-			});
-			this.logger.info("downloadList: Download completed!");
-			return {
-				/**
-				 * Name of the filter list
-				 */
-				name: name,
-
-				/**
-				 * Path of the filter list file
-				 */
-				filePath: filePath,
-
-				/**
-				 * Cache data for 1 full day
-				 * This may differ depending on the list metadata
-				 */
-				ttl: 24 * 3600
-			};
 		},
 	},
 
 	created() {
-		// this.logger.info("Service Filter created!, Loading default list...");
-		// this.loadDefaultList();
-		// this.logger.info("Default list loaded!");
+
 	},
 
 	async started() {
-
+		await this.waitForServices();
+		this.logger.info("!!!! filter service: Services availables !!!!");
 	}
 };

@@ -99,28 +99,20 @@ module.exports = {
 
 			/** @param {Context} ctx  */
 			async handler(ctx) {
+				/**
+				 * Query is an object containing the packet query
+				 */
 				const query = await this.decodeQueryMessage(ctx.params.dns);
 				ctx.meta.queryName = query.name;
 				ctx.meta.queryType = query.type;
 				ctx.meta.queryClass = query.class;
 				this.logger.info("Query:", query);
 
+
+
 				/**
-				 * Check if there is a list id to pass by
+				 * Check the domain
 				 */
-				const listName = ctx.meta.listId;
-				const listResult = await ctx.call(
-					"v1.filter.checkDomain",
-					{
-						domain: query.name,
-						listName: listName,
-					}
-				);
-
-				this.logger.info("listResult", listResult);
-
-				
-
 				const key = `doh:q:${query.name}:${query.type}:${query.class}`;
 				const cachedResponse = await this.broker.cacher.get(key);
 				let response = {};
@@ -136,11 +128,36 @@ module.exports = {
 					ctx.emit("doh.response", {response: response});
 				}
 				this.logger.info("Response: ", response);
-				if (listResult.action == "restrict") {
-					// We must HERE find a way to return NXDOMAIN with NO answers
-					response.rcode = "NXDOMAIN";
-					response.answers = [];
-					this.logger.info("Response: ", response);
+
+
+
+				/**
+				 * Check if there is a list id to pass by
+				 */
+				const listName = ctx.meta.listId;
+				this.logger.info("listName:", listName);
+
+
+				
+				/**
+				 * Check if the domain is in the filterList
+				 */
+				if (listName) {
+					const listResult = await ctx.call(
+						"v1.filter.checkDomain",
+						{
+							domain: query.name,
+							listName: listName,
+						}
+					);
+	
+					this.logger.info("listResult", listResult);
+					if (listResult.action == "restrict") {
+						// We must HERE find a way to return NXDOMAIN with NO answers
+						response.rcode = "NXDOMAIN";
+						response.answers = [];
+						this.logger.info("Response: ", response);
+					}
 				}
 
 				return response;
