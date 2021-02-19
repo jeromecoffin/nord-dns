@@ -137,15 +137,13 @@ module.exports = {
 
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				const key = "filter:lists";
-				const cachedLists = await this.broker.cacher.get(key);
-				if (!cachedLists) {
+				const key = `filter:lists:${ctx.params.name}`;
+				const listMetas = await this.broker.cacher.get(key);
+				if (!listMetas) {
 					this.logger.warn("There is no cached list! You should consider caching at least one list");
 					return false;
 				}
-				const listNames = cachedLists.map(list => list.name);
-				this.logger.info("Lists in cache: ", listNames);
-				return listNames.includes(ctx.params.name);
+				return true;
 			}
 		},
 
@@ -161,7 +159,11 @@ module.exports = {
 			},
 
 			/**
-			 * Enable action cache
+			 * Cache results from this action
+			 * 
+			 * We assume the list have been previously updated.
+			 * 
+			 * We could cache result up to a hour (3600s)
 			 */
 			cache: false,
 
@@ -181,6 +183,7 @@ module.exports = {
 		 */
 		getDefaultList: {
 			timeout: 0,
+			cache: false,
 			async handler(ctx) {
 				const listName = this.settings.defaultList.name;
 				const uri = this.settings.defaultList.uri;
@@ -194,9 +197,16 @@ module.exports = {
 		},
 
 
-
+		/**
+		 * getAndSaveList
+		 * 
+		 * This action is used to retrieve a list (download)
+		 * and import domain's list into the service cache.
+		 * Finally this action will register the list to the filter service.
+		 */
 		getAndSaveList: {
 			timeout: 0,
+			cache: false,
 			params: {
 				listName: "string",
 				uri: "string",
@@ -206,6 +216,7 @@ module.exports = {
 				const listName = ctx.params.listName;
 				const uri = ctx.params.uri;
 				const ttl = ctx.params.ttl;
+
 				/**
 				 * First we download the list
 				 */
@@ -214,16 +225,16 @@ module.exports = {
 					uri: uri,
 					ttl: ttl
 				});
-				this.logger.info("listMetas: ", listMetas);
-
 
 				/**
 				 * Then we load domains of the list into the service cache
 				 */
-				const imported = await ctx.call("v1.filter.importListDomains", {listMetas: listMetas});
-				this.logger.info("imported: ", imported);
+				await ctx.call("v1.filter.importListDomains", {listMetas: listMetas});
 
-				return true;
+				/**
+				 * Finally we register the current list to the service lists
+				 */
+				return await ctx.call("v1.filter.registerList", {listMetas: listMetas});
 			}
 		},
 
@@ -241,6 +252,12 @@ module.exports = {
 			 * will be triggered
 			 */
 			timeout: 3000,
+
+			/**
+			 * We disable the cache because this action is used to download
+			 * a list.
+			 */
+			cache: false,
 			params: {
 				listName: "string",
 				uri: "string",
@@ -251,11 +268,11 @@ module.exports = {
 				const name = ctx.params.listName;
 				const uri = ctx.params.uri;
 
-				this.logger.info(`getList: Downloading list ${name} from ${uri}`);
+				this.logger.info(`downloadList: Downloading list ${name} from ${uri}`);
 				const filePath = `./lists/${name}.txt`;
 				const response = await fetch(uri);
 				await streamPipeline(response.body, fs.createWriteStream(filePath));
-				this.logger.info("getList: Download completed!");
+				this.logger.info("downloadList: Download completed!");
 
 				return {
 					/**
@@ -272,7 +289,18 @@ module.exports = {
 					 * Cache data for 1 full day
 					 * This may differ depending on the list metadata
 					 */
-					ttl: 24 * 3600
+					ttl: 24 * 3600,
+
+					/**
+					 * Endpoint to download the list
+					 */
+					uri: uri,
+
+					/**
+					 * Timestamp in milisecond used to save when the
+					 * list have been retrieved
+					 */
+					updated: Number(new Date())
 				};
 			}
 		},
@@ -281,7 +309,10 @@ module.exports = {
 		/**
 		 * Import domains in a list
 		 * 
-		 * This action will 
+		 * This action will import domain from a list (available in the ./lists filter)
+		 * into the service cache.
+		 * 
+		 * This action is optimised to parse large files (using streams)
 		 */
 		importListDomains: {
 			/**
@@ -340,6 +371,25 @@ module.exports = {
 				return true;
 			}
 		},
+
+
+		/**
+		 * registerList
+		 * 
+		 * This action is used to register the current list into the lists list :)
+		 * 
+		 * By doing so, you can check if a list have been already saved or has expired
+		 */
+		registerList: {
+			params: {
+				listMetas: "object"
+			},
+
+			async handler(ctx) {
+				const key = `filter:lists:${ctx.params.listMetas.name}`;
+				return this.broker.cacher.set(key, ctx.params.listMetas, ctx.params.listMetas.ttl);
+			}
+		}
 	},
 
 	events: {
