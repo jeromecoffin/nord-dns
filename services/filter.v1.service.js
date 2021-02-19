@@ -1,10 +1,13 @@
 /* eslint-disable indent */
 "use strict";
 
-const https = require("https");
 const fs = require("fs");
 const readline = require("readline");
 const { once } = require("events");
+const {pipeline} = require("stream");
+const {promisify} = require("util");
+const fetch = require("node-fetch");
+const streamPipeline = promisify(pipeline);
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -224,16 +227,17 @@ module.exports = {
 		},
 
 
-
-
-
-
 		/**
 		 * Download a list
+		 * 
+		 * This method is used to download a list from a specified url.
+		 * The file is then stored into the ./list folder
 		 */
 		downloadList: {
 			/**
-			 * Retry to download the filter list file after 3 seconds
+			 * Set timeout to 3 seconds.
+			 * After that delay, if the action is not completed a retry
+			 * will be triggered
 			 */
 			timeout: 3000,
 			params: {
@@ -241,16 +245,15 @@ module.exports = {
 				uri: "string",
 				ttl: "number|optional"
 			},
-			handler(ctx) {
+			/** @param {Context} ctx  */
+			async handler(ctx) {
 				const name = ctx.params.listName;
 				const uri = ctx.params.uri;
 
 				this.logger.info(`getList: Downloading list ${name} from ${uri}`);
 				const filePath = `./lists/${name}.txt`;
-				const file = fs.createWriteStream(filePath, {flags : "w"});
-				https.get(uri, function(response) {
-					response.pipe(file);
-				});
+				const response = await fetch(uri);
+				await streamPipeline(response.body, fs.createWriteStream(filePath));
 				this.logger.info("getList: Download completed!");
 
 				return {
@@ -276,6 +279,8 @@ module.exports = {
 
 		/**
 		 * Import domains in a list
+		 * 
+		 * This action will 
 		 */
 		importListDomains: {
 			/**
@@ -291,7 +296,7 @@ module.exports = {
 
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				await new Promise(resolve => setTimeout(resolve, 150));
+				//await new Promise(resolve => setTimeout(resolve, 150));
 				const listMetas = ctx.params.listMetas;
 
 				/**
@@ -301,8 +306,6 @@ module.exports = {
 				this.logger.info("importListDomains: listMetas", listMetas);
 				const rl = readline.createInterface({
 					input: fs.createReadStream(listMetas.filePath),
-					//output: process.stdout,
-					//terminal: false,
 					crlfDelay: Infinity
 				});
 
@@ -329,7 +332,7 @@ module.exports = {
 				});
 
 				await once(rl, "close");
-				console.log("File processed.");
+				this.logger.info(`importListDomains: Domains from  ${listMetas.name} list have been imported successfully!`);
 			}
 		},
 
@@ -337,150 +340,11 @@ module.exports = {
 	},
 
 	events: {
-		/**
-		 * filter.loadDomain
-		 * 
-		 * This event will load to redis store a domain based on a specific key
-		 */
-		"filter.loadDomain": {
-			params: {
-				domain: "string",
-				listName: "string",
-				ttl: "number|optional"
-			},
 
-			/** @param {Context} ctx  */
-			handler(ctx) {
-				const domain = ctx.params.domain;
-				const listName = ctx.params.domain;
-				const key = `filter:l:${listName}:${domain}}`;
-				this.broker.cacher.set(key, {domain: domain, listName: listName}, ctx.params.ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
-			}
-		},
-
-		/**
-		 * This event is used to import a list
-		 * 
-		 * @param {Context} ctx
-		 */
-		async "filter.loadDefaultList"(ctx) {
-			// Import lists meta from default variables
-			const listName = this.settings.defaultList.name;
-			const uri = this.settings.defaultList.uri;
-			const ttl = this.settings.defaultList.ttl;
-			this.logger.info(`loadDefaultList: Importing list ${listName} from ${uri}`);
-			const key = "filter:lists";
-			let cachedLists = await this.broker.cacher.get(key);
-
-			// Check if there are already cached lists
-			if (!cachedLists) {
-				this.logger.info("There is no cached list!");
-				cachedLists = [];
-			}
-
-			// Check if the list is already in the list
-			const listNames = cachedLists.map(list => list.name);
-			const index = listNames.indexOf(listName); // -1 if not in the list
-			const list = {
-				/**
-				 * Name of the list
-				 */
-				name: listName,
-				/**
-				 * Download link of the list
-				 * This link must be public, and exposed over https
-				 */
-				uri: uri,
-				/**
-				 * Time to live of the list (usually a day) in seconds
-				 */
-				ttl: ttl,
-				/**
-				 * Unix timestamps in miliseconds
-				 */
-				lastUpdated: Number(new Date())
-			};
-			if (index == -1) {
-				cachedLists.push(list);
-			} else {
-				cachedLists[index] = list;
-			}
-			
-			
-
-			this.logger.info(`loadDefaultList: loading default list (${listName}) from ${uri}`);
-			const span = ctx.startSpan("method 'loadDefaultList'", {
-				tags: {
-					uri: uri,
-					name: listName,
-					service: `v${this.version}.${this.name}`
-				}
-			});
-
-
-			await this.loadList(uri, listName);
-
-
-			span.finish();
-
-
-
-			this.broker.cacher.set(key, cachedLists);
-		},
-
-		/**
-		 * filter.loadList
-		 * 
-		 * This event will load to redis store a domain based on a specific key
-		 */
-		"filter.loadList": {
-			params: {
-				listName: "string"
-			},
-
-			/** @param {Context} ctx  */
-			async handler(ctx) {
-				const domain = ctx.params.domain;
-				const listName = ctx.params.listName;
-
-				// Check if the requested list is the default list
-				if (listName == this.settings.defaultList.name) {
-					this.logger.info("filter.loadList: This is the default list");
-					ctx.emit("filter.loadDefaultList");
-					return true;
-				}
-
-				// The requested list is not the default list
-				// uri MUST be defined
-				// ttl MAY be defined
-				// todo
-				this.logger.info(`filter.loadList: Importing list ${listName} from ${uri}`);
-				return true;
-			}
-		},		
 	},
 
 	methods: {
-		/**
-		 * loadList
-		 * 
-		 * This internal method is used to import a list to the filter service.
-		 * The list is then stored in the local cache for a limited time (TTL)
-		 * up to 24 hours.
-		 * 
-		 * @param {String} uri 
-		 * @param {String} name 
-		 */
-		async loadList(uri, name) {
-			this.logger.info(`loadList: loading list ${name} from ${uri}`);
-			/**
-			 * First we download the list data and retrieve list metadata
-			 */
-			const listMetas = await this.broker.call("v1.filter.getList", {listName: name, uri: uri});
-			const importListDomains = await this.broker.call("v1.filter.importListDomains", {listMetas: listMetas});
-
-			this.logger.info("loadList: Import completed!");
-		},
+		
 	},
 
 	created() {

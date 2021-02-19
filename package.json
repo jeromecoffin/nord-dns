@@ -37,6 +37,7 @@
     "moleculer-db-adapter-mongo": "^0.4.11",
     "moleculer-web": "^0.9.0",
     "nats": "^1.4.12",
+    "node-fetch": "^2.6.1",
     "swagger-stats": "^0.95.18"
   },
   "engines": {

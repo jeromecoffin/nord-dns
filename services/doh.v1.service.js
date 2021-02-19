@@ -130,7 +130,6 @@ module.exports = {
 				this.logger.info("Response: ", response);
 
 
-
 				/**
 				 * Check if there is a list id to pass by
 				 */
@@ -138,7 +137,6 @@ module.exports = {
 				this.logger.info("listName:", listName);
 
 
-				
 				/**
 				 * Check if the domain is in the filterList
 				 */
