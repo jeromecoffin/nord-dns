@@ -89,10 +89,11 @@ module.exports = {
 				const isListinCache = await ctx.call("v1.filter.checkList", {"name": listName});
 				this.logger.info(`isListinCache: ${isListinCache}`);
 				if (!isListinCache) {
-					
-
-					
-					//ctx.emit("filter.loadList", {listName: listName});
+					/**
+					 * The list is not yet in cache
+					 * We will triggered an event to gracefully get the list
+					 */
+					ctx.emit("filter.getDefaultList");
 					return {
 						action: "pass"
 					};
@@ -308,7 +309,6 @@ module.exports = {
 					input: fs.createReadStream(listMetas.filePath),
 					crlfDelay: Infinity
 				});
-
 				
 				/**
 				 * Read line by line
@@ -317,6 +317,10 @@ module.exports = {
 				 */
 				this.logger.info("importListDomains: Importing list to cache...");
 				rl.on("line", (line) => {
+					/**
+					 * Check if we don't have an empty line (line is empty) and
+					 * if the list is not a comment (start with #)
+					 */
 					if (line && !line.startsWith("#")) {
 						const key = `filter:l:${listMetas.name}:${line}`;
 						this.broker.cacher.set(
@@ -330,17 +334,18 @@ module.exports = {
 						);
 					}
 				});
-
 				await once(rl, "close");
+
 				this.logger.info(`importListDomains: Domains from  ${listMetas.name} list have been imported successfully!`);
+				return true;
 			}
 		},
-
-
 	},
 
 	events: {
-
+		async "filter.getDefaultList"(ctx) {
+			await ctx.call("v1.filter.getDefaultList");
+		}
 	},
 
 	methods: {
