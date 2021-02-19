@@ -118,7 +118,7 @@ module.exports = {
 					ctx.cachedResult = true; // Display the action as yellow in Tracer
 					response = cachedResponse;
 				} else {
-					response = await ctx.call("v1.doh.lookup", {query: query})
+					response = await ctx.call("v1.doh.lookup", {query: query});
 					this.logger.info("Response: ", response.answers[0]);
 					ctx.emit("doh.response", {response: response});
 				}
