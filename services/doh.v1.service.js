@@ -108,8 +108,6 @@ module.exports = {
 				ctx.meta.queryClass = query.class;
 				this.logger.info("Query:", query);
 
-
-
 				/**
 				 * Check the domain
 				 */
@@ -127,15 +125,12 @@ module.exports = {
 					this.logger.info("Response: ", response.answers[0]);
 					ctx.emit("doh.response", {response: response});
 				}
-				this.logger.info("Response: ", response);
-
 
 				/**
 				 * Check if there is a list id to pass by
 				 */
 				const listName = ctx.meta.listId;
-				this.logger.info("listName:", listName);
-
+				//this.logger.info("listName:", listName);
 
 				/**
 				 * Check if the domain is in the filterList
