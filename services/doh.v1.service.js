@@ -383,7 +383,7 @@ module.exports = {
 					// Cache only the response if TTL is greater than 0
 					this.broker.cacher.set(key, response, ttl); // https://github.com/moleculerjs/moleculer/blob/2f7d3d0d1a39511bc6bb9b71c6729326a3e8afad/src/cachers/base.js#L126
 				}
-				ctx.emit("v1.doh.count.add");
+				ctx.emit("doh.count.add");
 			}
 		},
 
@@ -393,7 +393,7 @@ module.exports = {
 		 * Cached response, simply trigger count.add event
 		 */
 		"doh.cachedResponse"(ctx) {
-			ctx.emit("v1.doh.count.add");
+			ctx.emit("doh.count.add");
 		},
 
 
@@ -403,7 +403,7 @@ module.exports = {
 		 * Count the number of response
 		 * Save this number onto redis cache
 		 */
-		async "count.add"(ctx) {
+		async "doh.count.add"(ctx) {
 			const key = "doh:count";
 			const count = await ctx.broker.cacher.get(key);
 			let newCount = 1;

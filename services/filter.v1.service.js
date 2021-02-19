@@ -165,7 +165,7 @@ module.exports = {
 			 * 
 			 * We could cache result up to a hour (3600s)
 			 */
-			cache: false,
+			cache: 3600,
 
 			/** @param {Context} ctx  */
 			async handler(ctx) {
