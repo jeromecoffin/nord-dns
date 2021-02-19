@@ -87,7 +87,6 @@ module.exports = {
 				 * We fist check if the list is imported, if not then we try to load it (async)
 				 */
 				const isListinCache = await ctx.call("v1.filter.checkList", {"name": listName});
-				this.logger.info(`isListinCache: ${isListinCache}`);
 				if (!isListinCache) {
 					/**
 					 * The list is not yet in cache
@@ -109,7 +108,6 @@ module.exports = {
 						listName: listName
 					}
 				);
-				this.logger.info("isDomainInList", isDomainInList);
 				const action = isDomainInList ? "restrict" : "pass";
 				
 				return {

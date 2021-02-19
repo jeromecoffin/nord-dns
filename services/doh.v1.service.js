@@ -102,10 +102,7 @@ module.exports = {
 				/**
 				 * Query is an object containing the packet query
 				 */
-				const query = await this.decodeQueryMessage(ctx.params.dns);
-				ctx.meta.queryName = query.name;
-				ctx.meta.queryType = query.type;
-				ctx.meta.queryClass = query.class;
+				const query = await ctx.call("v1.doh.decodeUdpPacket", {message: ctx.params.dns});
 				this.logger.info("Query:", query);
 
 				/**
@@ -121,7 +118,7 @@ module.exports = {
 					ctx.cachedResult = true; // Display the action as yellow in Tracer
 					response = cachedResponse;
 				} else {
-					response = await this.lookup(query);
+					response = await ctx.call("v1.doh.lookup", {query: query})
 					this.logger.info("Response: ", response.answers[0]);
 					ctx.emit("doh.response", {response: response});
 				}
@@ -149,11 +146,51 @@ module.exports = {
 						// We must HERE find a way to return NXDOMAIN with NO answers
 						response.rcode = "NXDOMAIN";
 						response.answers = [];
-						this.logger.info("Response: ", response);
 					}
 				}
 
 				return response;
+			}
+		},
+
+		/**
+		 * Decode UDP DNS packet (encoded as a base64 string)
+		 */
+		decodeUdpPacket: {
+			params: {
+				message: "string"
+			},
+
+			/**
+			 * Enable action cache
+			 */
+			cache: true,
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				const decodedMessage = await this.decodeQueryMessage(ctx.params.message);
+				ctx.meta.queryName = decodedMessage.name;
+				ctx.meta.queryType = decodedMessage.type;
+				ctx.meta.queryClass = decodedMessage.class;
+				return decodedMessage;
+			}
+		},
+
+
+		/**
+		 * lookup
+		 * 
+		 * This action is used to query a question using
+		 * the default resolver.
+		 */
+		lookup: {
+			params: {
+				query: "object"
+			},
+			cache: false,
+
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				return await this.lookup(ctx.params.query);
 			}
 		},
 
