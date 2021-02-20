@@ -5,9 +5,12 @@
 const fs = require("fs");
 const dnsPacket = require("dns-packet");
 const tls = require("tls");
-const domain = process.env.DOMAIN || "alex.local.ndns.cf";
-const keyPath = "./certificates/local.ndns.cf/privkey1.pem";
-const certPath = "./certificates/local.ndns.cf/fullchain1.pem";
+
+const domain = process.env.DOMAIN || "localhost.local.ndns.cf";
+const certFolder = (domain == "ndns.cf") ? domain : "local.ndns.cf";
+
+const keyPath = `./certificates/${certFolder}/privkey1.pem`;
+const certPath = `./certificates/${certFolder}/fullchain1.pem`;
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context

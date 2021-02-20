@@ -4,7 +4,12 @@ const ApiGateway = require("moleculer-web");
 const fs = require("fs");
 const bodyParser = require("body-parser");
 const rawParser = bodyParser.raw({ type: "application/dns-message" });
-const domain = process.env.DOMAIN || "local.ndns.cf";
+
+const domain = process.env.DOMAIN || "localhost.local.ndns.cf";
+const certFolder = (domain == "ndns.cf") ? domain : "local.ndns.cf";
+
+const keyPath = `./certificates/${certFolder}/privkey1.pem`;
+const certPath = `./certificates/${certFolder}/fullchain1.pem`;
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -28,8 +33,8 @@ module.exports = {
 		 * HTTPS server with certificate
 		 */
 		https: {
-			key: fs.readFileSync(`./certificates/${domain}/private.key`),
-			cert: fs.readFileSync(`./certificates/${domain}/certificate.crt`),
+			key: fs.readFileSync(keyPath),
+			cert: fs.readFileSync(certPath),
 			allowHTTP1: true,
 		},
 
