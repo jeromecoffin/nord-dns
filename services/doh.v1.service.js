@@ -119,7 +119,6 @@ module.exports = {
 					response = cachedResponse;
 				} else {
 					response = await ctx.call("v1.doh.lookup", {query: query});
-					this.logger.info("Response: ", response.answers[0]);
 					ctx.emit("doh.response", {response: response});
 				}
 
@@ -133,6 +132,14 @@ module.exports = {
 				 * Check if the domain is in the filterList
 				 */
 				if (listName) {
+					/**
+					 * listResult
+					 * 
+					 * Object:
+					 * {
+					 * 	action: "pass|restrict"
+					 * }
+					 */
 					const listResult = await ctx.call(
 						"v1.filter.checkDomain",
 						{
@@ -140,8 +147,7 @@ module.exports = {
 							listName: listName,
 						}
 					);
-	
-					this.logger.info("listResult", listResult);
+
 					if (listResult.action == "restrict") {
 						// We must HERE find a way to return NXDOMAIN with NO answers
 						response.rcode = "NXDOMAIN";
@@ -165,6 +171,7 @@ module.exports = {
 			 * Enable action cache
 			 */
 			cache: true,
+
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				const decodedMessage = await this.decodeQueryMessage(ctx.params.message);

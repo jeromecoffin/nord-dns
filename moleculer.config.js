@@ -125,12 +125,12 @@ module.exports = {
 		/**
 		 * Enable feature
 		 */
-		enabled: true,
+		enabled: false,
 
 		/**
 		 * Count of retries
 		 */
-		retries: 5,
+		retries: 3,
 
 		/**
 		 * First delay in milliseconds.
