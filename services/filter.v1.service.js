@@ -109,7 +109,7 @@ module.exports = {
 					}
 				);
 				const action = isDomainInList ? "restrict" : "pass";
-				
+				this.logger.info("Action: ", action);
 				return {
 					action: action
 				};
@@ -344,7 +344,7 @@ module.exports = {
 				 * More info: https://nodejs.org/api/readline.html#readline_example_read_file_stream_line_by_line
 				 * note: The for await...of wasn't working (it didn't read the full list)
 				 */
-				this.logger.info("importListDomains: Importing list to cache...");
+				this.logger.info(`Importing list ${listMetas.name} to cache...`);
 				rl.on("line", (line) => {
 					/**
 					 * Check if we don't have an empty line (line is empty) and
@@ -365,7 +365,7 @@ module.exports = {
 				});
 				await once(rl, "close");
 
-				this.logger.info(`importListDomains: Domains from  ${listMetas.name} list have been imported successfully!`);
+				this.logger.info(`importListDomains: Domains from ${listMetas.name} list have been imported successfully!`);
 				return true;
 			}
 		},
@@ -383,6 +383,7 @@ module.exports = {
 				listMetas: "object"
 			},
 
+			/** @param {Context} ctx  */
 			async handler(ctx) {
 				const key = `filter:lists:${ctx.params.listMetas.name}`;
 				return this.broker.cacher.set(key, ctx.params.listMetas, ctx.params.listMetas.ttl);
@@ -391,6 +392,14 @@ module.exports = {
 	},
 
 	events: {
+		/**
+		 * filter.getDefaultList
+		 * 
+		 * This event is used wen we want to download and cache the default list
+		 * to the service cache.
+		 * 
+		 * @param {Context} ctx 
+		 */
 		async "filter.getDefaultList"(ctx) {
 			await ctx.call("v1.filter.getDefaultList");
 		}

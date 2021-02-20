@@ -112,7 +112,6 @@ module.exports = {
 				const cachedResponse = await this.broker.cacher.get(key);
 				let response = {};
 				if (cachedResponse) {
-					this.logger.info("Cached Response");
 					ctx.emit("doh.cachedResponse");
 					this.logger.info("Response: ", cachedResponse.answers[0]);
 					ctx.cachedResult = true; // Display the action as yellow in Tracer
@@ -486,7 +485,7 @@ module.exports = {
 			 *		name: 'google.com' // which record are you looking for
 			 *	}
 			 */
-			this.logger.info("Question:", question);
+			// this.logger.info("Question:", question);
 
 			/**
 			 * Sample Response
