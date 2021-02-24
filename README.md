@@ -19,6 +19,12 @@ Nord DNS is exposed over HTTPS. (OSI layer 7) - [RFC8484](https://tools.ietf.org
 Nord DNS is exposed over TLS. (OSI layer 4) - [RFC7858](https://tools.ietf.org/html/rfc7858) & [RFC8310](https://tools.ietf.org/html/rfc8310)
 
 ![DNS-over-TLS Architecture diagram](./artefacts/diagram-DNS-over-TLS.svg)
+
+### Filter
+Nord DNS is able to filter DNS queries using filter lists such as [1Hosts](https://badmojr.github.io/1Hosts/) blocklist. Using this feature you will be able to navigate on the web ad-free, by blocking advertising, trackers, spyware and malware domains at the DNS level.
+
+![Filter Architecture diagram](./artefacts/diagram-Filter.svg)
+
 ## Technical Architecture
 Nord DNS relies on [Moleculer](https://moleculer.services/), a progressive microservices framework for Node.js.
 
