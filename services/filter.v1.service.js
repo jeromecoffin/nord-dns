@@ -400,8 +400,24 @@ module.exports = {
 		 * 
 		 * @param {Context} ctx 
 		 */
-		async "filter.getDefaultList"(ctx) {
-			await ctx.call("v1.filter.getDefaultList");
+		"filter.getDefaultList": {
+
+			/**
+			 * Throttle
+			 * 
+			 * Throttling is a straightforward reduction of the trigger rate.
+			 * It will cause the event listener to ignore some portion of the events 
+			 * while still firing the listeners at a constant (but reduced) rate.
+			 * 
+			 * More info: https://moleculer.services/docs/0.14/middlewares.html#Throttle
+			 * 60 000 (60s)
+			 */
+			throttle: 60000,
+
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				await ctx.call("v1.filter.getDefaultList");
+			}
 		}
 	},
 
