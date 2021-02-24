@@ -1,4 +1,6 @@
 [![Moleculer](https://badgen.net/badge/Powered%20by/Moleculer/0e83cd)](https://moleculer.services)
+[![Redis](https://badgen.net/badge/Powered%20by/Redis/d92a21)](https://redis.io/) 
+[![Jaeger](https://badgen.net/badge/Powered%20by/Jaeger/60d0e4)](https://www.jaegertracing.io/)
 
 # NordDNS
 > NordDNS encrypts your DNS traffic and hides your IP and physical location. Works on any devices at once, on every major platform.  
