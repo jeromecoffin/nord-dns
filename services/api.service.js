@@ -17,7 +17,15 @@ const certPath = `./certificates/${certFolder}/fullchain1.pem`;
  * @typedef {import('http').ServerResponse} ServerResponse HTTP Server Response
  */
 module.exports = {
+
+	/**
+	 * Name of the module
+	 * 
+	 * DNS-over-TLS (DoT)
+	 * RFC 7858 & 8310
+	 */
 	name: "api",
+
 	mixins: [ApiGateway],
 
 	/**
@@ -54,9 +62,20 @@ module.exports = {
 		 */
 		use: [],
 
+		/**
+		 * Base path
+		 */
+		path: "",
+
+		/**
+		 * Routes
+		 */
 		routes: [
 			{
-				path: "/",
+				/**
+				 * Path for this route
+				 */
+				path: "",
 
 				/**
 				 * CORS headers.
@@ -74,6 +93,11 @@ module.exports = {
 					methods: ["GET", "OPTIONS", "POST"]
 				},
 
+				/**
+				 * Action whitelist
+				 * 
+				 * More info: https://moleculer.services/docs/0.14/moleculer-web.html#Whitelist
+				 */
 				whitelist: [
 					"**"
 				],
@@ -270,7 +294,31 @@ module.exports = {
 		logResponseData: null,
 	},
 
+	/**
+	 * Methods
+	 */
 	methods: {
+
+	},
+
+	/**
+	 * Service created lifecycle event handler
+	 */
+	created() {
+
+	},
+
+	/**
+	 * Service started lifecycle event handler
+	 */
+	async started() {
+		
+	},
+
+	/**
+	 * Service stopped lifecycle event handler
+	 */
+	async stopped() {
 
 	}
 };

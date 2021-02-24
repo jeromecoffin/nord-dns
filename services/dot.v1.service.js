@@ -16,14 +16,32 @@ const certPath = `./certificates/${certFolder}/fullchain1.pem`;
  * @typedef {import('moleculer').Context} Context Moleculer's Context
  */
 module.exports = {
+
+	/**
+	 * Name of the module
+	 * 
+	 * DNS-over-TLS (DoT)
+	 * RFC 7858 & 8310
+	 */
 	name: "dot",
+
+	/**
+	 * Version of the module
+	 */
 	version: 1,
+
 	mixins: [],
 
+	/**
+	 * Settings
+	 */
 	settings: {
 
 	},
 
+	/**
+	 * Actions
+	 */
 	actions: {
 
 		/**
@@ -36,6 +54,7 @@ module.exports = {
 		 * - Parse response to a DoT packet
 		 */
 		resolveDoT: {
+
 			/**
 			 * Disable action cache
 			 */
@@ -43,13 +62,21 @@ module.exports = {
 			
 			/** @param {Context} ctx  */
 			async handler(ctx) {
-				// Convert the TCP packet (buffer) to base64 UDP message
+				/**
+				 * messageQuery
+				 * 
+				 * Contain the base64 UDP message from the TCP packet (buffer)
+				 */
 				const messageQuery = await ctx.call(
 					"v1.dot.parsePacket", 
 					{buffer: ctx.params.payload}
 				);
 
-				// Resolve the query using the DoH resolver
+				/**
+				 * response
+				 * 
+				 * Contain the DNS response from the default service resolver
+				 */
 				const response = await ctx.call (
 					"v1.doh.resolveDoH",
 					{dns: messageQuery}
@@ -66,6 +93,7 @@ module.exports = {
 		 * This method is used to decode a TLS (TCP) packet to a base64 UDP packet
 		 */
         parsePacket: {
+
 			/**
 			 * Disable action cache
 			 */
@@ -73,21 +101,50 @@ module.exports = {
 
 			/** @param {Context} ctx  */
 			handler(ctx) {
-				const query = dnsPacket.streamDecode(ctx.params.buffer); // Decode TCP packet to json object
-				const packet = dnsPacket.encode(query); // Encode the UDP packet to base64
-				return packet.toString("base64"); // Create the base64 query message
+
+				/**
+				 * query
+				 * 
+				 * Is an object containing the query to be made
+				 * decoded from a TCP packet
+				 */
+				const query = dnsPacket.streamDecode(ctx.params.buffer);
+
+				/**
+				 * packet
+				 * 
+				 * Convert the query object to a UDP packet (buffer)
+				 */
+				const packet = dnsPacket.encode(query);
+
+				/**
+				 * response
+				 * 
+				 * Convert the UDP packet to a string (base64)
+				 */
+				const response = packet.toString("base64"); // Create the base64 query message
+				return response;
 			}
 		},
 	},
 
+	/**
+	 * Events
+	 */
 	events: {
 		
 	},
 
+	/**
+	 * Methods
+	 */
 	methods: {
 
 	},
 
+	/**
+	 * Service created lifecycle event handler
+	 */
 	created() {
 		// Create a span to measure the initialization
 		const host = "0.0.0.0";
@@ -128,5 +185,19 @@ module.exports = {
 			// Finish the main span.
 			span.finish();
 		});		
+	},
+
+	/**
+	 * Service started lifecycle event handler
+	 */
+	async started() {
+
+	},
+
+	/**
+	 * Service stopped lifecycle event handler
+	 */
+	async stopped() {
+
 	}
 };

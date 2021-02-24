@@ -13,6 +13,7 @@ const streamPipeline = promisify(pipeline);
  * @typedef {import('moleculer').Context} Context Moleculer's Context
  */
 module.exports = {
+	
 	/**
 	 * Name of the module
 	 */
@@ -194,7 +195,6 @@ module.exports = {
 			}
 		},
 
-
 		/**
 		 * getAndSaveList
 		 * 
@@ -235,7 +235,6 @@ module.exports = {
 				return await ctx.call("v1.filter.registerList", {listMetas: listMetas});
 			}
 		},
-
 
 		/**
 		 * Download a list
@@ -303,7 +302,6 @@ module.exports = {
 			}
 		},
 
-
 		/**
 		 * Import domains in a list
 		 * 
@@ -370,7 +368,6 @@ module.exports = {
 			}
 		},
 
-
 		/**
 		 * registerList
 		 * 
@@ -391,6 +388,9 @@ module.exports = {
 		}
 	},
 
+	/**
+	 * Events
+	 */
 	events: {
 		/**
 		 * filter.getDefaultList
@@ -405,16 +405,32 @@ module.exports = {
 		}
 	},
 
+	/**
+	 * Methods
+	 */
 	methods: {
 		
 	},
 
+	/**
+	 * Service created lifecycle event handler
+	 */
 	created() {
 
 	},
 
+	/**
+	 * Service started lifecycle event handler
+	 */
 	async started() {
 		await this.waitForServices();
 		this.logger.info("!!!! filter service: Services availables !!!!");
+	},
+
+	/**
+	 * Service stopped lifecycle event handler
+	 */
+	async stopped() {
+
 	}
 };

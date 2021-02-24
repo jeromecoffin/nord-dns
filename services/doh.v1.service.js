@@ -10,17 +10,25 @@ const doh = require("dohjs");
  * @typedef {import('moleculer').Context} Context Moleculer's Context
  */
 module.exports = {
+	
 	/**
+	 * Name of the module
+	 * 
 	 * DNS-over-HTTPS (DoH)
 	 * RFC 8484 (GET and POST)
 	 */
 	name: "doh",
+
+	/**
+	 * Version of the module
+	 */
 	version: 1,
 
 	/**
 	 * Settings
 	 */
 	settings: {
+
 		/**
 		 * Resolver
 		 * 
@@ -43,6 +51,7 @@ module.exports = {
 	 * Actions
 	 */
 	actions: {
+
 		/**
 		 * Get DoH handler
 		 *
@@ -462,6 +471,7 @@ module.exports = {
 	 * Methods
 	 */
 	methods: {
+
 		/**
 		 * decodeQueryMessage
 		 * 
@@ -476,6 +486,17 @@ module.exports = {
 			return decoded.questions[0];
 		},
 
+		/**
+		 * lookup
+		 * 
+		 * This method take a question object, make a
+		 * DoH query using the default service resolver
+		 * and return a response object
+		 * 
+		 * @param {Object} question
+		 * 
+		 * @returns {Object}
+		 */
 		async lookup(question) {
 			/**
 			 * Sample Question
