@@ -312,7 +312,7 @@ module.exports = {
 				// Add `loggedIn.username` value from `ctx.meta`
 				meta: true,
 				// Always add the response
-				response: false,
+				response: true,
 			}
 		},
 		events: true,
