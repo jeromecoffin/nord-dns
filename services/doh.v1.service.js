@@ -364,7 +364,6 @@ module.exports = {
 			async handler(ctx) {
 				const listId = ctx.params.listId;
 				ctx.meta.listId = listId;
-				this.logger.info("postListDoH listId: ", listId);
 				return await ctx.call("v1.doh.parsePostDoH");
 			}
 		},

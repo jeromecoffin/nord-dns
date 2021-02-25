@@ -115,7 +115,7 @@ module.exports = {
 	/**
 	 * Number of milliseconds to wait before reject a request with a RequestTimeout error. Disabled: 0
 	 */
-	requestTimeout: 1 * 1000,
+	requestTimeout: 0,
 
 	/**
 	 * Retry policy settings.
