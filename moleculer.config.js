@@ -51,7 +51,8 @@ module.exports = {
 	hotReload: true,
 
 	/**
-	 * Enable/disable logging or use custom logger. 
+	 * Enable/disable logging or use custom logger.
+	 * 
 	 * More info: https://moleculer.services/docs/0.14/logging.html
 	 * Available logger types: "Console", "File", "Pino", "Winston", "Bunyan", "debug", "Log4js", "Datadog"
 	 */
@@ -93,6 +94,7 @@ module.exports = {
 	
 	/**
 	 * Define transporter.
+	 * 
 	 * More info: https://moleculer.services/docs/0.14/networking.html
 	 * Note: During the development, you don't need to define it because all services will be loaded locally.
 	 * In production you can set it via `TRANSPORTER=nats://localhost:4222` environment variable.
@@ -101,6 +103,7 @@ module.exports = {
 
 	/**
 	 * Define a cacher.
+	 * 
 	 * More info: https://moleculer.services/docs/0.14/caching.html
 	 */
 	cacher: process.env.REDIS_URI || "redis://172.17.0.1:6379",
@@ -108,17 +111,21 @@ module.exports = {
 	/**
 	 * Define a serializer.
 	 * Available values: "JSON", "Avro", "ProtoBuf", "MsgPack", "Notepack", "Thrift".
+	 * 
 	 * More info: https://moleculer.services/docs/0.14/networking.html#Serialization
 	 */
 	serializer: "JSON",
 
 	/**
 	 * Number of milliseconds to wait before reject a request with a RequestTimeout error. Disabled: 0
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/configuration.html#Broker-options
 	 */
 	requestTimeout: 0,
 
 	/**
 	 * Retry policy settings.
+	 * 
 	 * More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Retry
 	 */
 	retryPolicy: {
@@ -156,26 +163,35 @@ module.exports = {
 
 	/**
 	 * Limit of calling level. If it reaches the limit, broker will throw an MaxCallLevelError error. (Infinite loop protection)
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/configuration.html#Broker-options
 	 */
 	maxCallLevel: 100,
 
 	/**
 	 * Number of seconds to send heartbeat packet to other nodes.
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/configuration.html#Broker-options
 	 */
 	heartbeatInterval: 10,
 
 	/**
 	 * Number of seconds to wait before setting node to unavailable status.
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/configuration.html#Broker-options
 	 */
 	heartbeatTimeout: 30,
 
 	/**
 	 * Cloning the params of context if enabled. High performance impact, use it with caution!
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/configuration.html#Broker-options
 	 */
 	contextParamsCloning: false,
 
 	/**
 	 * Tracking requests and waiting for running requests before shuting down.
+	 * 
 	 * More info: https://moleculer.services/docs/0.14/context.html#Context-tracking
 	 */
 	tracking: {
@@ -192,18 +208,22 @@ module.exports = {
 
 	/**
 	 * Disable built-in request & emit balancer. (Transporter must support it, as well.).
+	 * 
 	 * More info: https://moleculer.services/docs/0.14/networking.html#Disabled-balancer
 	 */
 	disableBalancer: false,
 
 	/**
 	 * Settings of Service Registry.
+	 * 
 	 * More info: https://moleculer.services/docs/0.14/registry.html
 	 */
 	registry: {
 		/**
-		 * Define balancing strategy. More info: https://moleculer.services/docs/0.14/balancing.html
+		 * Define balancing strategy.
 		 * Available values: "RoundRobin", "Random", "CpuUsage", "Latency", "Shard"
+		 * 
+		 * More info: https://moleculer.services/docs/0.14/balancing.html
 		 */
 		strategy: "Latency",
 
@@ -391,6 +411,8 @@ module.exports = {
 
 	/**
 	 * Called after broker created.
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/lifecycle.html#created-event-handler
 	 * @param {*} broker 
 	 */
 	created(broker) {
@@ -399,6 +421,8 @@ module.exports = {
 
 	/**
 	 * Called after broker created.
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/lifecycle.html#started-event-handler
 	 * @param {*} broker 
 	 */
 	async started(broker) {
@@ -407,6 +431,8 @@ module.exports = {
 
 	/**
 	 * Called after broker created.
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/lifecycle.html#stopped-event-handler
 	 * @param {*} broker 
 	 */
 	async stopped(broker) {
