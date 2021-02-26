@@ -16,8 +16,24 @@
     "dc:down": "docker-compose down"
   },
   "keywords": [
-    "microservices",
-    "moleculer"
+    "dns",
+    "dns-server",
+    "dns-over-https",
+    "dns-over-tls",
+    "dns-record",
+    "encrypted-dns",
+    "machine-learning",
+    "docker",
+    "kubernetes",
+    "aws",
+    "cloud",
+    "serverless",
+    "docker-compose",
+    "azure",
+    "gcp",
+    "ibm-cloud",
+    "artificial-intelligence",
+    "covid-19-phishing"
   ],
   "devDependencies": {
     "eslint": "^7.20.0",
