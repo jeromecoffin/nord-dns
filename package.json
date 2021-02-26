@@ -1,6 +1,6 @@
 {
   "name": "nord-dns",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "NordDNS encrypts your DNS traffic and hides your IP and physical location. Works on any devices at once, on every major platform.",
   "repository": "https://github.com/IAmFrench/nord-dns.git",
   "author": "Alexandre Parès <IAmFrench@users.noreply.github.com>",
