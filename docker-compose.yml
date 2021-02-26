@@ -47,10 +47,11 @@ services:
     labels:
       # Explicitly tell Traefik to expose this container
       - traefik.enable=true
-      # Allow request only from the predefined entry point named "websecure"
+      # The domain the service will respond to Host AND Path
+      - traefik.tcp.routers.my-tcp-app.rule=HostSNI(`ndns.cf`)
+      # Allow request only from the predefined entry point named "dot-socket"
       - traefik.http.routers.dot.entrypoints=dot-socket
-      # Use TLS between the API service and Traefik
-      - traefik.http.routers.dot.tls=true
+      - traefik.tcp.routers.my-tcp-app.tls.passthrough=true
       # Tell Traefik to use the port 853 to connect to `dot` service
       - traefik.http.services.dot.loadbalancer.server.port=853
     networks:
