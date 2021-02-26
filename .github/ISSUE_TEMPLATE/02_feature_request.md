@@ -1,6 +1,9 @@
 ---
 name: Feature request
 about: Wouldn’t it be nice if Nord DNS could ...
+title: ''
+labels: enhancement
+assignees: ''
 
 ---
 

@@ -1,6 +1,9 @@
 ---
 name: New blocklist suggestion
 about: Integrate a new blocklist, etc
+title: ''
+labels: enhancement, list
+assignees: ''
 
 ---
 
