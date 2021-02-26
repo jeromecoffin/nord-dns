@@ -212,42 +212,92 @@ module.exports = {
 		 */
 		preferLocal: true
 	},
-
-	// Settings of Circuit Breaker. More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Circuit-Breaker
+	
+	/**
+	 * Settings of Circuit Breaker.
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Circuit-Breaker
+	 */
 	circuitBreaker: {
-		// Enable feature
+		/**
+		 * Enable feature
+		 */
 		enabled: false,
-		// Threshold value. 0.5 means that 50% should be failed for tripping.
+
+		/**
+		 * Threshold value.
+		 * 0.5 means that 50% should be failed for tripping.
+		 */
 		threshold: 0.5,
-		// Minimum request count. Below it, CB does not trip.
+		
+		/**
+		 * Minimum request count.
+		 * Below it, CB does not trip.
+		 */
 		minRequestCount: 20,
-		// Number of seconds for time window.
+
+		/**
+		 * Number of seconds for time window.
+		 */
 		windowTime: 60,
-		// Number of milliseconds to switch from open to half-open state
+		
+		/**
+		 * Number of milliseconds to switch from open to half-open state
+		 */
 		halfOpenTime: 10 * 1000,
-		// A function to check failed requests.
+		
+		/**
+		 * A function to check failed requests.
+		 * @param {*} err 
+		 */
 		check: err => err && err.code >= 500
 	},
-
-	// Settings of bulkhead feature. More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Bulkhead
+	
+	/**
+	 * Settings of bulkhead feature.
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Bulkhead
+	 */
 	bulkhead: {
-		// Enable feature.
+		/**
+		 * Enable feature.
+		 */
 		enabled: false,
-		// Maximum concurrent executions.
+
+		/**
+		 * Maximum concurrent executions.
+		 */
 		concurrency: 10,
-		// Maximum size of queue
+		
+		/**
+		 * Maximum size of queue
+		 */
 		maxQueueSize: 100,
 	},
 
-	// Enable action & event parameter validation. More info: https://moleculer.services/docs/0.14/validating.html
+	/**
+	 * Enable action & event parameter validation.
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/validating.html
+	 */
 	validator: true,
 
 	errorHandler: null,
-
-	// Enable/disable built-in metrics function. More info: https://moleculer.services/docs/0.14/metrics.html
+	
+	/**
+	 * Enable/disable built-in metrics function.
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/metrics.html
+	 */
 	metrics: {
+		/**
+		 * Enable feature.
+		 */
 		enabled: true,
-		// Available built-in reporters: "Console", "CSV", "Event", "Prometheus", "Datadog", "StatsD"
+
+		/**
+		 * Available built-in reporters: "Console", "CSV", "Event", "Prometheus", "Datadog", "StatsD"
+		 */
 		reporter: {
 			type: "Prometheus",
 			options: {
@@ -264,10 +314,20 @@ module.exports = {
 		}
 	},
 
-	// Enable built-in tracing function. More info: https://moleculer.services/docs/0.14/tracing.html
+	/**
+	 * Enable built-in tracing function.
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/tracing.html
+	 */
 	tracing: {
+		/**
+		 * Enable feature.
+		 */
 		enabled: true,
-		// Available built-in exporters: "Console", "Datadog", "Event", "EventLegacy", "Jaeger", "Zipkin"
+
+		/**
+		 * Available built-in exporters: "Console", "Datadog", "Event", "EventLegacy", "Jaeger", "Zipkin"
+		 */
 		exporter:  [
 			{
 				type: "Console", // Console exporter is only for development!
@@ -319,23 +379,36 @@ module.exports = {
 		stackTrace: true
 	},
 
-	// Register custom middlewares
+	/**
+	 * Register custom middlewares
+	 */
 	middlewares: [],
-
-	// Register custom REPL commands.
+	
+	/**
+	 * Register custom REPL commands.
+	 */
 	replCommands: null,
 
-	// Called after broker created.
+	/**
+	 * Called after broker created.
+	 * @param {*} broker 
+	 */
 	created(broker) {
 
 	},
 
-	// Called after broker started.
+	/**
+	 * Called after broker created.
+	 * @param {*} broker 
+	 */
 	async started(broker) {
 
 	},
 
-	// Called after broker stopped.
+	/**
+	 * Called after broker created.
+	 * @param {*} broker 
+	 */
 	async stopped(broker) {
 
 	}
