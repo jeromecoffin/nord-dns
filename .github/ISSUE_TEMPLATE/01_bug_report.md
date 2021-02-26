@@ -14,8 +14,8 @@ about: Something not working as expected
 
 ## Environment
 
-- **semantic-release** version: <!-- Version set in package.json devDpendencies -->
+- **Nord DNS** version: <!-- Version set in package.json devDependencies -->
 - CI environment: <!-- CI service name -->
-- Plugins used: <!-- List semantic-release plugin used if any -->
-- **semantic-release** configuration: <!-- link to your repository or relevant part of the semantic-release config -->
-- CI logs: <!-- link to your CI logs or semantic-release logs -->
+- Plugins used: <!-- List Nord DNS plugin used if any -->
+- **Nord DNS** configuration: <!-- link to your repository or relevant part of the Nord DNS config -->
+- CI logs: <!-- link to your CI logs or Nord DNS logs -->

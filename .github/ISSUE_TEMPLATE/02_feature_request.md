@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Wouldn’t it be nice if semantic-release could ...
+about: Wouldn’t it be nice if Nord DNS could ...
 
 ---
 
@@ -10,8 +10,8 @@ about: Wouldn’t it be nice if semantic-release could ...
 
 ## New feature description
 
-<!-- Describe the functional changes that would have to be made in semantic-release or its plugins. -->
+<!-- Describe the functional changes that would have to be made in Nord DNS -->
 
 ## New feature implementation
 
-<!-- Optionally describe the technical changes to be made in semantic-release or its plugins. -->
+<!-- Optionally describe the technical changes to be made in Nord DNS -->
