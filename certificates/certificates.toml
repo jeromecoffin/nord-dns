@@ -1,7 +1,7 @@
 [[tls.certificates]] #first certificate
    certFile = "/certificates/ndns.cf/cert1.pem" 
-   keyFile = "/certificates/ndns.cf/privkey1.key"
+   keyFile = "/certificates/ndns.cf/privkey1.pem"
 
 [[tls.certificates]] #second certificate
    certFile = "/certificates/local.ndns.cf/cert1.pem" 
-   keyFile = "/certificates/local.ndns.cf/privkey1.key"
+   keyFile = "/certificates/local.ndns.cf/privkey1.pem"

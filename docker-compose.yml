@@ -21,7 +21,7 @@ services:
       - traefik.http.routers.api.rule=PathPrefix(`/`)
       # Allow request only from the predefined entry point named "websecure"
       - traefik.http.routers.api.entrypoints=websecure
-      # Use https between the API service and Traefik
+      # Use TLS between the API service and Traefik
       - traefik.http.routers.api.tls=true
       # Tell Traefik to use the port 3000 to connect to `api` service
       - traefik.http.services.api.loadbalancer.server.port=3000
@@ -42,6 +42,27 @@ services:
     env_file: docker-compose.env
     environment:
       SERVICES: doh
+    depends_on:
+      - nats
+    labels:
+      # Explicitly tell Traefik to expose this container
+      - traefik.enable=true
+      # Allow request only from the predefined entry point named "websecure"
+      - traefik.http.routers.dot.entrypoints=dot-socket
+      # Use TLS between the API service and Traefik
+      - traefik.http.routers.dot.tls=true
+      # Tell Traefik to use the port 853 to connect to `dot` service
+      - traefik.http.services.dot.loadbalancer.server.port=853
+    networks:
+      - internal
+
+  dot:
+    build:
+      context: .
+    image: nord-dns
+    env_file: docker-compose.env
+    environment:
+      SERVICES: dot
     depends_on:
       - nats
     networks:
@@ -67,17 +88,19 @@ services:
   traefik:
     image: traefik:v2.1
     command:
-      - "--log.level=DEBUG"
+      - --log.level=DEBUG
       # Enabling docker provider
-      - "--providers.docker=true"
+      - --providers.docker=true
       # Traefik will listen to incoming request on entrypoint "websecure" to the port 3001 (HTTPS)
-      - "--entrypoints.websecure.address=:3001"
+      - --entrypoints.websecure.address=:3001
       # Do not expose containers unless explicitly told so
-      - "--providers.docker.exposedbydefault=false"
+      - --providers.docker.exposedbydefault=false
 
       # Traefik will listen to incoming request on entrypoint "dot-socket" to the port 853 (TLS)
-      - "--entryPoints.dot-socket.address=:853"
-      # - "--configFile=/etc/traefik/certificates.toml"
+      - --entryPoints.dot-socket.address=:853
+
+      - --providers.file.directory=/configuration/
+      - --providers.file.watch=true
       
     ports:
       # HTTPS server
@@ -85,8 +108,9 @@ services:
       # DoT (DNS-over-TLS on port 853)
       - 853:853
     volumes:
+      # Bin the certificate folder to use custom certificates
       - ./certificates/:/certificates/:ro
-      - ./certificates/certificates.toml:/etc/traefik/certificates.toml
+      - ./certificates/certificates.toml:/configuration/certificates.toml
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
