@@ -30,21 +30,28 @@ const { ServiceBroker } = require("moleculer");
 module.exports = {
 	/**
 	 * Namespace of nodes to segment your nodes on the same network.
+	 * (e.g.: “development”, “staging”, “production”). Default: ""
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/configuration.html#Broker-options
 	 */
 	namespace: process.env.NAMESPACE || "com.nord-dns",
 	
 	/**
 	 * Unique node identifier. Must be unique in a namespace.
+	 * If not the broker will throw a fatal error and stop the process. Default: hostname + PID
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/configuration.html#Broker-options
 	 */
 	nodeID: process.env.HOSTNAME || null,
 	
 	/**
 	 * Custom metadata store. Store here what you want. Accessing: `this.broker.metadata`
+	 * Default: null
 	 */
 	metadata: {},
 
 	/**
-	 * Hot Realoading services
+	 * Watch the loaded services and hot reload if they changed.
 	 * 
 	 * More info: https://moleculer.services/docs/0.14/services.html#Hot-Reloading-Services
 	 */
@@ -408,6 +415,14 @@ module.exports = {
 	 * Register custom REPL commands.
 	 */
 	replCommands: null,
+	
+	/**
+	 * Register internal services at start.
+	 * Default: true
+	 * 
+	 * More info: https://moleculer.services/docs/0.14/configuration.html#Broker-options
+	 */
+	internalServices: true,
 
 	/**
 	 * Called after broker created.
