@@ -377,7 +377,7 @@ module.exports = {
 					// UDP Sender host option.
 					host: process.env.JAEGER_HOST || "172.17.0.1",
 					// UDP Sender port option.
-					port: process.env.JAEGER_HOST || 6832,
+					port: process.env.JAEGER_PORT || 6832,
 					// Jaeger Sampler configuration.
 					sampler: {
 						// Sampler type. More info: https://www.jaegertracing.io/docs/1.14/sampling/#client-sampling-configuration
