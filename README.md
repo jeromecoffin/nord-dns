@@ -36,8 +36,21 @@ The production deployment will be done into a Kubernetes cluster, on a Cloud Pro
 or you can simply use the following command:
 
 ```bash
-docker-compose up
+docker-compose up -d
 ```
+
+To scale in or out a service just use this command:
+
+```bash
+docker-compose up -d --scale SERVICE=NUM
+```
+
+Such as:
+
+```bash
+docker-compose up --scale api=2 --scale doh=3 --scale filter=3
+```
+
 
 More info: [Use Compose in production](https://docs.docker.com/compose/production/)
 
