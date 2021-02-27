@@ -11,7 +11,8 @@ services:
       SERVICES: api
       PORT: 3000
     depends_on:
-      - nats
+      - nats # service registry
+      - doh
     labels:
       # Docker specific labels https://doc.traefik.io/traefik/routing/providers/docker/#specific-provider-options
       # Explicitly tell Traefik to expose this container
@@ -32,7 +33,7 @@ services:
       - traefik.tcp.routers.api.rule=HostSNI(`*`)
       - traefik.tcp.routers.api.service=apiService
       - traefik.tcp.services.apiService.loadbalancer.server.port=3000
-      # - traefik.tcp.routers.api.tls.passthrough=true
+      - traefik.tcp.routers.api.tls.passthrough=true
     networks:
       - internal
   
@@ -48,7 +49,7 @@ services:
     image: nord-dns
     env_file: docker-compose.env
     environment:
-      SERVICES: doh
+      SERVICES: doh.v1
     depends_on:
       - nats
       - redis
@@ -69,10 +70,12 @@ services:
     image: nord-dns
     env_file: docker-compose.env
     environment:
-      SERVICES: dot
+      SERVICES: dot.v1
     depends_on:
       - nats
       - redis
+    labels:
+      - traefik.enable=false
     networks:
       - internal
 
@@ -82,20 +85,24 @@ services:
     image: nord-dns
     env_file: docker-compose.env
     environment:
-      SERVICES: filter
+      SERVICES: filter.v1
     depends_on:
       - nats
       - redis
+    labels:
+      - traefik.enable=false
     networks:
       - internal
 
   nats:
-    image: nats:2
+    image: nats:latest
+    labels:
+      - traefik.enable=false
     networks:
       - internal
 
   traefik:
-    image: traefik:v2.1
+    image: traefik:latest
     command:
       - --log.level=DEBUG
 

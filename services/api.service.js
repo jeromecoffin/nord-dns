@@ -312,7 +312,7 @@ module.exports = {
 	 * Service started lifecycle event handler
 	 */
 	async started() {
-		
+		this.logger.info(`API gateway stated and listening on https://${this.settings.ip}:${this.settings.port}!`);
 	},
 
 	/**
