@@ -33,8 +33,6 @@ services:
       - traefik.tcp.routers.api.service=apiService
       - traefik.tcp.services.apiService.loadbalancer.server.port=3000
       # - traefik.tcp.routers.api.tls.passthrough=true
-
-
     networks:
       - internal
   
@@ -100,6 +98,7 @@ services:
     image: traefik:v2.1
     command:
       - --log.level=DEBUG
+
       # Enabling docker provider
       - --providers.docker=true
       # Do not expose containers unless explicitly told so
@@ -107,6 +106,7 @@ services:
 
       - --providers.file.directory=/configuration/
       - --providers.file.watch=true
+
 
       ## API-GW Entrypoint
       # Traefik will listen to incoming request on entrypoint "websecure" to the port 3001 (HTTPS)
@@ -120,11 +120,9 @@ services:
 
       ## Jaeger Entrypoint
       # Traefik will listen to incoming request on entrypoint "jaeger" to the port 16686 (HTTPS)
-      - --entrypoints.jaeger.address=:16686    
-      
-      
+      - --entrypoints.jaeger.address=:16686      
     ports:
-      # HTTPS Server (exposed:internal port)
+      # HTTPS API Gateway (exposed:internal port)
       - 8443:3001
       # DoT (DNS-over-TLS on port 853)
       - 853:853
@@ -133,6 +131,7 @@ services:
     volumes:
       # Bin the certificate folder to use custom certificates
       - ./certificates/:/certificates/:ro
+      # Add certificate config for traefik
       - ./certificates/certificates.toml:/configuration/certificates.toml
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -146,20 +145,20 @@ services:
       COLLECTOR_ZIPKIN_HTTP_PORT: 9411
     labels:
       - traefik.enable=true
-      - traefik.http.routers.jaeger.tls=false
-      # Allow request only from the predefined entry point named "jaeger"
-      - traefik.http.routers.jaeger.entrypoints=jaeger
-      - traefik.http.routers.jaeger.rule=HostRegexp(`localhost`, `{subdomain:[a-z]+}.local.ndns.cf`)
-      - traefik.http.routers.jaeger.service=jaeger
-
-      - traefik.http.services.jaeger.loadBalancer.server.scheme=http
-      - traefik.http.services.jaeger.loadbalancer.server.port=16686
+      # TCP config (working, but the service is unavailable (HTTP/503 Service unavailable))
+      - traefik.tcp.routers.jaeger.entrypoints=jaeger
+      # Use * to allow non TLS request (https://doc.traefik.io/traefik/v2.0/routing/routers/#rule_1)
+      - traefik.tcp.routers.jaeger.rule=HostSNI(`*`)
+      - traefik.tcp.routers.jaeger.service=jaeger
+      # Don't use TLS
+      - traefik.tcp.routers.jaeger.tls=false
+      - traefik.tcp.services.jaeger.loadbalancer.server.port=16686
+      # - traefik.tcp.routers.jaeger.tls.passthrough=true
     networks:
       - internal
-      - default
 
 networks:
   internal:
 
-volumes:
-  data:
+# volumes:
+#   data:
