@@ -120,6 +120,14 @@ services:
       - --providers.file.directory=/configuration/
       - --providers.file.watch=true
 
+      # Enable Tracing to Jaeger
+      - --tracing.jaeger=true
+      - --tracing.jaeger.samplingServerURL=http://jaeger:5778/sampling
+      - --tracing.jaeger.samplingType=const
+      - --tracing.jaeger.samplingParam=1.0
+      - --tracing.jaeger.localAgentHostPort=jaeger:6831
+      - --tracing.jaeger.propagation=jaeger
+      - --tracing.jaeger.traceContextHeaderName=uber-trace-id
 
       ## API-GW Entrypoint
       # Traefik will listen to incoming request on entrypoint "api-gw" to the port 3001 (HTTPS)
@@ -155,6 +163,8 @@ services:
       - ./certificates/certificates.toml:/configuration/certificates.toml
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - jaeger # for tracing
     networks:
       - internal
       - default
