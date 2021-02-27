@@ -3,12 +3,12 @@
 .vscode
 artefacts
 data
-lists
 node_modules
 test
 .editorconfig
 .eslintrc.js
 .gitignore
+lists/*.txt
 docker-compose.env
 docker-compose.yml
 Dockerfile

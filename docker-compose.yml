@@ -17,8 +17,8 @@ services:
       # Docker specific labels https://doc.traefik.io/traefik/routing/providers/docker/#specific-provider-options
       # Explicitly tell Traefik to expose this container
       - traefik.enable=true
-      # Allow request only from the predefined entry point named "websecure"
-      # - traefik.http.routers.api.entrypoints=websecure
+      # Allow request only from the predefined entry point named "api-gw"
+      # - traefik.http.routers.api.entrypoints=api-gw
       # - traefik.http.routers.api.rule=HostRegexp(`localhost`, `ndns.cf`, `{subdomain:[a-z]+}.local.ndns.cf`)
       # - traefik.http.routers.api.service=api
       # Use TLS between the API service and Traefik
@@ -29,7 +29,7 @@ services:
       # - traefik.http.services.api.loadBalancer.server.scheme=https
 
       # TCP config (working, but the service is unavailable (HTTP/503 Service unavailable))
-      - traefik.tcp.routers.api.entrypoints=websecure
+      - traefik.tcp.routers.api.entrypoints=api-gw
       - traefik.tcp.routers.api.rule=HostSNI(`*`)
       - traefik.tcp.routers.api.service=apiService
       - traefik.tcp.services.apiService.loadbalancer.server.port=3000
@@ -75,7 +75,13 @@ services:
       - nats
       - redis
     labels:
-      - traefik.enable=false
+      - traefik.enable=true
+      # TCP config (working, but the service is unavailable (HTTP/503 Service unavailable))
+      - traefik.tcp.routers.dot.entrypoints=dot-socket
+      - traefik.tcp.routers.dot.rule=HostSNI(`*`)
+      - traefik.tcp.routers.dot.service=dotService
+      - traefik.tcp.services.dotService.loadbalancer.server.port=853
+      - traefik.tcp.routers.dot.tls.passthrough=true
     networks:
       - internal
 
@@ -116,8 +122,8 @@ services:
 
 
       ## API-GW Entrypoint
-      # Traefik will listen to incoming request on entrypoint "websecure" to the port 3001 (HTTPS)
-      - --entrypoints.websecure.address=:3001
+      # Traefik will listen to incoming request on entrypoint "api-gw" to the port 3001 (HTTPS)
+      - --entrypoints.api-gw.address=:3001
       
 
       ## DoT TLS Socket Entrypoint
