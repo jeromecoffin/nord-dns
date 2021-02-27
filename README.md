@@ -51,6 +51,10 @@ Such as:
 docker-compose up --scale api=2 --scale doh=3 --scale filter=3
 ```
 
+Finally to clean the deployment use this command:
+```bash
+docker-compose down -v
+```
 
 More info: [Use Compose in production](https://docs.docker.com/compose/production/)
 
@@ -76,12 +80,16 @@ docker run -it --rm --name redis -p "6379:6379" redis redis-server
 docker run -it --rm --name jaeger -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp -p 5778:5778 -p 16686:16686 -p 14268:14268 -p 14250:14250 -p 9411:9411 jaegertracing/all-in-one:1.21
 ```
 
+Note: Jaeger includes a Dashboard available at: http://localhost:16686
+
 Then to start the Development deployment simply run the project using the `npm run dev` command.
 
 ## Useful links
 
 * Moleculer website: https://moleculer.services
 * Moleculer Documentation: https://moleculer.services/docs/0.14
+* Jaeger Dashboard: http://localhost:16686
+* *Traefik Dashboard: http://localhost:8080/dashboard/  *If the solution has been deployed using docker-compose
 
 ## NPM scripts
 
