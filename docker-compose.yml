@@ -34,6 +34,11 @@ services:
       - traefik.tcp.routers.api.service=apiService
       - traefik.tcp.services.apiService.loadbalancer.server.port=3000
       - traefik.tcp.routers.api.tls.passthrough=true
+      
+      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
+      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
+      - org.opencontainers.image.title="API Gateway"
+      - org.opencontainers.image.description="Respond to incoming HTTPS traffic and packages query before forwarding to DoH service"
     networks:
       - internal
   
@@ -61,6 +66,11 @@ services:
       - traefik.tcp.routers.dot.tls.passthrough=true
       # Tell Traefik to use the port 853 to connect to `dot` service
       - traefik.http.services.dot.loadbalancer.server.port=853
+
+      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
+      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
+      - org.opencontainers.image.title="DNS-over-HTTPS Service"
+      - org.opencontainers.image.description="Responds to DoH (DNS-over-HTTPS) request using built-in resolver"
     networks:
       - internal
 
@@ -82,6 +92,11 @@ services:
       - traefik.tcp.routers.dot.service=dotService
       - traefik.tcp.services.dotService.loadbalancer.server.port=853
       - traefik.tcp.routers.dot.tls.passthrough=true
+
+      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
+      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
+      - org.opencontainers.image.title="DNS-over-TLS Service"
+      - org.opencontainers.image.description="Responds to DoH (DNS-over-TLS) request using the DoH Service"
     networks:
       - internal
 
@@ -97,6 +112,11 @@ services:
       - redis
     labels:
       - traefik.enable=false
+      
+      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
+      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
+      - org.opencontainers.image.title="Filter Service"
+      - org.opencontainers.image.description="Used to filter queries using blocklists such as 1Hosts and EasyList"
     networks:
       - internal
 
