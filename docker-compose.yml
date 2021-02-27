@@ -127,7 +127,12 @@ services:
 
       ## Jaeger Entrypoint
       # Traefik will listen to incoming request on entrypoint "jaeger" to the port 16686 (HTTPS)
-      - --entrypoints.jaeger.address=:16686      
+      - --entrypoints.jaeger.address=:16686   
+      
+      ## Trafik built-in Dashboard
+      # http://<Traefik IP>:8080/dashboard/
+      - --api.dashboard=true
+      - --api.insecure=true
     ports:
       # HTTPS API Gateway (exposed:internal port)
       - 8443:3001
@@ -135,6 +140,8 @@ services:
       - 853:853
       # Jaeger Dashboard
       - 16686:16686
+      # Trafik built-in Dashboard
+      - 8080:8080
     volumes:
       # Bin the certificate folder to use custom certificates
       - ./certificates/:/certificates/:ro
