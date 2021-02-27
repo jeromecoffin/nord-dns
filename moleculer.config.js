@@ -357,19 +357,6 @@ module.exports = {
 		 */
 		exporter:  [
 			{
-				type: "Console", // Console exporter is only for development!
-				options: {
-					// Custom logger
-					logger: null,
-					// Using colors
-					colors: true,
-					// Width of row
-					width: 100,
-					// Gauge width in the row
-					gaugeWidth: 40
-				}
-			},
-			{
 				type: "Jaeger",
 				options: {
 					// HTTP Reporter endpoint. If set, HTTP Reporter will be used.
@@ -431,7 +418,23 @@ module.exports = {
 	 * @param {*} broker 
 	 */
 	created(broker) {
-
+		const consoleTraceExporter = {
+			type: "Console", // Console exporter is only for development!
+			enabled: false,
+			options: {
+				// Custom logger
+				logger: null,
+				// Using colors
+				colors: true,
+				// Width of row
+				width: 100,
+				// Gauge width in the row
+				gaugeWidth: 40
+			}
+		};
+		if (process.env.JAEGER_PORT == "dev") {
+			this.tracing.exporter.push(consoleTraceExporter);
+		}
 	},
 
 	/**
