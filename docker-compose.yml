@@ -57,14 +57,6 @@ services:
       - nats
       - redis
     labels:
-      # Explicitly tell Traefik to expose this container
-      - traefik.enable=true
-      # Allow request only from the predefined entry point named "dot-socket"
-      - traefik.http.routers.dot.entrypoints=dot-socket
-      - traefik.tcp.routers.dot.tls.passthrough=true
-      # Tell Traefik to use the port 853 to connect to `dot` service
-      - traefik.http.services.dot.loadbalancer.server.port=853
-
       # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
       - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
       - org.opencontainers.image.title="DNS-over-HTTPS Service"
@@ -120,8 +112,6 @@ services:
 
   nats:
     image: nats:latest
-    labels:
-      - traefik.enable=false
     networks:
       - internal
 
@@ -175,9 +165,7 @@ services:
 
       ## Trafik built-in Dashboard
       - --api.dashboard=true
-      - --entrypoints.dashboard.address=:443
-      # http://<Traefik IP>:8080/dashboard/
-      # - --api.insecure=true
+      - --entrypoints.https.address=:443
     ports:
       # HTTPS API Gateway (exposed:internal port)
       - 8443:3001
@@ -185,8 +173,6 @@ services:
       - 853:853
       # Jaeger Dashboard
       - 16686:16686
-      # Traefik built-in Dashboard (not secure)
-      - 8080:8080
       # Traefik secure Dashboard (secure)
       - 443:443
     volumes:
@@ -198,11 +184,11 @@ services:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
-      # - traefik.http.routers.dashboard.entrypoints=dot-socket
       - traefik.enable=true
-      - traefik.http.routers.dashboard.entrypoints=dashboard
-      - traefik.http.routers.dashboard.rule=Host(`localhost`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      - traefik.http.routers.dashboard.entrypoints=https,api-gw
+      - traefik.http.routers.dashboard.rule=HostRegexp(`localhost`, `{subdomain:[a-z]+}.local.ndns.cf`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
       - traefik.http.routers.dashboard.tls=true
+      - traefik.http.routers.dashboard.middlewares=traefik-forward-auth
       - traefik.http.routers.dashboard.service=api@internal
     depends_on:
       - jaeger # for tracing
@@ -210,6 +196,33 @@ services:
       - internal
       - default
   
+  traefik-forward-auth:
+    image: thomseddon/traefik-forward-auth:2
+    environment:
+      - PROVIDERS_GOOGLE_CLIENT_ID=18224688288-ikosin5i8fe1ha2a9amvras4417nma04.apps.googleusercontent.com
+      - PROVIDERS_GOOGLE_CLIENT_SECRET=uuB3wQKy-IZEfwQF7ZvDoqDs
+      - SECRET=something-random
+      - COOKIE_DOMAIN=ndns.cf
+      - URL_PATH=/_oauth
+      - AUTH_HOST=oauth.ndns.cf:8443
+      - DEFAULT_ACTION=auth
+      - DEFAULT_PROVIDER=google
+      - LOG_LEVEL=debug
+      # - INSECURE_COOKIE=true # Example assumes no https, do not use in production
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik-forward-auth.entrypoints=https,api-gw
+      - traefik.http.routers.traefik-forward-auth.rule=Host(`oauth.ndns.cf`) && PathPrefix(`/_oauth`)
+      - traefik.http.routers.traefik-forward-auth.middlewares=traefik-forward-auth
+      - traefik.http.routers.traefik-forward-auth.tls=true
+      - traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181
+      - traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User
+      - traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181
+    depends_on:
+      - traefik # for tracing
+    networks:
+      - internal
+
   jaeger:
     image: jaegertracing/all-in-one:latest
     environment:
@@ -225,8 +238,20 @@ services:
       - traefik.tcp.routers.jaeger.tls=false
       - traefik.tcp.services.jaeger.loadbalancer.server.port=16686
       # - traefik.tcp.routers.jaeger.tls.passthrough=true
+
+      - traefik.http.routers.jaeger_Router.entrypoints=https
+      # - traefik.http.routers.jaeger_Router.rule=Host(`localhost`) && PathPrefix(`/jaeger`)
+      - traefik.http.routers.jaeger_Router.rule=PathPrefix(`/jaeger`)
+      - traefik.http.routers.jaeger_Router.middlewares=jaeger_mdw,traefik-forward-auth
+      - traefik.http.middlewares.jaeger_mdw.stripprefix.prefixes=/jaeger
+      - traefik.http.routers.jaeger_Router.tls=true
+      - traefik.http.routers.jaeger_Router.service=jaeger_Service
+      - traefik.http.services.jaeger_Service.loadbalancer.server.port=16686
     networks:
       - internal
+
+  
+
 
 networks:
   internal:
