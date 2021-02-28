@@ -98,8 +98,10 @@ Then to start the Development deployment simply run the project using the `npm r
 
 * Moleculer website: https://moleculer.services
 * Moleculer Documentation: https://moleculer.services/docs/0.14
-* Jaeger Dashboard: http://localhost:16686
-* *Traefik Dashboard: http://localhost:8080/dashboard/  *If the solution has been deployed using docker-compose
+* *Jaeger Dashboard: https://tracer.ndns.cf:8443/
+* *Traefik Dashboard: https://proxy.ndns.cf:8443/dashboard/
+
+*If the solution has been deployed using docker-compose
 
 ## NPM scripts
 
