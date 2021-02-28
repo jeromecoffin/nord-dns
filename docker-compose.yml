@@ -147,7 +147,7 @@ services:
       - --tracing.jaeger.propagation=jaeger
       - --tracing.jaeger.traceContextHeaderName=uber-trace-id
 
-      
+
       ## API-GW Entrypoint
       # Traefik will listen to incoming request on entrypoint "api-gw" to the port 3001 (HTTPS)
       - --entrypoints.api-gw.address=:3001
@@ -162,12 +162,11 @@ services:
       - --api.dashboard=true
       - --entrypoints.https.address=:443
     ports:
-      # HTTPS API Gateway (exposed:internal port)
+      # "external:internal"
+      # HTTPS API Gateway
       - 8443:3001
       # DoT (DNS-over-TLS on port 853)
       - 853:853
-      # Jaeger Dashboard
-      - 16686:16686
       # Traefik secure Dashboard (secure)
       - 443:443
     volumes:
@@ -185,8 +184,14 @@ services:
       - traefik.http.routers.dashboard.tls=true
       - traefik.http.routers.dashboard.middlewares=traefik-forward-auth
       - traefik.http.routers.dashboard.service=api@internal
+      # Expose Traefik Dashboard 
+      - traefik.http.routers.dashboard2.entrypoints=https,api-gw
+      - traefik.http.routers.dashboard2.rule=Host(`proxy.ndns.cf`)
+      - traefik.http.routers.dashboard2.tls=true
+      - traefik.http.routers.dashboard2.middlewares=traefik-forward-auth
+      - traefik.http.routers.dashboard2.service=api@internal
     depends_on:
-      - jaeger # for tracing
+      - jaeger
     networks:
       - internal
       - default
@@ -200,6 +205,7 @@ services:
       - COOKIE_DOMAIN=ndns.cf
       - URL_PATH=/_oauth
       - AUTH_HOST=oauth.ndns.cf:8443
+      # - WHITELIST=
       - DEFAULT_ACTION=auth
       - DEFAULT_PROVIDER=google
       - LOG_LEVEL=debug
@@ -223,7 +229,6 @@ services:
       COLLECTOR_ZIPKIN_HTTP_PORT: 9411
     labels:
       - traefik.enable=true
-
       - traefik.http.routers.jaeger_Router.entrypoints=https,api-gw
       - traefik.http.routers.jaeger_Router.rule=Host(`tracer.ndns.cf`)
       - traefik.http.routers.jaeger_Router.middlewares=traefik-forward-auth
@@ -232,9 +237,6 @@ services:
       - traefik.http.services.jaeger_Service.loadbalancer.server.port=16686
     networks:
       - internal
-
-  
-
 
 networks:
   internal:
