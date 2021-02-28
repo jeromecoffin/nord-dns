@@ -179,12 +179,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - traefik.enable=true
-      # Expose Traefik Dashboard
+      ## Expose Traefik Dashboard
       - traefik.http.routers.dashboard.entrypoints=https,api-gw
       - traefik.http.routers.dashboard.rule=Host(`proxy.ndns.cf`)
       - traefik.http.routers.dashboard.tls=true
       - traefik.http.routers.dashboard.middlewares=traefik-forward-auth
       - traefik.http.routers.dashboard.service=api@internal
+
     depends_on:
       - jaeger
     networks:
@@ -230,6 +231,30 @@ services:
       - traefik.http.routers.jaeger_Router.tls=true
       - traefik.http.routers.jaeger_Router.service=jaeger_Service
       - traefik.http.services.jaeger_Service.loadbalancer.server.port=16686
+    networks:
+      - internal
+  
+  dohjs:
+    build:
+      context: ./dohjs
+    image: ghcr.io/iamfrench/nord-dns_dohjs
+    env_file: docker-compose.env
+    environment:
+      PORT: 3000
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dohjs_Router.entrypoints=https,api-gw
+      - traefik.http.routers.dohjs_Router.rule=Host(`gui.ndns.cf`)
+      - traefik.http.routers.dohjs_Router.service=dohjs_Service
+      - traefik.http.routers.dohjs_Router.tls=true
+      - traefik.http.services.dohjs_Service.loadbalancer.passhostheader=false
+      - traefik.http.services.dohjs_Service.loadbalancer.server.port=3000
+      - traefik.http.services.dohjs_Service.loadbalancer.server.scheme=http
+      
+      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
+      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
+      - org.opencontainers.image.title="DoHjs Web Interface"
+      - org.opencontainers.image.description="Provides a Web Interface to test DoH services"
     networks:
       - internal
 
