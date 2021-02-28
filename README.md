@@ -48,7 +48,7 @@ docker-compose up -d --scale SERVICE=NUM
 Such as:
 
 ```bash
-docker-compose up -d --scale api=2 --scale doh=3 --scale filter=3
+docker-compose up -d --scale api-gw=2 --scale doh=3 --scale filter=3
 ```
 
 Finally to clean the deployment use this command:
