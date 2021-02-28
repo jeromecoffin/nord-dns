@@ -179,17 +179,12 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - traefik.enable=true
+      # Expose Traefik Dashboard
       - traefik.http.routers.dashboard.entrypoints=https,api-gw
-      - traefik.http.routers.dashboard.rule=HostRegexp(`{subdomain:[a-z]+}.local.ndns.cf`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      - traefik.http.routers.dashboard.rule=Host(`proxy.ndns.cf`)
       - traefik.http.routers.dashboard.tls=true
       - traefik.http.routers.dashboard.middlewares=traefik-forward-auth
       - traefik.http.routers.dashboard.service=api@internal
-      # Expose Traefik Dashboard 
-      - traefik.http.routers.dashboard2.entrypoints=https,api-gw
-      - traefik.http.routers.dashboard2.rule=Host(`proxy.ndns.cf`)
-      - traefik.http.routers.dashboard2.tls=true
-      - traefik.http.routers.dashboard2.middlewares=traefik-forward-auth
-      - traefik.http.routers.dashboard2.service=api@internal
     depends_on:
       - jaeger
     networks:
