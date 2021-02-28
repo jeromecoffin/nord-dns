@@ -127,6 +127,7 @@ services:
 
   traefik:
     image: traefik:latest
+    restart: unless-stopped
     command:
       - --log.level=DEBUG
 
@@ -173,9 +174,10 @@ services:
       
 
       ## Trafik built-in Dashboard
-      # http://<Traefik IP>:8080/dashboard/
       - --api.dashboard=true
-      - --api.insecure=true
+      - --entrypoints.dashboard.address=:443
+      # http://<Traefik IP>:8080/dashboard/
+      # - --api.insecure=true
     ports:
       # HTTPS API Gateway (exposed:internal port)
       - 8443:3001
@@ -183,8 +185,10 @@ services:
       - 853:853
       # Jaeger Dashboard
       - 16686:16686
-      # Trafik built-in Dashboard
+      # Traefik built-in Dashboard (not secure)
       - 8080:8080
+      # Traefik secure Dashboard (secure)
+      - 443:443
     volumes:
       # Bin the certificate folder to use custom certificates
       - ./certificates/:/certificates/:ro
@@ -193,6 +197,13 @@ services:
       - ./traefik.toml:/configuration/traefik.toml
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      # - traefik.http.routers.dashboard.entrypoints=dot-socket
+      - traefik.enable=true
+      - traefik.http.routers.dashboard.entrypoints=dashboard
+      - traefik.http.routers.dashboard.rule=Host(`localhost`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      - traefik.http.routers.dashboard.tls=true
+      - traefik.http.routers.dashboard.service=api@internal
     depends_on:
       - jaeger # for tracing
     networks:
