@@ -432,7 +432,7 @@ module.exports = {
 				gaugeWidth: 40
 			}
 		};
-		if (process.env.JAEGER_PORT == "dev") {
+		if (process.env.NODE_ENV == "development") {
 			this.tracing.exporter.push(consoleTraceExporter);
 		}
 	},

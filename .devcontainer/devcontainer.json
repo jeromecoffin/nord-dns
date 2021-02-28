@@ -32,6 +32,6 @@
 
 	// Adding environment variables. More info: https://code.visualstudio.com/docs/remote/containers-advanced#_adding-environment-variables
 	"containerEnv": {
-		"ENV": "dev"
+		"NODE_ENV": "development"
 	}
 }
