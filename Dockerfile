@@ -11,4 +11,6 @@ RUN npm install --production
 
 COPY . .
 
+LABEL org.opencontainers.image.source https://github.com/IAmFrench/nord-dns
+
 CMD ["npm", "start"]
