@@ -48,7 +48,7 @@ docker-compose up -d --scale SERVICE=NUM
 Such as:
 
 ```bash
-docker-compose up --scale api=2 --scale doh=3 --scale filter=3
+docker-compose up -d --scale api=2 --scale doh=3 --scale filter=3
 ```
 
 Finally to clean the deployment use this command:
@@ -58,8 +58,8 @@ docker-compose down -v
 
 More info: [Use Compose in production](https://docs.docker.com/compose/production/)
 
-Note: Pre-built Docker images are available. To use them, you just need to pull them from the [GitHub Container Registry](https://docs.github.com/en/packages/guides/about-github-container-registry).
-You may need to login, in that case please see this tutorial to [Authenticating to GitHub Container Registry](https://docs.github.com/en/packages/guides/pushing-and-pulling-docker-images#authenticating-to-github-container-registry)
+Note: Pre-built Docker images are available. To use them, you just need to pull them from the [GitHub Container Registry](https://docs.github.com/en/packages/guides/about-github-container-registry).   
+You may need to login, in that case please see this tutorial to [Authenticating to GitHub Container Registry](https://docs.github.com/en/packages/guides/pushing-and-pulling-docker-images#authenticating-to-github-container-registry).
 
 ```bash
 docker pull ghcr.io/iamfrench/nord-dns_dot:latest
