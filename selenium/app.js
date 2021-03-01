@@ -1,6 +1,6 @@
 "use strict";
 
-const {Builder} = require("selenium-webdriver");
+const {Builder, Key, By} = require("selenium-webdriver");
 const firefox = require("selenium-webdriver/firefox");
 let fs = require("fs");
 
@@ -40,9 +40,12 @@ const pages = [
 
 	for (let index = 0; index < pages.length; index++) {
 		const pageUri = pages[index];
+		console.log(`Loading page ${pageUri}...`);
 		await driver.get(pageUri);
-		let encodedString = await driver.takeScreenshot();
-		let now = (new Date()).toISOString().replace("T", " ").replaceAll(":","-").split(".")[0];
+		await driver.actions().sendKeys(Key.END).perform();
+		let body = await driver.findElement(By.css("body"));
+		let encodedString = await body.takeScreenshot();
+		let now = (new Date()).toISOString().replace("T", " ").replace(/:/g,"-").split(".")[0];
 		await fs.writeFileSync(`screenshots/${now}_${index}.png`, encodedString, "base64");
 	}
 
