@@ -65,3 +65,6 @@ typings/
 
 # Custom lists
 lists/*.txt
+
+# .DS_Store banished!
+.DS_Store
