@@ -260,6 +260,8 @@ services:
 
 networks:
   internal:
+  default:
+    driver: bridge
 
 # volumes:
 #   data:
