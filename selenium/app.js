@@ -29,9 +29,9 @@ const pages = [
 	"https://www.purepeople.com/",
 	"https://www.purepeople.com/article/golden-globes-brad-pitt-renee-zellweger-joaquin-phoenix-le-palmares_a368192/1",
 	"https://www.purepeople.com/article/festival-de-cannes-2020-une-petite-edition-hors-normes-programmee_a405602/1",
-    "https://actu.orange.fr/",
-    "https://actu.orange.fr/societe/environnement/un-morceau-d-antarctique-plus-grand-que-paris-se-fracture-et-part-a-la-derive-magic-CNT000001xpE7B.html",
-    "https://actu.orange.fr/societe/environnement/lancement-en-inde-d-amazonie-1-le-premier-satellite-100-bresilien-CNT000001xrNjf.html"
+	"https://actu.orange.fr/",
+	"https://actu.orange.fr/societe/environnement/un-morceau-d-antarctique-plus-grand-que-paris-se-fracture-et-part-a-la-derive-magic-CNT000001xpE7B.html",
+	"https://actu.orange.fr/societe/environnement/lancement-en-inde-d-amazonie-1-le-premier-satellite-100-bresilien-CNT000001xrNjf.html"
 ];
 
 (async function myFunction() {
