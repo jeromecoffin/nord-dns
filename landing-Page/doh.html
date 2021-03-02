@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>
+    Nord DNS - DoH
+  </title>
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="" />
+  <link rel="stylesheet" href="https://unpkg.com/tailwindcss/dist/tailwind.min.css" />
+  <!--Replace with your tailwind.css once created-->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet" />
+  <!-- Define your gradient here - use online tools to find a gradient matching your branding-->
+  <style>
+    .gradient {
+      background: linear-gradient(90deg, #d53369 0%, #daae51 100%);
+    }
+  </style>
+</head>
+<body class="leading-normal tracking-normal text-white gradient" style="font-family: 'Source Sans Pro', sans-serif;">
+  <!--Nav-->
+  <nav id="header" class="fixed w-full z-30 top-0 text-white">
+    <div class="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-2">
+      <div class="pl-4 flex items-center">
+        <a class="toggleColour text-white no-underline hover:no-underline font-bold text-2xl lg:text-4xl" href="#">
+          <!--Icon from: http://www.potlabicons.com/ -->
+          <svg class="h-8 fill-current inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.005 512.005">
+            <rect fill="#2a2a31" x="16.539" y="425.626" width="479.767" height="50.502" transform="matrix(1,0,0,1,0,0)" />
+            <path
+            class="plane-take-off"
+            d=" M 510.7 189.151 C 505.271 168.95 484.565 156.956 464.365 162.385 L 330.156 198.367 L 155.924 35.878 L 107.19 49.008 L 211.729 230.183 L 86.232 263.767 L 36.614 224.754 L 0 234.603 L 45.957 314.27 L 65.274 347.727 L 105.802 336.869 L 240.011 300.886 L 349.726 271.469 L 483.935 235.486 C 504.134 230.057 516.129 209.352 510.7 189.151 Z "
+            />
+          </svg>
+          Nord DNS
+        </a>
+      </div>
+      <div class="block lg:hidden pr-4">
+        <button id="nav-toggle" class="flex items-center p-1 text-pink-800 hover:text-gray-900 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+          <svg class="fill-current h-6 w-6" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <title>Menu</title>
+            <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+          </svg>
+        </button>
+      </div>
+      <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-white lg:bg-transparent text-black p-4 lg:p-0 z-20" id="nav-content">
+        <ul class="list-reset lg:flex justify-end flex-1 items-center">
+          <li class="mr-4">
+            <a class="inline-block text-black no-underline hover:text-gray-800 hover:text-underline py-2 px-4" href="doh.html">DoH</a>
+          </li>
+          <li class="mr-4">
+            <a class="inline-block text-black no-underline hover:text-gray-800 hover:text-underline py-2 px-4" href="#">Demo</a>
+          </li>
+          <li class="mr-4">
+            <a class="inline-block text-black no-underline hover:text-gray-800 hover:text-underline py-2 px-4" href="#">Doc</a>
+          </li>
+          <li class="mr-4">
+            <a class="inline-block text-black no-underline hover:text-gray-800 hover:text-underline py-2 px-4" href="#">About</a>
+          </li>
+        </ul>
+        <button
+        id="navAction"
+        class="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
+        >
+        github
+      </button>
+    </div>
+  </div>
+  <hr class="border-b border-gray-100 opacity-25 my-0 py-0" />
+</nav>
+<!--Hero-->
+<div class="pt-24">
+  <div class="container px-3 mx-auto flex flex-wrap flex-col md:flex-row items-center">
+    <!--Left Col-->
+    <div class="flex flex-col w-full md:w-2/5 justify-center items-start text-center md:text-left">
+      <p class="uppercase tracking-loose w-full">DNS over HTTPS</p>
+      <h1 class="my-4 text-5xl font-bold leading-tight">
+        What is DNS over HTTPS?
+      </h1>
+      <p class="leading-normal text-2xl mb-8">
+        For a more secured internet.
+      </p>
+      <button class="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+        Discover
+      </button>
+    </div>
+    <!--Right Col-->
+    <div class="w-full md:w-3/5 py-6 text-center">
+      <img class="w-full md:w-4/5 z-50" src="whatsdoh.png" />
+    </div>
+  </div>
+</div>
+<br/>
+<div class="relative -mt-12 lg:-mt-24">
+  <svg viewBox="0 0 1428 174" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g transform="translate(-2.000000, 44.000000)" fill="#FFFFFF" fill-rule="nonzero">
+        <path d="M0,0 C90.7283404,0.927527913 147.912752,27.187927 291.910178,59.9119003 C387.908462,81.7278826 543.605069,89.334785 759,82.7326078 C469.336065,156.254352 216.336065,153.6679 0,74.9732496" opacity="0.100000001"></path>
+        <path
+        d="M100,104.708498 C277.413333,72.2345949 426.147877,52.5246657 546.203633,45.5787101 C666.259389,38.6327546 810.524845,41.7979068 979,55.0741668 C931.069965,56.122511 810.303266,74.8455141 616.699903,111.243176 C423.096539,147.640838 250.863238,145.462612 100,104.708498 Z"
+        opacity="0.100000001"
+        ></path>
+        <path d="M1046,51.6521276 C1130.83045,29.328812 1279.08318,17.607883 1439,40.1656806 L1439,120 C1271.17211,77.9435312 1140.17211,55.1609071 1046,51.6521276 Z" id="Path-4" opacity="0.200000003"></path>
+      </g>
+      <g transform="translate(-4.000000, 76.000000)" fill="#FFFFFF" fill-rule="nonzero">
+        <path
+        d="M0.457,34.035 C57.086,53.198 98.208,65.809 123.822,71.865 C181.454,85.495 234.295,90.29 272.033,93.459 C311.355,96.759 396.635,95.801 461.025,91.663 C486.76,90.01 518.727,86.372 556.926,80.752 C595.747,74.596 622.372,70.008 636.799,66.991 C663.913,61.324 712.501,49.503 727.605,46.128 C780.47,34.317 818.839,22.532 856.324,15.904 C922.689,4.169 955.676,2.522 1011.185,0.432 C1060.705,1.477 1097.39,3.129 1121.236,5.387 C1161.703,9.219 1208.621,17.821 1235.4,22.304 C1285.855,30.748 1354.351,47.432 1440.886,72.354 L1441.191,104.352 L1.121,104.031 L0.457,34.035 Z"
+        ></path>
+      </g>
+    </g>
+  </svg>
+</div>
+<section class="bg-white border-b py-8">
+  <div class="container max-w-5xl mx-auto m-8">
+    <h1 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
+      What is DNS?
+    </h1>
+    <div class="w-full mb-4">
+      <div class="h-1 mx-auto gradient w-64 opacity-25 my-0 py-0 rounded-t"></div>
+    </div>
+    <div class="flex flex-wrap">
+      <div class="w-5/6 sm:w-1/2 p-6">
+        <h3 class="text-3xl text-gray-800 font-bold leading-none mb-3">
+          The great translator.
+        </h3>
+        <p class="text-gray-600 mb-8">
+          The DNS server is a service whose main function is to translate a domain name into an IP address. Basically, the DNS server acts like a directory that a computer consults when accessing another computer over a network.
+          In other words, the DNS server is this service which makes it possible to associate a website (or a connected computer or a server) with an IP address, as a telephone directory makes it possible to associate a telephone number with a subscriber name.
+          <br />
+          <br />
+        </p>
+      </div>
+      <div class="w-full sm:w-1/2 p-6">
+        <svg class="w-full sm:h-64 mx-auto" viewBox="0 0 1177 598.5" xmlns="http://www.w3.org/2000/svg">
+          <title>easy DNS</title>
+          <path d="M901.32664,359.28559c-29.23789-21.85782-75.03171-42.52949-125.63917-56.71393-46.07822-12.91529-91.02143-19.15081-126.56032-17.55845l-.185-4.13293c35.96224-1.61055,81.37165,4.67732,127.862,17.70792,51.07935,14.31675,97.36929,35.23244,126.99984,57.384Z" transform="translate(-196.07014 -159.20912)" fill="#ccc"/>
+          <path d="M898.29142,376.12168a137.67178,137.67178,0,0,1-11.91446,56.2089q-.98672,2.22156-2.0561,4.40172a138.19449,138.19449,0,0,1-262.37841-60.6106q0-4.79685.3268-9.51915.15517-2.4015.40132-4.774a138.18139,138.18139,0,0,1,275.62085,14.29316Z" transform="translate(-196.07014 -159.20912)" fill="#6c63ff"/>
+          <path d="M886.377,432.33058q-.98672,2.22156-2.0561,4.40172-6.05652.6578-12.75013.95563c-3.69431.16548-7.49618.24823-11.38077.24823-33.93136,0-74.7673-6.26336-116.48441-17.95442-46.49117-13.03142-88.55164-31.25886-118.43706-51.32724q-1.52654-1.02391-2.99928-2.05195.15516-2.4015.40132-4.774,2.37669,1.69405,4.90228,3.39228c29.53375,19.82846,71.17228,37.86147,117.24976,50.77708,41.353,11.59174,81.80426,17.80133,115.34672,17.80133q5.75241,0,11.21531-.2441Q879.34006,433.1952,886.377,432.33058Z" transform="translate(-196.07014 -159.20912)" opacity="0.1" style="isolation:isolate"/>
+          <path d="M860.19056,434.62735c-33.93033.00081-74.76867-6.26321-116.48394-17.95538-46.4907-13.03061-88.553-31.25872-118.43869-51.32658-30.50945-20.48664-44.81593-40.67331-40.28428-56.84141,4.53149-16.16808,27.24578-25.97842,63.95844-27.6237l.185,4.13293c-17.14436.7682-31.11629,3.31645-41.52756,7.57379-10.386,4.24685-16.65492,9.97779-18.63248,17.03366-1.97757,7.05566.39956,15.20979,7.06516,24.23616,6.68194,9.04818,17.29424,18.48685,31.54191,28.054,29.53037,19.82933,71.17027,37.86269,117.24916,50.77777,41.35405,11.59075,81.80173,17.80186,115.34706,17.80265q5.74914,0,11.213-.24442c17.14453-.76841,31.11646-3.31645,41.528-7.57379,10.386-4.24685,16.65492-9.97758,18.63248-17.03345,3.55077-12.66943-7.18028-29.13164-30.21719-46.354l2.47736-3.31319c11.85458,8.86254,20.62986,17.59844,26.08223,25.96449,5.84508,8.96919,7.743,17.31987,5.64106,24.81932-4.53166,16.16808-27.24616,25.978-63.95844,27.62351C867.87462,434.54535,864.075,434.62735,860.19056,434.62735Z" transform="translate(-196.07014 -159.20912)" fill="#ccc"/>
+          <circle cx="567.70201" cy="52.23483" r="1.58335" fill="#f2f2f2"/>
+          <circle cx="357.64502" cy="119.80078" r="2.7239" fill="#ccc"/>
+          <circle cx="351.83942" cy="226.41262" r="5.38101" fill="#ccc"/>
+          <circle cx="674.84163" cy="61.73489" r="3.58631" fill="#ccc"/>
+          <circle cx="802.03694" cy="210.57918" r="5.82278" fill="#ccc"/>
+          <circle cx="756.50568" cy="117.57999" r="2.49824" fill="#ccc"/>
+          <circle cx="453.17346" cy="85.48506" r="3.89733" fill="#ccc"/>
+          <circle cx="747.76185" cy="198.77239" r="2.49824" fill="#ccc"/>
+          <circle cx="364.50618" cy="302.41316" r="3.10939" fill="#ccc"/>
+          <circle cx="427.31216" cy="345.69122" r="3.36729" fill="#ccc"/>
+          <polygon points="525.2 6.645 518.555 6.645 518.555 0 514.99 0 514.99 6.645 508.342 6.645 508.342 10.213 514.99 10.213 514.99 16.858 518.555 16.858 518.555 10.213 525.2 10.213 525.2 6.645" fill="#ccc"/>
+          <polygon points="679.342 366.201 675.168 366.201 675.168 362.029 672.93 362.029 672.93 366.201 668.758 366.201 668.758 368.44 672.93 368.44 672.93 372.612 675.168 372.612 675.168 368.44 679.342 368.44 679.342 366.201" fill="#ccc"/>
+          <polygon points="775.646 344.844 772.527 344.844 772.527 341.725 770.852 341.725 770.852 344.844 767.733 344.844 767.733 346.519 770.852 346.519 770.852 349.638 772.527 349.638 772.527 346.519 775.646 346.519 775.646 344.844" fill="#ccc"/>
+          <circle cx="566.1187" cy="108.71737" r="11.61119" opacity="0.1" style="isolation:isolate"/>
+          <circle cx="476.92363" cy="193.69017" r="11.61119" opacity="0.1" style="isolation:isolate"/>
+          <circle cx="605.17451" cy="310.32987" r="11.61119" opacity="0.1" style="isolation:isolate"/>
+          <circle cx="566.1187" cy="211.63475" r="11.61119" opacity="0.1" style="isolation:isolate"/>
+          <circle cx="482.72921" cy="275.49629" r="11.61119" opacity="0.1" style="isolation:isolate"/>
+          <circle cx="628.3969" cy="149.35654" r="11.61119" opacity="0.1" style="isolation:isolate"/>
+          <circle cx="666.92492" cy="227.99597" r="11.61119" opacity="0.1" style="isolation:isolate"/>
+          <circle cx="566.1187" cy="160.96774" r="15.30567" fill="#fff"/>
+          <path d="M762.18884,298.01a21.639,21.639,0,0,0-21.639,21.639c0,11.9509,21.639,51.19479,21.639,51.19479s21.639-39.24389,21.639-51.19479A21.639,21.639,0,0,0,762.18884,298.01Zm0,32.19467a10.02787,10.02787,0,1,1,10.02789-10.02787,10.02785,10.02785,0,0,1-10.02789,10.02787h0Z" transform="translate(-196.07014 -159.20912)" fill="#ccc"/>
+          <circle cx="482.72921" cy="226.41262" r="15.30565" fill="#fff"/>
+          <path d="M678.79935,363.45492a21.639,21.639,0,0,0-21.639,21.639c0,11.9509,21.639,51.19478,21.639,51.19478s21.639-39.24388,21.639-51.19478A21.639,21.639,0,0,0,678.79935,363.45492Zm0,32.19466a10.02787,10.02787,0,1,1,10.02789-10.02786,10.02784,10.02784,0,0,1-10.02789,10.02786h0Z" transform="translate(-196.07014 -159.20912)" fill="#ccc"/>
+          <circle cx="666.92492" cy="178.9123" r="15.30567" fill="#fff"/>
+          <path d="M862.9951,315.9546a21.639,21.639,0,0,0-21.639,21.63906c0,11.9509,21.639,51.19478,21.639,51.19478s21.639-39.24388,21.639-51.19478A21.639,21.639,0,0,0,862.9951,315.9546Zm0,32.19466A10.02787,10.02787,0,1,1,873.023,338.1214a10.02784,10.02784,0,0,1-10.02789,10.02786Z" transform="translate(-196.07014 -159.20912)" fill="#ccc"/>
+          <circle cx="566.1187" cy="58.05035" r="15.30567" fill="#fff"/>
+          <path d="M762.18884,195.09266a21.63905,21.63905,0,0,0-21.639,21.639c0,11.95091,21.639,51.1948,21.639,51.1948s21.639-39.24389,21.639-51.1948A21.639,21.639,0,0,0,762.18884,195.09266Zm0,32.19467a10.02787,10.02787,0,1,1,10.02789-10.02787,10.02785,10.02785,0,0,1-10.02789,10.02787Z" transform="translate(-196.07014 -159.20912)" fill="#ccc"/>
+          <circle cx="605.17451" cy="261.2462" r="15.30567" fill="#fff"/>
+          <path d="M801.24465,398.2885a21.639,21.639,0,0,0-21.639,21.639c0,11.9509,21.639,51.19478,21.639,51.19478s21.639-39.24388,21.639-51.19478A21.639,21.639,0,0,0,801.24465,398.2885Zm0,32.19467a10.02787,10.02787,0,1,1,10.02789-10.02787,10.02785,10.02785,0,0,1-10.02789,10.02787Z" transform="translate(-196.07014 -159.20912)" fill="#3f3d56"/>
+          <circle cx="476.92363" cy="143.55094" r="15.30567" fill="#fff"/>
+          <path d="M672.99378,280.59326a21.639,21.639,0,0,0-21.639,21.639c0,11.9509,21.639,51.19479,21.639,51.19479s21.639-39.24389,21.639-51.19479A21.639,21.639,0,0,0,672.99378,280.59326Zm0,32.19466a10.02787,10.02787,0,1,1,10.02788-10.02787,10.02786,10.02786,0,0,1-10.02788,10.02787Z" transform="translate(-196.07014 -159.20912)" fill="#3f3d56"/>
+          <circle cx="628.3969" cy="100.80065" r="15.30567" fill="#fff"/>
+          <path d="M824.467,237.843A21.639,21.639,0,0,0,802.828,259.482c0,11.95091,21.639,51.19479,21.639,51.19479s21.639-39.24389,21.639-51.1948A21.639,21.639,0,0,0,824.467,237.843Zm0,32.19467a10.02787,10.02787,0,1,1,10.02788-10.02787A10.02786,10.02786,0,0,1,824.467,270.03762h0Z" transform="translate(-196.07014 -159.20912)" fill="#3f3d56"/>
+          <polygon points="188.862 569.715 201.044 568.332 201.509 520.688 183.53 522.729 188.862 569.715" fill="#ffb8b8"/>
+          <path d="M382.64322,723.51987h38.53073a0,0,0,0,1,0,0v14.88687a0,0,0,0,1,0,0H397.53007a14.88686,14.88686,0,0,1-14.88686-14.88686v0A0,0,0,0,1,382.64322,723.51987Z" transform="translate(687.60258 1252.73963) rotate(173.52594)" fill="#2f2e41"/>
+          <polygon points="63.582 568.954 75.842 568.953 81.674 521.665 63.58 521.666 63.582 568.954" fill="#ffb8b8"/>
+          <path d="M257.02549,724.65948h38.53073a0,0,0,0,1,0,0v14.88687a0,0,0,0,1,0,0H271.91235a14.88686,14.88686,0,0,1-14.88686-14.88686v0A0,0,0,0,1,257.02549,724.65948Z" transform="translate(356.54499 1304.98409) rotate(179.99738)" fill="#2f2e41"/>
+          <path d="M347.61369,516.69512l7,22.76923,38,82.23077,10,78-23,1-14-72-48-52-42,136-19-2s16-176,38-194C294.61369,516.69512,330.61369,499.69512,347.61369,516.69512Z" transform="translate(-196.07014 -159.20912)" fill="#2f2e41"/>
+          <circle cx="120.49237" cy="234.6789" r="24.56103" fill="#ffb8b8"/>
+          <path d="M350.11369,521.19512s3-102-39-95-24.5,105.5-24.5,105.5,9,18,31-2S350.11369,521.19512,350.11369,521.19512Z" transform="translate(-196.07014 -159.20912)" fill="#ccc"/>
+          <polygon points="96.044 309.986 105.927 347.869 120.984 362.927 100.044 355.986 96.044 309.986" opacity="0.2"/>
+          <path d="M350.424,564.33339a10.05576,10.05576,0,0,1-5.277-14.48823l-23.35887-27.04335,18.41436-2.39689,19.35886,26.04829a10.11028,10.11028,0,0,1-9.13733,17.88018Z" transform="translate(-196.07014 -159.20912)" fill="#ffb8b8"/>
+          <path d="M321.98365,446.97089l2.63,51.72423,31,40-13,10-42-42s-15-51-4-66c4.125-5.625,8.67188-7.17188,12.74414-6.90821A13.78031,13.78031,0,0,1,321.98365,446.97089Z" transform="translate(-196.07014 -159.20912)" fill="#ccc"/>
+          <path d="M313.64139,419.69532a1.01358,1.01358,0,0,0-.14318-1.61666,14.28328,14.28328,0,0,1,1.37609-25.03743c7.22106-3.44291,17.00605-.76444,22.34414-7.38039a12.40873,12.40873,0,0,0,2.30264-10.0772c-1.15182-6.24874-5.8494-10.8893-11.11025-14.06959a40.429,40.429,0,0,0-61.08911,39.13442c.67906,6.01412,2.53479,12.75778-1.04129,17.64065-3.14734,4.29745-9.08815,5.10326-14.30673,6.17108-11.19313,2.29031-21.99165,7.57389-29.58753,16.1082s-11.64806,20.50823-9.35788,31.70139,11.47806,21.03009,22.77061,22.76506c9.19165,1.41219,18.68267-2.4913,25.43252-8.88821s11.01639-15.03534,13.70753-23.93695c3.19415-10.56543,4.4541-21.95037,10.22083-31.36184,5.64312-9.20972,17.80394-15.81164,27.33492-11.01525a1.022,1.022,0,0,0,1.14669-.13728Z" transform="translate(-196.07014 -159.20912)" fill="#2f2e41"/>
+          <path d="M504.07014,740.79088h-307a1,1,0,0,1,0-2h307a1,1,0,1,1,0,2Z" transform="translate(-196.07014 -159.20912)" fill="#3f3d56"/>
+        </svg>
+      </div>
+    </div>
+
+    <hr>
+    
+    <div class="flex flex-wrap">
+      <div class="w-full sm:w-1/2 p-6">
+        <svg class="w-full sm:h-64 mx-auto" viewBox="0 0 1177 598.5" xmlns="http://www.w3.org/2000/svg">
+          <title>translator DNS</title>
+          <defs/>
+          <g>
+            <rect x="0" y="91" width="80" height="70" fill="none" stroke="none" pointer-events="all"/>
+            <path d="M 3.73 146.3 C 2.66 146.21 1.68 145.71 1 144.92 C 0.32 144.14 0 143.12 0.11 142.11 L 0.11 94.9 C 0.28 92.95 1.85 91.37 3.89 91.09 L 75.42 91.09 C 77.77 91 79.79 92.68 80 94.9 L 79.92 142.88 C 79.45 144.9 77.6 146.37 75.42 146.45 L 50.34 146.45 L 49.22 150.8 C 48.95 151.8 49.13 152.86 49.71 153.73 C 50.28 154.61 51.21 155.22 52.27 155.44 C 54.7 156.22 57.27 156.56 59.83 156.43 L 64.49 156.43 L 64.49 161 L 12.33 161 L 12.33 156.43 L 17.87 156.43 C 20.78 156.45 23.66 155.98 26.39 155.06 C 28.54 154.57 29.87 152.53 29.37 150.49 L 28.64 146.45 Z M 6.06 140.82 L 73.81 140.82 L 73.81 96.96 L 6.06 96.96 Z" fill="#190033" stroke="none" pointer-events="all"/>
+            <g transform="translate(-0.5 -0.5)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-start; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 168px; margin-left: 40px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; ">
+                      <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; ">
+                        Client System
+                      </div>
+                    </div>
+                  </div>
+                </foreignObject>
+                <text x="40" y="180" fill="#000000" font-family="Helvetica" font-size="12px" text-anchor="middle">
+                  Client System
+                </text>
+              </switch>
+            </g>
+            <rect x="440" y="46" width="63.25" height="115" fill="none" stroke="none" pointer-events="all"/>
+            <path d="M 480.8 63.07 L 483.7 62.78 Q 483.97 64.28 484.76 64.98 Q 485.57 65.68 486.93 65.68 Q 488.37 65.68 489.09 65.06 Q 489.83 64.43 489.83 63.59 Q 489.83 63.05 489.52 62.68 Q 489.21 62.31 488.45 62.02 Q 487.93 61.84 486.06 61.36 Q 483.66 60.75 482.7 59.87 Q 481.34 58.62 481.34 56.82 Q 481.34 55.66 481.97 54.66 Q 482.62 53.65 483.82 53.12 Q 485.03 52.59 486.73 52.59 Q 489.51 52.59 490.91 53.85 Q 492.32 55.09 492.39 57.18 L 489.41 57.32 Q 489.21 56.15 488.58 55.65 Q 487.96 55.12 486.7 55.12 Q 485.39 55.12 484.66 55.68 Q 484.19 56.02 484.19 56.62 Q 484.19 57.15 484.63 57.53 Q 485.2 58.02 487.37 58.55 Q 489.55 59.07 490.58 59.64 Q 491.64 60.2 492.21 61.18 Q 492.81 62.15 492.81 63.58 Q 492.81 64.88 492.11 66.02 Q 491.4 67.15 490.11 67.71 Q 488.82 68.26 486.9 68.26 Q 484.1 68.26 482.59 66.94 Q 481.1 65.61 480.8 63.07 Z M 466.68 67.99 L 466.68 52.86 L 469.58 52.86 L 475.62 62.96 L 475.62 52.86 L 478.39 52.86 L 478.39 67.99 L 475.41 67.99 L 469.45 58.12 L 469.45 67.99 Z M 451.73 52.86 L 457.18 52.86 Q 459.02 52.86 459.99 53.15 Q 461.29 53.54 462.22 54.54 Q 463.14 55.54 463.63 56.99 Q 464.11 58.44 464.11 60.57 Q 464.11 62.44 463.66 63.79 Q 463.1 65.44 462.08 66.47 Q 461.3 67.24 459.98 67.67 Q 459 67.99 457.34 67.99 L 451.73 67.99 Z M 454.71 55.42 L 454.71 65.44 L 456.94 65.44 Q 458.19 65.44 458.74 65.3 Q 459.46 65.11 459.94 64.67 Q 460.42 64.22 460.73 63.21 Q 461.02 62.19 461.02 60.43 Q 461.02 58.68 460.73 57.74 Q 460.42 56.8 459.88 56.27 Q 459.33 55.75 458.5 55.56 Q 457.87 55.42 456.05 55.42 Z M 503.25 74.86 L 503.25 53.03 C 503.25 49.16 500.09 46 496.32 46 L 446.86 46 C 443.09 46 440 49.16 440 53.03 L 440 74.86 Z M 440 144.24 L 440 153.97 C 440 157.84 443.09 161 446.86 161 L 496.32 161 C 500.09 161 503.25 157.84 503.25 153.97 L 503.25 144.24 Z M 500.33 147.36 L 500.33 153.97 C 500.33 156.23 498.52 158 496.32 158 L 446.86 158 C 444.66 158 442.92 156.23 442.92 153.97 L 442.92 147.36 Z M 442.92 71.78 L 442.92 53.03 C 442.92 50.77 444.66 49 446.86 49 L 496.32 49 C 498.52 49 500.33 50.77 500.33 53.03 L 500.33 71.78 Z M 471.66 85.27 C 467.94 85.27 464.89 88.39 464.89 92.21 C 464.89 96.02 467.94 99.15 471.66 99.15 C 475.39 99.15 478.43 96.02 478.43 92.21 C 478.43 88.39 475.39 85.27 471.66 85.27 Z M 470.79 87.45 L 470.79 92.36 C 470.79 92.85 471.18 93.26 471.66 93.26 C 472.15 93.26 472.54 92.85 472.54 92.36 L 472.54 87.45 C 474.73 87.87 476.38 89.83 476.38 92.21 C 476.38 94.89 474.28 97.05 471.66 97.05 C 469.04 97.05 466.94 94.89 466.94 92.21 C 466.94 89.83 468.59 87.87 470.79 87.45 Z M 440 125.76 L 440 127.26 L 440 141.36 L 503.25 141.36 L 503.25 125.76 Z M 442.92 128.76 L 500.33 128.76 L 500.33 138.36 L 442.92 138.36 Z M 440 77.11 L 440 78.61 L 440 122.56 L 503.25 122.56 L 503.25 77.11 Z M 442.92 80.11 L 500.33 80.11 L 500.33 119.57 L 442.92 119.57 Z" fill="#190033" stroke="none" pointer-events="all"/>
+            <g transform="translate(-0.5 -0.5)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-start; justify-content: unsafe center; width: 1px; height: 1px; padding-top: 168px; margin-left: 472px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; ">
+                      <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: nowrap; ">
+                        DNS Server
+                      </div>
+                    </div>
+                  </div>
+                </foreignObject>
+                <text x="472" y="180" fill="#000000" font-family="Helvetica" font-size="12px" text-anchor="middle">
+                  DNS Server
+                </text>
+              </switch>
+            </g>
+            <path d="M 90 81 L 423.63 81" fill="none" stroke="#190033" stroke-miterlimit="10" pointer-events="stroke"/>
+            <path d="M 428.88 81 L 421.88 84.5 L 423.63 81 L 421.88 77.5 Z" fill="#190033" stroke="#190033" stroke-miterlimit="10" pointer-events="all"/>
+            <path d="M 430 151 L 96.37 151" fill="none" stroke="#190033" stroke-miterlimit="10" pointer-events="stroke"/>
+            <path d="M 91.12 151 L 98.12 147.5 L 96.37 151 L 98.12 154.5 Z" fill="#190033" stroke="#190033" stroke-miterlimit="10" pointer-events="all"/>
+            <path d="M 220 90.38 C 188 90.38 180 117.25 205.6 122.63 C 180 134.45 208.8 160.25 229.6 149.5 C 244 171 292 171 308 149.5 C 340 149.5 340 128 320 117.25 C 340 95.75 308 74.25 280 85 C 260 68.88 228 68.88 220 90.38 Z" fill="none" stroke="#000000" stroke-width="3" stroke-miterlimit="10" pointer-events="all"/>
+            <g transform="translate(-0.5 -0.5)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 158px; height: 1px; padding-top: 117px; margin-left: 181px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: center; ">
+                      <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                        LAN/WAN
+                        <br />
+                        WWW
+                      </div>
+                    </div>
+                  </div>
+                </foreignObject>
+                <text x="260" y="121" fill="#000000" font-family="Helvetica" font-size="12px" text-anchor="middle">
+                  LAN/WAN...
+                </text>
+              </switch>
+            </g>
+            <rect x="200" y="1" width="120" height="60" fill="none" stroke="#000000" stroke-width="3" pointer-events="all"/>
+            <g transform="translate(-0.5 -0.5)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 118px; height: 1px; padding-top: 31px; margin-left: 202px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                      <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                        DNS Request
+                        <br style="font-size: 11px" />
+                        <br style="font-size: 11px" />
+                        Type A<br style="font-size: 11px" />
+                        mail.google.com
+                      </div>
+                    </div>
+                  </div>
+                </foreignObject>
+                <text x="202" y="34" fill="#000000" font-family="Helvetica" font-size="11px">
+                  DNS Request...
+                </text>
+              </switch>
+            </g>
+            <rect x="210" y="171" width="120" height="70" fill="none" stroke="#000000" stroke-width="3" pointer-events="all"/>
+            <g transform="translate(-0.5 -0.5)">
+              <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                  <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 118px; height: 1px; padding-top: 206px; margin-left: 212px;">
+                    <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                      <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                        <font style="font-size: 11px">
+                          DNS Response
+                          <br />
+                          <br />
+                          Type A
+                          <br />
+                          Code NOERROR
+                          <br />
+                          Response 1.2.3.4
+                        </font>
+                      </div>
+                    </div>
+                  </div>
+                </foreignObject>
+                <text x="212" y="209" fill="#000000" font-family="Helvetica" font-size="11px">
+                  DNS Response...
+                </text>
+              </switch>
+            </g>
+          </g>
+          <switch>
+            <g requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"/>
+            <a transform="translate(0,-5)" xlink:href="https://www.diagrams.net/doc/faq/svg-export-text-problems" target="_blank">
+              <text text-anchor="middle" font-size="10px" x="50%" y="100%">
+                Viewer does not support full SVG 1.1
+              </text>
+            </a>
+          </switch>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</section>
+<section>
+  <div class="container max-w-5xl mx-auto m-8">
+    <h1 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
+      What is DoH/DoT?
+    </h1>
+  </div>
+</section>
+<section class="bg-white border-b py-8" >
+  <div class="container max-w-5xl mx-auto m-8"></div>
+    <div class="flex flex-wrap flex-col-reverse sm:flex-row">
+      <div class="w-full sm:w-1/2 p-6 mt-6">
+        <div class="w-full md:w-3/5 py-6 text-center">
+          <img class="w-full md:w-4/5 z-50" src="dns-traffic-unsecured.png" />
+          <img class="w-full md:w-4/5 z-50" src="dns-traffic-over-tls-https.png" />
+        </div>
+      </div>
+      <div class="w-full sm:w-1/2 p-6 mt-6">
+        <div class="align-middle">
+          <h3 class="text-3xl text-gray-800 font-bold leading-none mb-3">
+            DoH/DoT vs Unsecured
+          </h3>
+          <p class="text-gray-600 mb-8">
+            Nord DNS replaces the connection between your device and the Internet with a modern, optimized, protocol.
+            <br />
+            <br />
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="container mx-auto flex flex-wrap pt-4 pb-12">
+    <h1 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
+      Now available for macOS and Windows
+    </h1>
+    <h3 class="w-full my-2 text-3xl leading-tight text-center">
+      Available for all plateform, we ensure your traffic is secured.
+    </h3>
+
+    <div class="flex flex-wrap flex-col-reverse sm:flex-row">
+      <div class="w-full sm:w-1/2 p-6 mt-6">
+        <svg id="e3fcecc7-e6c1-4472-ba1a-540914afc660" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="788.6063" height="505.46457" viewBox="0 0 788.6063 505.46457"><path d="M942.33387,700.8888c-10.21678-6.83513-15.36154-19.838-15.56457-32.1287-.06808-4.12168.97214-8.90006,4.6644-10.73313a6.40929,6.40929,0,0,1,9.17367,6.78517A62.0452,62.0452,0,0,1,945.908,653.2958c1.82517-3.08817,4.388-6.30229,7.96315-6.59584,4.14764-.34055,7.61254,3.6882,8.20046,7.80806s-.91111,8.22009-2.38458,12.11211a10.8304,10.8304,0,0,1,17.15884-6.08445c4.05614,3.13127,5.39282,8.89413,4.37235,13.91565s-4.01718,9.4151-7.33124,13.32331c-3.886,4.5827-8.38562,8.77056-13.773,11.43105s-11.75774,3.67806-17.48911,1.87429Z" transform="translate(-205.69685 -197.26772)" fill="#f2f2f2"/><path d="M802.59173,536.29076a10.74267,10.74267,0,0,0,3.84155-16.01843l25.033-121.54-23.36007-.30784-17.384,119.99816a10.80091,10.80091,0,0,0,11.86954,17.86816Z" transform="translate(-205.69685 -197.26772)" fill="#ffb8b8"/>
+          <path d="M916.376,529.97948a10.74267,10.74267,0,0,0-.89739-16.44817L904.72644,389.90678,882.253,396.289l17.64128,119.96061A10.80091,10.80091,0,0,0,916.376,529.97948Z" transform="translate(-205.69685 -197.26772)" fill="#ffb8b8"/><polygon points="638.591 492.157 626.331 492.156 620.499 444.868 638.593 444.869 638.591 492.157" fill="#ffb8b8"/>
+          <path d="M617.57428,488.65334h23.64384a0,0,0,0,1,0,0v14.88687a0,0,0,0,1,0,0H602.6874a0,0,0,0,1,0,0v0A14.88688,14.88688,0,0,1,617.57428,488.65334Z" fill="#2f2e41"/>
+          <polygon points="693.591 492.157 681.331 492.156 675.499 444.868 693.593 444.869 693.591 492.157" fill="#ffb8b8"/>
+          <path d="M672.57428,488.65334h23.64384a0,0,0,0,1,0,0v14.88687a0,0,0,0,1,0,0H657.6874a0,0,0,0,1,0,0v0A14.88688,14.88688,0,0,1,672.57428,488.65334Z" fill="#2f2e41"/>
+          <circle cx="641.76772" cy="129.73228" r="24.56103" fill="#ffb8b8"/>
+          <path d="M881.99281,659.58678a4.33406,4.33406,0,0,1-4.23108-3.48972l-16.604-85.90651a3.34938,3.34938,0,0,0-6.61752.26635l-9.29766,83.67754a4.28546,4.28546,0,0,1-4.08458,3.82523l-13.94509.63365a4.23451,4.23451,0,0,1-3.10607-1.1271,4.27755,4.27755,0,0,1-1.39229-2.99626l-5.347-129.25883a4.28031,4.28031,0,0,1,1.50794-3.45421l3.092-2.63831a4.31148,4.31148,0,0,1,2.79486-1.02991h72.27871a4.31139,4.31139,0,0,1,4.30654,4.30654V654.6251a4.29851,4.29851,0,0,1-4.11939,4.3028l-15.05116.65514C882.11547,659.58491,882.054,659.58678,881.99281,659.58678Z" transform="translate(-205.69685 -197.26772)" fill="#2f2e41"/>
+          <path d="M844.97576,536.89523c-11.68574.00094-21.98644-3.11308-27.18643-12.19438a4.38672,4.38672,0,0,1-.586-2.472l6.53388-99.87659a3.34931,3.34931,0,0,0-.679-2.25047l-18.33387-24.03831a4.305,4.305,0,0,1,.82359-6.043l27.50186-20.8355a3.36648,3.36648,0,0,0,1.19813-1.74953l.80117-2.80374a4.29778,4.29778,0,0,1,3.97523-3.12056l20.1806-.77664a4.34761,4.34761,0,0,1,3.52851,1.614l2.14766,2.68411a3.3412,3.3412,0,0,0,.996.84019l33.74952,18.65046a4.31507,4.31507,0,0,1,2.22336,3.72336l.0007.05982-.01378.057c-7.86729,32.80279-7.42477,74.26445,1.39229,130.485a4.30494,4.30494,0,0,1-2.58084,4.06355C893.34374,526.07561,866.75636,536.89523,844.97576,536.89523Z" transform="translate(-205.69685 -197.26772)" fill="#6c63ff"/>
+          <path d="M824.42414,433.87191H801.566a4.30071,4.30071,0,0,1-4.29977-4.55047c.34019-5.82336,1.01122-16.89812,1.683-25.63176.96682-12.56822,13.28153-18.7542,13.4056-18.81588l.24089-.11776,8.314,5.27757,7.73738,38.68783a4.30686,4.30686,0,0,1-4.22289,5.15047Z" transform="translate(-205.69685 -197.26772)" fill="#6c63ff"/>
+          <path d="M887.06009,431.73827a4.31245,4.31245,0,0,1-4.26028-4.7757l4.21846-38.81027,8.15-5.96916.18551.02056c.08715.01029,8.76939,1.0944,12.65888,10.81776,2.76962,6.92429,7,19.72149,9.27523,26.73363a4.30162,4.30162,0,0,1-3.08084,5.50654l-26.10817,6.35047A4.3564,4.3564,0,0,1,887.06009,431.73827Z" transform="translate(-205.69685 -197.26772)" fill="#6c63ff"/>
+          <path d="M848.02362,351.73228c5.25293-8.31094-1.30517-31.189-15.5957-31.78592-3.29932-.13781-4.56638-4.93874-5.68754-8.04446a12.38934,12.38934,0,0,1,1.61042-10.77928,20.33678,20.33678,0,0,1,8.67558-7.0083,30.10675,30.10675,0,1,1,16.86118,57.15692Z" transform="translate(-205.69685 -197.26772)" fill="#2f2e41"/>
+          <path d="M699.69685,197.26772h-487a7.00778,7.00778,0,0,0-7,7v330a7.00779,7.00779,0,0,0,7,7h487a7.00779,7.00779,0,0,0,7-7v-330A7.00778,7.00778,0,0,0,699.69685,197.26772Zm5,337a5.002,5.002,0,0,1-5,5h-487a5.002,5.002,0,0,1-5-5v-330a5.002,5.002,0,0,1,5-5h487a5.002,5.002,0,0,1,5,5Z" transform="translate(-205.69685 -197.26772)" fill="#3f3d56"/>
+          <rect x="1" y="28.03998" width="499" height="2" fill="#3f3d56"/>
+          <circle cx="18" cy="15" r="6" fill="#3f3d56"/>
+          <circle cx="35.25" cy="15" r="6" fill="#3f3d56"/>
+          <circle cx="52.5" cy="15" r="6" fill="#3f3d56"/>
+          <path d="M609.52362,293.73228h-310a15.5,15.5,0,0,1,0-31h310a15.5,15.5,0,0,1,0,31Zm-310-29a13.5,13.5,0,0,0,0,27h310a13.5,13.5,0,0,0,0-27Z" transform="translate(-205.69685 -197.26772)" fill="#3f3d56"/>
+          <path d="M379.52362,372.73228h-60a15.5,15.5,0,0,1,0-31h60a15.5,15.5,0,0,1,0,31Zm-60-29a13.5,13.5,0,0,0,0,27h60a13.5,13.5,0,0,0,0-27Z" transform="translate(-205.69685 -197.26772)" fill="#3f3d56"/>
+          <path d="M379.52362,424.73228h-60a15.5,15.5,0,0,1,0-31h60a15.5,15.5,0,0,1,0,31Zm-60-29a13.5,13.5,0,0,0,0,27h60a13.5,13.5,0,0,0,0-27Z" transform="translate(-205.69685 -197.26772)" fill="#3f3d56"/>
+          <path d="M379.52362,476.73228h-60a15.5,15.5,0,0,1,0-31h60a15.5,15.5,0,0,1,0,31Zm-60-29a13.5,13.5,0,0,0,0,27h60a13.5,13.5,0,0,0,0-27Z" transform="translate(-205.69685 -197.26772)" fill="#3f3d56"/>
+          <path d="M388.52362,285.23228h-84a7,7,0,0,1,0-14h84a7,7,0,0,1,0,14Z" transform="translate(-205.69685 -197.26772)" fill="#6c63ff"/>
+          <path d="M599.02362,281.73228a7,7,0,1,1,7-7A7.00786,7.00786,0,0,1,599.02362,281.73228Zm0-12a5,5,0,1,0,5,5A5.00573,5.00573,0,0,0,599.02362,269.73228Z" transform="translate(-205.69685 -197.26772)" fill="#3f3d56"/>
+          <path d="M609.85224,288.0648a.99676.99676,0,0,1-.707-.293l-7.02612-7.02636a.99989.99989,0,1,1,1.41406-1.41407l7.02613,7.02637a1,1,0,0,1-.707,1.707Z" transform="translate(-205.69685 -197.26772)" fill="#3f3d56"/>
+          <path d="M595.02362,366.73228h-34a9.5,9.5,0,0,1,0-19h34a9.5,9.5,0,0,1,0,19Z" transform="translate(-205.69685 -197.26772)" fill="#6c63ff"/>
+          <path d="M595.02362,418.73228h-34a9.5,9.5,0,0,1,0-19h34a9.5,9.5,0,0,1,0,19Z" transform="translate(-205.69685 -197.26772)" fill="#6c63ff"/>
+          <path d="M595.02362,470.73228h-34a9.5,9.5,0,0,1,0-19h34a9.5,9.5,0,0,1,0,19Z" transform="translate(-205.69685 -197.26772)" fill="#6c63ff"/>
+          <path d="M993.30315,702.73228h-248a1,1,0,0,1,0-2h248a1,1,0,0,1,0,2Z" transform="translate(-205.69685 -197.26772)" fill="#3f3d56"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="bg-gray-100 py-8">
+  <div class="container mx-auto px-2 pt-4 pb-12 text-gray-800">
+    <h1 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
+      Pricing
+    </h1>
+    <div class="w-full mb-4">
+      <div class="h-1 mx-auto gradient w-64 opacity-25 my-0 py-0 rounded-t"></div>
+    </div>
+    <div class="flex flex-col sm:flex-row justify-center pt-12 my-12 sm:my-4">
+      <div class="flex flex-col w-5/6 lg:w-1/4 mx-auto lg:mx-0 rounded-none lg:rounded-l-lg bg-white mt-4">
+        <div class="flex-1 bg-white text-gray-600 rounded-t rounded-b-none overflow-hidden shadow">
+          <div class="p-8 text-3xl font-bold text-center border-b-4">
+            Free
+          </div>
+          <ul class="w-full text-center text-sm">
+            <li class="border-b py-4">Thing</li>
+            <li class="border-b py-4">Thing</li>
+            <li class="border-b py-4">Thing</li>
+          </ul>
+        </div>
+        <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
+          <div class="w-full pt-6 text-3xl text-gray-600 font-bold text-center">
+            £0
+            <span class="text-base">for one user</span>
+          </div>
+          <div class="flex items-center justify-center">
+            <button class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+              Sign Up
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col w-5/6 lg:w-1/3 mx-auto lg:mx-0 rounded-lg bg-white mt-4 sm:-mt-6 shadow-lg z-10">
+        <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
+          <div class="w-full p-8 text-3xl font-bold text-center">Basic</div>
+          <div class="h-1 w-full gradient my-0 py-0 rounded-t"></div>
+          <ul class="w-full text-center text-base font-bold">
+            <li class="border-b py-4">Thing</li>
+            <li class="border-b py-4">Thing</li>
+            <li class="border-b py-4">Thing</li>
+            <li class="border-b py-4">Thing</li>
+          </ul>
+        </div>
+        <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
+          <div class="w-full pt-6 text-4xl font-bold text-center">
+            £x.99
+            <span class="text-base">/ per user</span>
+          </div>
+          <div class="flex items-center justify-center">
+            <button class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+              Sign Up
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col w-5/6 lg:w-1/4 mx-auto lg:mx-0 rounded-none lg:rounded-l-lg bg-white mt-4">
+        <div class="flex-1 bg-white text-gray-600 rounded-t rounded-b-none overflow-hidden shadow">
+          <div class="p-8 text-3xl font-bold text-center border-b-4">
+            Pro
+          </div>
+          <ul class="w-full text-center text-sm">
+            <li class="border-b py-4">Thing</li>
+            <li class="border-b py-4">Thing</li>
+            <li class="border-b py-4">Thing</li>
+          </ul>
+        </div>
+        <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
+          <div class="w-full pt-6 text-3xl text-gray-600 font-bold text-center">
+            £x.99
+            <span class="text-base">/ per user</span>
+          </div>
+          <div class="flex items-center justify-center">
+            <button class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+              Sign Up
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="bg-white border-b py-8">
+  <div class="container mx-auto flex flex-wrap pt-4 pb-12">
+    <h1 class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
+      They talk about us
+    </h1>
+    <div class="w-full mb-4">
+      <div class="h-1 mx-auto gradient w-64 opacity-25 my-0 py-0 rounded-t"></div>
+    </div>
+    <div class="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
+      <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
+        <a href="#" class="flex flex-wrap no-underline hover:no-underline">
+          <p class="w-full text-gray-600 text-xs md:text-sm px-6">
+            xSAFETY LINE - CTO
+          </p>
+          <div class="w-full font-bold text-xl text-gray-800 px-6">
+            Secured access to private websites
+          </div>
+          <p class="text-gray-800 text-base px-6 mb-5">
+            During business travalling, I know that I can access to my website securly. Even on public wifi, Nord DNS is enabled. so easy and fast!
+          </p>
+        </a>
+      </div>
+      <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
+        <div class="flex items-center justify-start">
+          <button class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+            Action
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
+      <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
+        <a href="#" class="flex flex-wrap no-underline hover:no-underline">
+          <p class="w-full text-gray-600 text-xs md:text-sm px-6">
+            xGATECH - CEO
+          </p>
+          <div class="w-full font-bold text-xl text-gray-800 px-6">
+            Remove unuseful ads
+          </div>
+          <p class="text-gray-800 text-base px-6 mb-5">
+            I was tired of getting to much advertizing while on the net, for business or personal purpose. Nord DNS is a great alternive to remove them.
+          </p>
+        </a>
+      </div>
+      <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
+        <div class="flex items-center justify-center">
+          <button class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+            Action
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
+      <div class="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow">
+        <a href="#" class="flex flex-wrap no-underline hover:no-underline">
+          <p class="w-full text-gray-600 text-xs md:text-sm px-6">
+            xHACKR - HEAD OF IT
+          </p>
+          <div class="w-full font-bold text-xl text-gray-800 px-6">
+            No more spoofing!
+          </div>
+          <p class="text-gray-800 text-base px-6 mb-5">
+            Even in a IT security team, it is not easy to detect a DNS spoofing. Nord DNS withdraw the fear of beeing hacked while surfing the web.
+          </p>
+        </a>
+      </div>
+      <div class="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow p-6">
+        <div class="flex items-center justify-end">
+          <button class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+            Action
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Change the colour #f8fafc to match the previous section colour -->
+<svg class="wave-top" viewBox="0 0 1439 147" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g transform="translate(-1.000000, -14.000000)" fill-rule="nonzero">
+      <g class="wave" fill="#f8fafc">
+        <path
+        d="M1440,84 C1383.555,64.3 1342.555,51.3 1317,45 C1259.5,30.824 1206.707,25.526 1169,22 C1129.711,18.326 1044.426,18.475 980,22 C954.25,23.409 922.25,26.742 884,32 C845.122,37.787 818.455,42.121 804,45 C776.833,50.41 728.136,61.77 713,65 C660.023,76.309 621.544,87.729 584,94 C517.525,105.104 484.525,106.438 429,108 C379.49,106.484 342.823,104.484 319,102 C278.571,97.783 231.737,88.736 205,84 C154.629,75.076 86.296,57.743 0,32 L0,0 L1440,0 L1440,84 Z"
+        ></path>
+      </g>
+      <g transform="translate(1.000000, 15.000000)" fill="#FFFFFF">
+        <g transform="translate(719.500000, 68.500000) rotate(-180.000000) translate(-719.500000, -68.500000) ">
+          <path d="M0,0 C90.7283404,0.927527913 147.912752,27.187927 291.910178,59.9119003 C387.908462,81.7278826 543.605069,89.334785 759,82.7326078 C469.336065,156.254352 216.336065,153.6679 0,74.9732496" opacity="0.100000001"></path>
+          <path
+          d="M100,104.708498 C277.413333,72.2345949 426.147877,52.5246657 546.203633,45.5787101 C666.259389,38.6327546 810.524845,41.7979068 979,55.0741668 C931.069965,56.122511 810.303266,74.8455141 616.699903,111.243176 C423.096539,147.640838 250.863238,145.462612 100,104.708498 Z"
+          opacity="0.100000001"
+          ></path>
+          <path d="M1046,51.6521276 C1130.83045,29.328812 1279.08318,17.607883 1439,40.1656806 L1439,120 C1271.17211,77.9435312 1140.17211,55.1609071 1046,51.6521276 Z" opacity="0.200000003"></path>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
+<section class="container mx-auto text-center py-6 mb-12">
+  <h1 class="w-full my-2 text-5xl font-bold leading-tight text-center text-white">
+    Get started for free
+  </h1>
+  <div class="w-full mb-4">
+    <div class="h-1 mx-auto bg-white w-1/6 opacity-25 my-0 py-0 rounded-t"></div>
+  </div>
+  <h3 class="my-4 text-3xl leading-tight">
+    Join the community for a secured and private internet
+  </h3>
+  <button class="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+    Action!
+  </button>
+</section>
+<!--Footer-->
+<footer class="bg-white">
+  <div class="container mx-auto px-8">
+    <div class="w-full flex flex-col md:flex-row py-6">
+      <div class="flex-1 mb-6 text-black">
+        <a class="text-pink-600 no-underline hover:no-underline font-bold text-2xl lg:text-4xl" href="#">
+          <!--Icon from: http://www.potlabicons.com/ -->
+          <svg class="h-8 fill-current inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.005 512.005">
+            <rect fill="#2a2a31" x="16.539" y="425.626" width="479.767" height="50.502" transform="matrix(1,0,0,1,0,0)" />
+            <path
+            class="plane-take-off"
+            d=" M 510.7 189.151 C 505.271 168.95 484.565 156.956 464.365 162.385 L 330.156 198.367 L 155.924 35.878 L 107.19 49.008 L 211.729 230.183 L 86.232 263.767 L 36.614 224.754 L 0 234.603 L 45.957 314.27 L 65.274 347.727 L 105.802 336.869 L 240.011 300.886 L 349.726 271.469 L 483.935 235.486 C 504.134 230.057 516.129 209.352 510.7 189.151 Z "
+            />
+          </svg>
+          Nord DNS
+        </a>
+      </div>
+      <div class="flex-1">
+        <p class="uppercase text-gray-500 md:mb-6">Links</p>
+        <ul class="list-reset mb-6">
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">FAQ</a>
+          </li>
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Help</a>
+          </li>
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Support</a>
+          </li>
+        </ul>
+      </div>
+      <div class="flex-1">
+        <p class="uppercase text-gray-500 md:mb-6">Legal</p>
+        <ul class="list-reset mb-6">
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Terms</a>
+          </li>
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Privacy</a>
+          </li>
+        </ul>
+      </div>
+      <div class="flex-1">
+        <p class="uppercase text-gray-500 md:mb-6">Social</p>
+        <ul class="list-reset mb-6">
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Facebook</a>
+          </li>
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Linkedin</a>
+          </li>
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Twitter</a>
+          </li>
+        </ul>
+      </div>
+      <div class="flex-1">
+        <p class="uppercase text-gray-500 md:mb-6">Company</p>
+        <ul class="list-reset mb-6">
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Official Blog</a>
+          </li>
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">About Us</a>
+          </li>
+          <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+            <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <a href="https://www.freepik.com/free-photos-vectors/background" class="text-gray-500">Background vector created by freepik - www.freepik.com</a>
+</footer>
+<!-- jQuery if you need it
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+-->
+<script>
+  var scrollpos = window.scrollY;
+  var header = document.getElementById("header");
+  var navcontent = document.getElementById("nav-content");
+  var navaction = document.getElementById("navAction");
+  var brandname = document.getElementById("brandname");
+  var toToggle = document.querySelectorAll(".toggleColour");
+
+  document.addEventListener("scroll", function () {
+    /*Apply classes for slide in bar*/
+    scrollpos = window.scrollY;
+
+    if (scrollpos > 10) {
+      header.classList.add("bg-white");
+      navaction.classList.remove("bg-white");
+      navaction.classList.add("gradient");
+      navaction.classList.remove("text-gray-800");
+      navaction.classList.add("text-white");
+      //Use to switch toggleColour colours
+      for (var i = 0; i < toToggle.length; i++) {
+        toToggle[i].classList.add("text-gray-800");
+        toToggle[i].classList.remove("text-white");
+      }
+      header.classList.add("shadow");
+      navcontent.classList.remove("bg-gray-100");
+      navcontent.classList.add("bg-white");
+    } else {
+      header.classList.remove("bg-white");
+      navaction.classList.remove("gradient");
+      navaction.classList.add("bg-white");
+      navaction.classList.remove("text-white");
+      navaction.classList.add("text-gray-800");
+      //Use to switch toggleColour colours
+      for (var i = 0; i < toToggle.length; i++) {
+        toToggle[i].classList.add("text-white");
+        toToggle[i].classList.remove("text-gray-800");
+      }
+
+      header.classList.remove("shadow");
+      navcontent.classList.remove("bg-white");
+      navcontent.classList.add("bg-gray-100");
+    }
+  });
+</script>
+<script>
+  /*Toggle dropdown list*/
+  /*https://gist.github.com/slavapas/593e8e50cf4cc16ac972afcbad4f70c8*/
+
+  var navMenuDiv = document.getElementById("nav-content");
+  var navMenu = document.getElementById("nav-toggle");
+
+  document.onclick = check;
+  function check(e) {
+    var target = (e && e.target) || (event && event.srcElement);
+
+    //Nav Menu
+    if (!checkParent(target, navMenuDiv)) {
+      // click NOT on the menu
+      if (checkParent(target, navMenu)) {
+        // click on the link
+        if (navMenuDiv.classList.contains("hidden")) {
+          navMenuDiv.classList.remove("hidden");
+        } else {
+          navMenuDiv.classList.add("hidden");
+        }
+      } else {
+        // click both outside link and outside menu, hide menu
+        navMenuDiv.classList.add("hidden");
+      }
+    }
+  }
+  function checkParent(t, elm) {
+    while (t.parentNode) {
+      if (t == elm) {
+        return true;
+      }
+      t = t.parentNode;
+    }
+    return false;
+  }
+</script>
+</body>
+</html>
