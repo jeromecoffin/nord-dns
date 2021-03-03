@@ -68,3 +68,6 @@ lists/*.txt
 
 # .DS_Store banished!
 .DS_Store
+
+# Grafana
+grafana/plugins
