@@ -37,6 +37,11 @@ services:
       - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
       - org.opencontainers.image.title="API Gateway"
       - org.opencontainers.image.description="Respond to incoming HTTPS traffic and packages query before forwarding to DoH service"
+    deploy:
+      resources:
+        limits:
+          # cpu: 0.25
+          memory: 0.5Gb
     networks:
       - internal
   
