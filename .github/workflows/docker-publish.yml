@@ -28,19 +28,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
-          
-      - name: Docker meta
-        id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
-        with:
-          # list of Docker images to use as base name for tags
-          images: |
-            ghcr.io/iamfrench/nord-dns
-          # add git short SHA as Docker tag
-          tag-sha: true
-          tag-semver: |
-            {{version}}
-            {{major}}.{{minor}}
       
       - name: Set up Docker Buildx
         id: buildx
@@ -57,7 +44,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ghcr.io/iamfrench/nord-dns_api-gw:latest
-          # labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Build and push  image for DNS-over-HTTPS service
         uses: docker/build-push-action@v2
@@ -68,7 +54,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ghcr.io/iamfrench/nord-dns_doh:latest
-          labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Build and push  image for DNS-over-TLS service
         uses: docker/build-push-action@v2
@@ -79,7 +64,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ghcr.io/iamfrench/nord-dns_dot:latest
-          labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Build and push image for Filter service
         uses: docker/build-push-action@v2
@@ -90,7 +74,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ghcr.io/iamfrench/nord-dns_filter:latest
-          labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Build and push  image for DoHjs Web Interface
         uses: docker/build-push-action@v2
@@ -101,7 +84,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ghcr.io/iamfrench/nord-dns_dohjs:latest
-          labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
