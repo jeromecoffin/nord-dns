@@ -19,7 +19,7 @@ services:
       # Allow request only from the predefined entry point named "api-gw"
       - traefik.http.routers.api-gw_Router.entrypoints=api-gw
       # Create rule to match domaines ndns.cf & *.local.ndns.cf
-      - traefik.http.routers.api-gw_Router.rule=HostRegexp(`ndns.cf`, `{subdomain:[a-z]+}.local.ndns.cf`)
+      - traefik.http.routers.api-gw_Router.rule=HostRegexp(`${APP_DOMAIN_ROOT}`, `{subdomain:[a-z]+}.local.ndns.cf`)
       # Register service to use for this router
       - traefik.http.routers.api-gw_Router.service=api-gw_Service
       # Use TLS between the Traefik and the api-gw container
@@ -127,13 +127,15 @@ services:
 
 
       ## Enabling Docker provider
-      - --providers.docker=${_COMPOSE_USE_DOCKER_PROVIDER}
-
+      - --providers.docker=${TRAEFIK_USE_DOCKER_PROVIDER}
       # Do not expose containers unless explicitly told so
       - --providers.docker.exposedbydefault=false
+      # Se the docker daemon endpoint - Default: unix:///var/run/docker.sock
+      - --providers.docker.endpoint=${TRAEFIK_DOCKER_ENDPOINT}
       
+
       ## Enable ECS provider
-      - --providers.ecs=${_COMPOSE_USE_ECS_PROVIDER}
+      - --providers.ecs=${TRAEFIK_USE_ECS_PROVIDER}
       - --providers.ecs.exposedByDefault=false
       - --providers.ecs.autoDiscoverClusters=true
       # - --providers.ecs.region=eu-west-3
@@ -172,10 +174,9 @@ services:
     ports:
       # "external:internal"
       # HTTPS API Gateway
-      - 8443:3001
+      - ${APP_PORTS_HTTPS}:3001
       # DoT (DNS-over-TLS on port 853)
       - 853:853
-      # Traefik secure Dashboard (secure)
       - 443:443
     volumes:
       # Bin the certificate folder to use custom certificates
@@ -189,11 +190,10 @@ services:
       - traefik.enable=true
       ## Expose Traefik Dashboard
       - traefik.http.routers.dashboard.entrypoints=https,api-gw
-      - traefik.http.routers.dashboard.rule=Host(`proxy.ndns.cf`)
+      - traefik.http.routers.dashboard.rule=Host(`${APP_SUBDOMAIN_TRAEFIK}.${APP_DOMAIN_ROOT}`)
       - traefik.http.routers.dashboard.tls=true
       - traefik.http.routers.dashboard.middlewares=traefik-forward-auth
       - traefik.http.routers.dashboard.service=api@internal
-
     depends_on:
       - jaeger
     networks:
@@ -203,12 +203,12 @@ services:
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:2
     environment:
-      - PROVIDERS_GOOGLE_CLIENT_ID=18224688288-ikosin5i8fe1ha2a9amvras4417nma04.apps.googleusercontent.com
-      - PROVIDERS_GOOGLE_CLIENT_SECRET=uuB3wQKy-IZEfwQF7ZvDoqDs
+      - PROVIDERS_GOOGLE_CLIENT_ID=${TRAEFIK_AUTH_PROVIDERS_GOOGLE_CLIENT_ID}
+      - PROVIDERS_GOOGLE_CLIENT_SECRET=${TRAEFIK_AUTH_PROVIDERS_GOOGLE_CLIENT_SECRET}
       - SECRET=LnfbuvGezhdP4yRxrdIQ
-      - COOKIE_DOMAIN=ndns.cf
+      - COOKIE_DOMAIN=${APP_DOMAIN_ROOT}
       - URL_PATH=/_oauth
-      - AUTH_HOST=oauth.ndns.cf:8443
+      - AUTH_HOST=${APP_SUBDOMAIN_AUTH}.${APP_DOMAIN_ROOT}:${APP_PORTS_HTTPS}
       # - WHITELIST=
       - DEFAULT_ACTION=auth
       - DEFAULT_PROVIDER=google
@@ -216,7 +216,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.traefik-forward-auth.entrypoints=https,api-gw
-      - traefik.http.routers.traefik-forward-auth.rule=Host(`oauth.ndns.cf`) && PathPrefix(`/_oauth`)
+      - traefik.http.routers.traefik-forward-auth.rule=Host(`${APP_SUBDOMAIN_AUTH}.${APP_DOMAIN_ROOT}`) && PathPrefix(`/_oauth`)
       - traefik.http.routers.traefik-forward-auth.middlewares=traefik-forward-auth
       - traefik.http.routers.traefik-forward-auth.tls=true
       - traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181
@@ -234,7 +234,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.jaeger_Router.entrypoints=https,api-gw
-      - traefik.http.routers.jaeger_Router.rule=Host(`tracer.ndns.cf`)
+      - traefik.http.routers.jaeger_Router.rule=Host(`${APP_SUBDOMAIN_JAEGER}.${APP_DOMAIN_ROOT}`)
       - traefik.http.routers.jaeger_Router.middlewares=traefik-forward-auth
       - traefik.http.routers.jaeger_Router.tls=true
       - traefik.http.routers.jaeger_Router.service=jaeger_Service
@@ -252,7 +252,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.dohjs_Router.entrypoints=https,api-gw
-      - traefik.http.routers.dohjs_Router.rule=Host(`gui.ndns.cf`)
+      - traefik.http.routers.dohjs_Router.rule=Host(`${APP_SUBDOMAIN_GUI}.${APP_DOMAIN_ROOT}`)
       - traefik.http.routers.dohjs_Router.service=dohjs_Service
       - traefik.http.routers.dohjs_Router.tls=true
       - traefik.http.services.dohjs_Service.loadbalancer.passhostheader=false
