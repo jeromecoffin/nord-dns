@@ -5,10 +5,11 @@ services:
   api-gw:
     build:
       context: .
+      dockerfile: Dockerfile-api-gw-v1
     image: ghcr.io/iamfrench/nord-dns_api-gw
     env_file: docker-compose.env
     environment:
-      SERVICES: api
+      SERVICES: api-gw.v1
       PORT: 3000
     depends_on:
       - nats # service registry
@@ -32,11 +33,6 @@ services:
       # We have to disable traefik SSL verification (see traefic service command)
       - traefik.http.services.api-gw_Service.loadbalancer.server.port=3000
       - traefik.http.services.api-gw_Service.loadbalancer.server.scheme=https
-      
-      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
-      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
-      - org.opencontainers.image.title="API Gateway"
-      - org.opencontainers.image.description="Respond to incoming HTTPS traffic and packages query before forwarding to DoH service"
     deploy:
       resources:
         limits:
@@ -54,6 +50,7 @@ services:
   doh:
     build:
       context: .
+      dockerfile: Dockerfile-doh-v1
     image: ghcr.io/iamfrench/nord-dns_doh
     env_file: docker-compose.env
     environment:
@@ -62,16 +59,14 @@ services:
       - nats
       - redis
     labels:
-      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
-      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
-      - org.opencontainers.image.title="DNS-over-HTTPS Service"
-      - org.opencontainers.image.description="Responds to DoH (DNS-over-HTTPS) request using built-in resolver"
+      - traefik.enable=false
     networks:
       - internal
 
   dot:
     build:
       context: .
+      dockerfile: Dockerfile-dot-v1
     image: ghcr.io/iamfrench/nord-dns_dot
     env_file: docker-compose.env
     environment:
@@ -87,17 +82,13 @@ services:
       - traefik.tcp.routers.dot.service=dotService
       - traefik.tcp.services.dotService.loadbalancer.server.port=853
       - traefik.tcp.routers.dot.tls.passthrough=true
-
-      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
-      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
-      - org.opencontainers.image.title="DNS-over-TLS Service"
-      - org.opencontainers.image.description="Responds to DoH (DNS-over-TLS) request using the DoH Service"
     networks:
       - internal
 
   filter:
     build:
       context: .
+      dockerfile: Dockerfile-filter-v1
     image: ghcr.io/iamfrench/nord-dns_filter
     env_file: docker-compose.env
     environment:
@@ -107,16 +98,13 @@ services:
       - redis
     labels:
       - traefik.enable=false
-      
-      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
-      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
-      - org.opencontainers.image.title="Filter Service"
-      - org.opencontainers.image.description="Used to filter queries using blocklists such as 1Hosts and EasyList"
     networks:
       - internal
 
   nats:
     image: nats:latest
+    labels:
+      - traefik.enable=false
     networks:
       - internal
 
