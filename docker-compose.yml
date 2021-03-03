@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.8"
 
 services:
 
@@ -17,7 +17,7 @@ services:
       # Explicitly tell Traefik to expose this container
       - traefik.enable=true
       # Allow request only from the predefined entry point named "api-gw"
-      - traefik.http.routers.api-gw_Router.entrypoints=api-gw
+      - traefik.http.routers.api-gw_Router.entrypoints=https
       # Create rule to match domaines ndns.cf & *.local.ndns.cf
       - traefik.http.routers.api-gw_Router.rule=HostRegexp(`${APP_DOMAIN_ROOT}`, `{subdomain:[a-z]+}.local.ndns.cf`)
       # Register service to use for this router
@@ -156,11 +156,6 @@ services:
       - --tracing.jaeger.localAgentHostPort=jaeger:6831
       - --tracing.jaeger.propagation=jaeger
       - --tracing.jaeger.traceContextHeaderName=uber-trace-id
-
-
-      ## API-GW Entrypoint
-      # Traefik will listen to incoming request on entrypoint "api-gw" to the port 3001 (HTTPS)
-      - --entrypoints.api-gw.address=:3001
       
 
       ## DoT TLS Socket Entrypoint
@@ -168,16 +163,17 @@ services:
       - --entryPoints.dot-socket.address=:853
       
 
-      ## Trafik built-in Dashboard
+      ## Traefik will listen to incoming request on entrypoint "api-gw" to the port 3001 (HTTPS)
+      - --entrypoints.https.address=:3001
+
+      ## Enabling Traefik Dashboard
       - --api.dashboard=true
-      - --entrypoints.https.address=:443
     ports:
       # "external:internal"
       # HTTPS API Gateway
       - ${APP_PORTS_HTTPS}:3001
       # DoT (DNS-over-TLS on port 853)
-      - 853:853
-      - 443:443
+      - ${APP_PORTS_DOT}:853
     volumes:
       # Bin the certificate folder to use custom certificates
       - ./certificates/:/certificates/:ro
@@ -189,7 +185,7 @@ services:
     labels:
       - traefik.enable=true
       ## Expose Traefik Dashboard
-      - traefik.http.routers.dashboard.entrypoints=https,api-gw
+      - traefik.http.routers.dashboard.entrypoints=https
       - traefik.http.routers.dashboard.rule=Host(`${APP_SUBDOMAIN_TRAEFIK}.${APP_DOMAIN_ROOT}`)
       - traefik.http.routers.dashboard.tls=true
       - traefik.http.routers.dashboard.middlewares=traefik-forward-auth
@@ -215,7 +211,7 @@ services:
       - LOG_LEVEL=debug
     labels:
       - traefik.enable=true
-      - traefik.http.routers.traefik-forward-auth.entrypoints=https,api-gw
+      - traefik.http.routers.traefik-forward-auth.entrypoints=https
       - traefik.http.routers.traefik-forward-auth.rule=Host(`${APP_SUBDOMAIN_AUTH}.${APP_DOMAIN_ROOT}`) && PathPrefix(`/_oauth`)
       - traefik.http.routers.traefik-forward-auth.middlewares=traefik-forward-auth
       - traefik.http.routers.traefik-forward-auth.tls=true
@@ -233,7 +229,7 @@ services:
       COLLECTOR_ZIPKIN_HTTP_PORT: 9411
     labels:
       - traefik.enable=true
-      - traefik.http.routers.jaeger_Router.entrypoints=https,api-gw
+      - traefik.http.routers.jaeger_Router.entrypoints=https
       - traefik.http.routers.jaeger_Router.rule=Host(`${APP_SUBDOMAIN_JAEGER}.${APP_DOMAIN_ROOT}`)
       - traefik.http.routers.jaeger_Router.middlewares=traefik-forward-auth
       - traefik.http.routers.jaeger_Router.tls=true
@@ -251,7 +247,7 @@ services:
       PORT: 3000
     labels:
       - traefik.enable=true
-      - traefik.http.routers.dohjs_Router.entrypoints=https,api-gw
+      - traefik.http.routers.dohjs_Router.entrypoints=https
       - traefik.http.routers.dohjs_Router.rule=Host(`${APP_SUBDOMAIN_GUI}.${APP_DOMAIN_ROOT}`)
       - traefik.http.routers.dohjs_Router.service=dohjs_Service
       - traefik.http.routers.dohjs_Router.tls=true
