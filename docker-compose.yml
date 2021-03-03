@@ -275,6 +275,18 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.graphana_Router.entrypoints=https
+      - traefik.http.routers.graphana_Router.rule=Host(`${APP_SUBDOMAIN_GRAPH}.${APP_DOMAIN_ROOT}`)
+      - traefik.http.routers.graphana_Router.middlewares=traefik-forward-auth
+      - traefik.http.routers.graphana_Router.tls=true
+      - traefik.http.routers.graphana_Router.service=graphana_Service
+      - traefik.http.services.graphana_Service.loadbalancer.server.port=3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+    depends_on:
+      - prometheus
     networks:
       - internal
       - default
