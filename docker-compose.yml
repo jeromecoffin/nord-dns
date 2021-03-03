@@ -161,6 +161,12 @@ services:
 
       ## Enabling Traefik Dashboard
       - --api.dashboard=true
+
+
+      ## Enable Prometheus metrics (on port 3000)
+      - --metrics.prometheus=true
+      - --entryPoints.metrics.address=:3030
+      - --metrics.prometheus.entryPoint=metrics
     ports:
       # "external:internal"
       # HTTPS API Gateway
@@ -269,8 +275,6 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
-    ports:
-    - 3000:3000
     networks:
       - internal
       - default
