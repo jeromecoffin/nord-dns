@@ -100,7 +100,7 @@ jobs:
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-          tags: ghcr.io/iamfrench/nord-dns_dojs:latest
+          tags: ghcr.io/iamfrench/nord-dns_dohjs:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Image digest
