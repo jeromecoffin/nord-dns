@@ -67,6 +67,8 @@ jobs:
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+          tags: ghcr.io/iamfrench/nord-dns_doh:latest
+          labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Build and push  image for DNS-over-TLS service
         uses: docker/build-push-action@v2
@@ -76,6 +78,8 @@ jobs:
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+          tags: ghcr.io/iamfrench/nord-dns_dot:latest
+          labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Build and push image for Filter service
         uses: docker/build-push-action@v2
@@ -85,6 +89,8 @@ jobs:
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+          tags: ghcr.io/iamfrench/nord-dns_filter:latest
+          labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Build and push  image for DoHjs Web Interface
         uses: docker/build-push-action@v2
@@ -94,6 +100,8 @@ jobs:
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+          tags: ghcr.io/iamfrench/nord-dns_dojs:latest
+          labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
