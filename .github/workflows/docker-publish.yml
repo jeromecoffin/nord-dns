@@ -1,0 +1,79 @@
+name: Docker
+
+on:
+  workflow_dispatch:
+  push:
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+jobs:
+  # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+            
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_TOKEN }}
+        
+      - uses: actions/checkout@v2
+
+      - name: Build and push  image for API Gateway service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile-api-gw-v1
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Build and push  image for DNS-over-HTTPS service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile-doh-v1
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Build and push  image for DNS-over-TLS service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile-dot-v1
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Build and push image for Filter service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile-filter-v1
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Build and push  image for DoHjs Web Interface
+        uses: docker/build-push-action@v2
+        with:
+          context: ./dohjs
+          file: ./dohjs/Dockerfile
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
