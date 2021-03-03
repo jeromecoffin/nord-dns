@@ -57,7 +57,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ghcr.io/iamfrench/nord-dns_api-gw:latest
-          labels: ${{ steps.docker_meta.outputs.labels }}
+          # labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Build and push  image for DNS-over-HTTPS service
         uses: docker/build-push-action@v2
