@@ -16,11 +16,11 @@ services:
       # Docker specific labels https://doc.traefik.io/traefik/routing/providers/docker/#specific-provider-options
       # Explicitly tell Traefik to expose this container
       - traefik.enable=true
-      # Allow request only from the predefined entry point named "api-gw"
+      # Allow request only from the predefined entry point named "https"
       - traefik.http.routers.api-gw_Router.entrypoints=https
-      # Create rule to match domaines ndns.cf & *.local.ndns.cf
+      # Create rule to match root domain & *.local.{rootDomain}
       - traefik.http.routers.api-gw_Router.rule=HostRegexp(`${APP_DOMAIN_ROOT}`, `{subdomain:[a-z]+}.local.ndns.cf`)
-      # Register service to use for this router
+      # Register the service to use for this router
       - traefik.http.routers.api-gw_Router.service=api-gw_Service
       # Use TLS between the Traefik and the api-gw container
       # will terminate the TLS request
@@ -146,7 +146,6 @@ services:
       # - --providers.ecs.region=eu-west-3
 
 
-
       ## Enabling File provider
       - --providers.file.directory=/configuration/
       # Allow Traefik to automatically watch for file changes
@@ -170,6 +169,7 @@ services:
 
       ## Traefik will listen to incoming request on entrypoint "api-gw" to the port 3001 (HTTPS)
       - --entrypoints.https.address=:3001
+
 
       ## Enabling Traefik Dashboard
       - --api.dashboard=true
@@ -212,7 +212,7 @@ services:
       - AUTH_HOST=${APP_SUBDOMAIN_AUTH}.${APP_DOMAIN_ROOT}:${APP_PORTS_HTTPS}
       # - WHITELIST=
       - DEFAULT_ACTION=auth
-      - DEFAULT_PROVIDER=google
+      - DEFAULT_PROVIDER=${TRAEFIK_AUTH_DEFAULT_PROVIDER}
       - LOG_LEVEL=debug
     labels:
       - traefik.enable=true
