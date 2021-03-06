@@ -158,19 +158,22 @@ module.exports = {
 			},
 
 			/**
-			 * Cache results from this action
+			 * Don't cache results from this action
 			 * 
-			 * We assume the list have been previously updated.
-			 * 
-			 * We could cache result up to a hour (3600s)
+			 * Indeed we relies on the cache ttl from the answer
 			 */
-			cache: 3600,
+			cache: false,
 
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				const key = `filter:l:${ctx.params.listName}:${ctx.params.domain}`;
-				const isInList = await this.broker.cacher.get(key);
-				return isInList ? true : false;
+				const isInList = await this.broker.cacher.getWithTTL(key);
+				if (isInList.data) {
+					ctx.meta.$responseHeaders = {
+						"Cache-Control": `public, max-age=${isInList.ttl}`
+					};
+				}
+				return isInList.data ? true : false;
 			}
 		},
 

@@ -126,7 +126,7 @@ module.exports = {
 					this.logger.info("Response: ", cachedResponse.data.answers[0]);
 					ctx.cachedResult = true; // Display the action as yellow in Tracer
 					ctx.meta.$responseHeaders = {
-						"cache-control": `public, max-age=${cachedResponse.ttl}`
+						"Cache-Control": `public, max-age=${cachedResponse.ttl}`
 					};
 					response = cachedResponse.data;
 				} else {
@@ -134,7 +134,7 @@ module.exports = {
 					const minTtl = Math.min(...response.answers.map(answer => answer.ttl));
 					console.log("minTtl", minTtl);
 					ctx.meta.$responseHeaders = {
-						"cache-control": `public, max-age=${minTtl}`
+						"Cache-Control": `public, max-age=${minTtl}`
 					};
 					ctx.emit("doh.response", {response: response});
 				}
