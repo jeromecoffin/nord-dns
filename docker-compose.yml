@@ -101,6 +101,30 @@ services:
     networks:
       - internal
 
+  selenium:
+    build:
+      context: .
+      dockerfile: Dockerfile-selenium-v1
+      shm_size: '2gb'
+    image: ghcr.io/iamfrench/nord-dns_selenium
+    env_file: docker-compose.env
+    environment:
+      SERVICES: selenium.v1
+    depends_on:
+      - nats
+      - selenium-firefox
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
+
+  selenium-firefox:
+    image: selenium/standalone-firefox:4.0.0-beta-1-20210215
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
+
   nats:
     image: nats:latest
     labels:
@@ -263,18 +287,13 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-    - 9090:9090
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - internal
-      - default
       
   grafana:
     image: grafana/grafana
-    container_name: grafana
     labels:
       - traefik.enable=true
       - traefik.http.routers.graphana_Router.entrypoints=https
@@ -289,7 +308,7 @@ services:
       - prometheus
     networks:
       - internal
-      - default
+
       
 
 
