@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-api-gw-v1
-    image: ghcr.io/iamfrench/nord-dns_api-gw
+    image: ghcr.io/iamfrench/nord-dns_api-gw:latest
     env_file: docker-compose.env
     environment:
       SERVICES: api-gw.v1
@@ -51,7 +51,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-doh-v1
-    image: ghcr.io/iamfrench/nord-dns_doh
+    image: ghcr.io/iamfrench/nord-dns_doh:latest
     env_file: docker-compose.env
     environment:
       SERVICES: doh.v1
@@ -67,7 +67,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-dot-v1
-    image: ghcr.io/iamfrench/nord-dns_dot
+    image: ghcr.io/iamfrench/nord-dns_dot:latest
     env_file: docker-compose.env
     environment:
       SERVICES: dot.v1
@@ -89,7 +89,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-filter-v1
-    image: ghcr.io/iamfrench/nord-dns_filter
+    image: ghcr.io/iamfrench/nord-dns_filter:latest
     env_file: docker-compose.env
     environment:
       SERVICES: filter.v1
@@ -116,6 +116,7 @@ services:
       - selenium-firefox
     labels:
       - traefik.enable=false
+    restart: on-failure
     networks:
       - internal
 
@@ -265,7 +266,7 @@ services:
   dohjs:
     build:
       context: ./dohjs
-    image: ghcr.io/iamfrench/nord-dns_dohjs
+    image: ghcr.io/iamfrench/nord-dns_dohjs:latest
     env_file: docker-compose.env
     environment:
       PORT: 3000
@@ -294,7 +295,7 @@ services:
       - internal
       
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:latest
     labels:
       - traefik.enable=true
       - traefik.http.routers.graphana_Router.entrypoints=https
