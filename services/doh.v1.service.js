@@ -115,18 +115,27 @@ module.exports = {
 				this.logger.info("Query:", query);
 
 				/**
-				 * Check the domain
+				 * Check the domain in the cache
 				 */
 				const key = `doh:q:${query.name}:${query.type}:${query.class}`;
-				const cachedResponse = await this.broker.cacher.get(key);
+				const cachedResponse = await this.broker.cacher.getWithTTL(key);
+
 				let response = {};
-				if (cachedResponse) {
+				if (cachedResponse.data) {
 					ctx.emit("doh.cachedResponse");
-					this.logger.info("Response: ", cachedResponse.answers[0]);
+					this.logger.info("Response: ", cachedResponse.data.answers[0]);
 					ctx.cachedResult = true; // Display the action as yellow in Tracer
-					response = cachedResponse;
+					ctx.meta.$responseHeaders = {
+						"cache-control": `public, max-age=${cachedResponse.ttl}`
+					};
+					response = cachedResponse.data;
 				} else {
 					response = await ctx.call("v1.doh.lookup", {query: query});
+					const minTtl = Math.min(...response.answers.map(answer => answer.ttl));
+					console.log("minTtl", minTtl);
+					ctx.meta.$responseHeaders = {
+						"cache-control": `public, max-age=${minTtl}`
+					};
 					ctx.emit("doh.response", {response: response});
 				}
 
@@ -134,7 +143,6 @@ module.exports = {
 				 * Check if there is a list id to pass by
 				 */
 				const listName = ctx.meta.listId;
-				//this.logger.info("listName:", listName);
 
 				/**
 				 * Check if the domain is in the filterList
