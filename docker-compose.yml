@@ -106,10 +106,11 @@ services:
       context: .
       dockerfile: Dockerfile-selenium-v1
       shm_size: '2gb'
-    image: ghcr.io/iamfrench/nord-dns_selenium
+    image: ghcr.io/iamfrench/nord-dns_selenium:latest
     env_file: docker-compose.env
     environment:
       SERVICES: selenium.v1
+      SELENIUM_SERVER_ENDPOINT: http://selenium-firefox:4444/wd/hub
     depends_on:
       - nats
       - selenium-firefox

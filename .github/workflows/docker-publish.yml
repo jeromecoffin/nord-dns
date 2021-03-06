@@ -75,6 +75,16 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ghcr.io/iamfrench/nord-dns_filter:latest
 
+      - name: Build and push image for Selenium service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile-selenium-v1
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          tags: ghcr.io/iamfrench/nord-dns_selenium:latest
+
       - name: Build and push image for DoHjs Web Interface
         uses: docker/build-push-action@v2
         with:

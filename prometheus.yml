@@ -36,3 +36,4 @@ scrape_configs:
       - targets: ['dot:3030']
       - targets: ['filter:3030']
       - targets: ['traefik:3030']
+      - targets: ['selenium:3030']

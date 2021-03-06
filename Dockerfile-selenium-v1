@@ -1,0 +1,18 @@
+FROM node:current-alpine
+
+ENV NODE_ENV=production
+
+RUN mkdir /app
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm install --production
+
+COPY . .
+
+LABEL org.opencontainers.image.source https://github.com/IAmFrench/nord-dns
+LABEL org.opencontainers.image.title "Selenium Service"
+LABEL org.opencontainers.image.description "Used to test websites using a DoH server (emulate a web browser)"
+
+CMD ["npm", "start"]
