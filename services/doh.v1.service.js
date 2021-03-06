@@ -119,25 +119,22 @@ module.exports = {
 				 */
 				const key = `doh:q:${query.name}:${query.type}:${query.class}`;
 				const cachedResponse = await this.broker.cacher.getWithTTL(key);
+				let ttl = cachedResponse.ttl;
 
 				let response = {};
 				if (cachedResponse.data) {
 					ctx.emit("doh.cachedResponse");
 					this.logger.info("Response: ", cachedResponse.data.answers[0]);
 					ctx.cachedResult = true; // Display the action as yellow in Tracer
-					ctx.meta.$responseHeaders = {
-						"Cache-Control": `public, max-age=${cachedResponse.ttl}`
-					};
 					response = cachedResponse.data;
 				} else {
 					response = await ctx.call("v1.doh.lookup", {query: query});
-					const minTtl = Math.min(...response.answers.map(answer => answer.ttl));
-					console.log("minTtl", minTtl);
-					ctx.meta.$responseHeaders = {
-						"Cache-Control": `public, max-age=${minTtl}`
-					};
+					ttl = Math.min(...response.answers.map(answer => answer.ttl));
 					ctx.emit("doh.response", {response: response});
 				}
+				ctx.meta.$responseHeaders = {
+					"Cache-Control": `public, max-age=${ttl}`
+				};
 
 				/**
 				 * Check if there is a list id to pass by
