@@ -24,7 +24,8 @@ module.exports = {
 	 * DNS-over-TLS (DoT)
 	 * RFC 7858 & 8310
 	 */
-	name: "api",
+	name: "api-gw",
+	version: 1,
 
 	mixins: [ApiGateway],
 

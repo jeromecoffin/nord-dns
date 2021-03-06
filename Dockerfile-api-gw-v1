@@ -12,5 +12,7 @@ RUN npm install --production
 COPY . .
 
 LABEL org.opencontainers.image.source https://github.com/IAmFrench/nord-dns
+LABEL org.opencontainers.image.title "API Gateway"
+LABEL org.opencontainers.image.description "Respond to incoming HTTPS traffic and packages query before forwarding to DoH service"
 
 CMD ["npm", "start"]

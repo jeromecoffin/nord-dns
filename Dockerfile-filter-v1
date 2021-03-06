@@ -12,7 +12,7 @@ RUN npm install --production
 COPY . .
 
 LABEL org.opencontainers.image.source https://github.com/IAmFrench/nord-dns
-LABEL org.opencontainers.image.title "DoHjs Web Interface"
-LABEL org.opencontainers.image.description "Provides a Web Interface to test DoH services"
+LABEL org.opencontainers.image.title "Filter Service"
+LABEL org.opencontainers.image.description "Used to filter queries using blocklists such as 1Hosts and EasyList"
 
 CMD ["npm", "start"]

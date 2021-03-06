@@ -1,14 +1,15 @@
-version: "3.3"
+version: "3.8"
 
 services:
 
   api-gw:
     build:
       context: .
+      dockerfile: Dockerfile-api-gw-v1
     image: ghcr.io/iamfrench/nord-dns_api-gw
     env_file: docker-compose.env
     environment:
-      SERVICES: api
+      SERVICES: api-gw.v1
       PORT: 3000
     depends_on:
       - nats # service registry
@@ -16,11 +17,11 @@ services:
       # Docker specific labels https://doc.traefik.io/traefik/routing/providers/docker/#specific-provider-options
       # Explicitly tell Traefik to expose this container
       - traefik.enable=true
-      # Allow request only from the predefined entry point named "api-gw"
-      - traefik.http.routers.api-gw_Router.entrypoints=api-gw
-      # Create rule to match domaines ndns.cf & *.local.ndns.cf
-      - traefik.http.routers.api-gw_Router.rule=HostRegexp(`ndns.cf`, `{subdomain:[a-z]+}.local.ndns.cf`)
-      # Register service to use for this router
+      # Allow request only from the predefined entry point named "https"
+      - traefik.http.routers.api-gw_Router.entrypoints=https
+      # Create rule to match root domain & *.local.{rootDomain}
+      - traefik.http.routers.api-gw_Router.rule=HostRegexp(`${APP_DOMAIN_ROOT}`, `{subdomain:[a-z]+}.local.ndns.cf`)
+      # Register the service to use for this router
       - traefik.http.routers.api-gw_Router.service=api-gw_Service
       # Use TLS between the Traefik and the api-gw container
       # will terminate the TLS request
@@ -32,11 +33,11 @@ services:
       # We have to disable traefik SSL verification (see traefic service command)
       - traefik.http.services.api-gw_Service.loadbalancer.server.port=3000
       - traefik.http.services.api-gw_Service.loadbalancer.server.scheme=https
-      
-      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
-      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
-      - org.opencontainers.image.title="API Gateway"
-      - org.opencontainers.image.description="Respond to incoming HTTPS traffic and packages query before forwarding to DoH service"
+    deploy:
+      resources:
+        limits:
+          # cpu: 0.25
+          memory: 0.5Gb
     networks:
       - internal
   
@@ -49,6 +50,7 @@ services:
   doh:
     build:
       context: .
+      dockerfile: Dockerfile-doh-v1
     image: ghcr.io/iamfrench/nord-dns_doh
     env_file: docker-compose.env
     environment:
@@ -57,16 +59,14 @@ services:
       - nats
       - redis
     labels:
-      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
-      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
-      - org.opencontainers.image.title="DNS-over-HTTPS Service"
-      - org.opencontainers.image.description="Responds to DoH (DNS-over-HTTPS) request using built-in resolver"
+      - traefik.enable=false
     networks:
       - internal
 
   dot:
     build:
       context: .
+      dockerfile: Dockerfile-dot-v1
     image: ghcr.io/iamfrench/nord-dns_dot
     env_file: docker-compose.env
     environment:
@@ -82,17 +82,13 @@ services:
       - traefik.tcp.routers.dot.service=dotService
       - traefik.tcp.services.dotService.loadbalancer.server.port=853
       - traefik.tcp.routers.dot.tls.passthrough=true
-
-      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
-      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
-      - org.opencontainers.image.title="DNS-over-TLS Service"
-      - org.opencontainers.image.description="Responds to DoH (DNS-over-TLS) request using the DoH Service"
     networks:
       - internal
 
   filter:
     build:
       context: .
+      dockerfile: Dockerfile-filter-v1
     image: ghcr.io/iamfrench/nord-dns_filter
     env_file: docker-compose.env
     environment:
@@ -102,16 +98,13 @@ services:
       - redis
     labels:
       - traefik.enable=false
-      
-      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
-      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
-      - org.opencontainers.image.title="Filter Service"
-      - org.opencontainers.image.description="Used to filter queries using blocklists such as 1Hosts and EasyList"
     networks:
       - internal
 
   nats:
     image: nats:latest
+    labels:
+      - traefik.enable=false
     networks:
       - internal
 
@@ -127,9 +120,18 @@ services:
 
 
       ## Enabling Docker provider
-      - --providers.docker=true
+      - --providers.docker=${TRAEFIK_USE_DOCKER_PROVIDER}
       # Do not expose containers unless explicitly told so
       - --providers.docker.exposedbydefault=false
+      # Se the docker daemon endpoint - Default: unix:///var/run/docker.sock
+      - --providers.docker.endpoint=${TRAEFIK_DOCKER_ENDPOINT}
+      
+
+      ## Enable ECS provider
+      - --providers.ecs=${TRAEFIK_USE_ECS_PROVIDER}
+      - --providers.ecs.exposedByDefault=false
+      - --providers.ecs.autoDiscoverClusters=true
+      # - --providers.ecs.region=eu-west-3
 
 
       ## Enabling File provider
@@ -146,11 +148,6 @@ services:
       - --tracing.jaeger.localAgentHostPort=jaeger:6831
       - --tracing.jaeger.propagation=jaeger
       - --tracing.jaeger.traceContextHeaderName=uber-trace-id
-
-
-      ## API-GW Entrypoint
-      # Traefik will listen to incoming request on entrypoint "api-gw" to the port 3001 (HTTPS)
-      - --entrypoints.api-gw.address=:3001
       
 
       ## DoT TLS Socket Entrypoint
@@ -158,17 +155,24 @@ services:
       - --entryPoints.dot-socket.address=:853
       
 
-      ## Trafik built-in Dashboard
+      ## Traefik will listen to incoming request on entrypoint "api-gw" to the port 3001 (HTTPS)
+      - --entrypoints.https.address=:3001
+
+
+      ## Enabling Traefik Dashboard
       - --api.dashboard=true
-      - --entrypoints.https.address=:443
+
+
+      ## Enable Prometheus metrics (on port 3000)
+      - --metrics.prometheus=true
+      - --entryPoints.metrics.address=:3030
+      - --metrics.prometheus.entryPoint=metrics
     ports:
       # "external:internal"
       # HTTPS API Gateway
-      - 8443:3001
+      - ${APP_PORTS_HTTPS}:3001
       # DoT (DNS-over-TLS on port 853)
-      - 853:853
-      # Traefik secure Dashboard (secure)
-      - 443:443
+      - ${APP_PORTS_DOT}:853
     volumes:
       # Bin the certificate folder to use custom certificates
       - ./certificates/:/certificates/:ro
@@ -180,12 +184,11 @@ services:
     labels:
       - traefik.enable=true
       ## Expose Traefik Dashboard
-      - traefik.http.routers.dashboard.entrypoints=https,api-gw
-      - traefik.http.routers.dashboard.rule=Host(`proxy.ndns.cf`)
+      - traefik.http.routers.dashboard.entrypoints=https
+      - traefik.http.routers.dashboard.rule=Host(`${APP_SUBDOMAIN_TRAEFIK}.${APP_DOMAIN_ROOT}`)
       - traefik.http.routers.dashboard.tls=true
       - traefik.http.routers.dashboard.middlewares=traefik-forward-auth
       - traefik.http.routers.dashboard.service=api@internal
-
     depends_on:
       - jaeger
     networks:
@@ -195,20 +198,20 @@ services:
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:2
     environment:
-      - PROVIDERS_GOOGLE_CLIENT_ID=18224688288-ikosin5i8fe1ha2a9amvras4417nma04.apps.googleusercontent.com
-      - PROVIDERS_GOOGLE_CLIENT_SECRET=uuB3wQKy-IZEfwQF7ZvDoqDs
+      - PROVIDERS_GOOGLE_CLIENT_ID=${TRAEFIK_AUTH_PROVIDERS_GOOGLE_CLIENT_ID}
+      - PROVIDERS_GOOGLE_CLIENT_SECRET=${TRAEFIK_AUTH_PROVIDERS_GOOGLE_CLIENT_SECRET}
       - SECRET=LnfbuvGezhdP4yRxrdIQ
-      - COOKIE_DOMAIN=ndns.cf
+      - COOKIE_DOMAIN=${APP_DOMAIN_ROOT}
       - URL_PATH=/_oauth
-      - AUTH_HOST=oauth.ndns.cf:8443
+      - AUTH_HOST=${APP_SUBDOMAIN_AUTH}.${APP_DOMAIN_ROOT}:${APP_PORTS_HTTPS}
       # - WHITELIST=
       - DEFAULT_ACTION=auth
-      - DEFAULT_PROVIDER=google
+      - DEFAULT_PROVIDER=${TRAEFIK_AUTH_DEFAULT_PROVIDER}
       - LOG_LEVEL=debug
     labels:
       - traefik.enable=true
-      - traefik.http.routers.traefik-forward-auth.entrypoints=https,api-gw
-      - traefik.http.routers.traefik-forward-auth.rule=Host(`oauth.ndns.cf`) && PathPrefix(`/_oauth`)
+      - traefik.http.routers.traefik-forward-auth.entrypoints=https
+      - traefik.http.routers.traefik-forward-auth.rule=Host(`${APP_SUBDOMAIN_AUTH}.${APP_DOMAIN_ROOT}`) && PathPrefix(`/_oauth`)
       - traefik.http.routers.traefik-forward-auth.middlewares=traefik-forward-auth
       - traefik.http.routers.traefik-forward-auth.tls=true
       - traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181
@@ -225,8 +228,8 @@ services:
       COLLECTOR_ZIPKIN_HTTP_PORT: 9411
     labels:
       - traefik.enable=true
-      - traefik.http.routers.jaeger_Router.entrypoints=https,api-gw
-      - traefik.http.routers.jaeger_Router.rule=Host(`tracer.ndns.cf`)
+      - traefik.http.routers.jaeger_Router.entrypoints=https
+      - traefik.http.routers.jaeger_Router.rule=Host(`${APP_SUBDOMAIN_JAEGER}.${APP_DOMAIN_ROOT}`)
       - traefik.http.routers.jaeger_Router.middlewares=traefik-forward-auth
       - traefik.http.routers.jaeger_Router.tls=true
       - traefik.http.routers.jaeger_Router.service=jaeger_Service
@@ -243,8 +246,8 @@ services:
       PORT: 3000
     labels:
       - traefik.enable=true
-      - traefik.http.routers.dohjs_Router.entrypoints=https,api-gw
-      - traefik.http.routers.dohjs_Router.rule=Host(`gui.ndns.cf`)
+      - traefik.http.routers.dohjs_Router.entrypoints=https
+      - traefik.http.routers.dohjs_Router.rule=Host(`${APP_SUBDOMAIN_GUI}.${APP_DOMAIN_ROOT}`)
       - traefik.http.routers.dohjs_Router.service=dohjs_Service
       - traefik.http.routers.dohjs_Router.tls=true
       - traefik.http.services.dohjs_Service.loadbalancer.passhostheader=false
@@ -257,6 +260,38 @@ services:
       - org.opencontainers.image.description="Provides a Web Interface to test DoH services"
     networks:
       - internal
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+    - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - internal
+      - default
+      
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.graphana_Router.entrypoints=https
+      - traefik.http.routers.graphana_Router.rule=Host(`${APP_SUBDOMAIN_GRAPH}.${APP_DOMAIN_ROOT}`)
+      - traefik.http.routers.graphana_Router.middlewares=traefik-forward-auth
+      - traefik.http.routers.graphana_Router.tls=true
+      - traefik.http.routers.graphana_Router.service=graphana_Service
+      - traefik.http.services.graphana_Service.loadbalancer.server.port=3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - internal
+      - default
+      
+
 
 networks:
   internal:

@@ -55,7 +55,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+# .env
 
 # next.js build output
 .next
@@ -68,3 +68,6 @@ lists/*.txt
 
 # .DS_Store banished!
 .DS_Store
+
+# Grafana
+grafana/plugins
