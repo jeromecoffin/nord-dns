@@ -148,6 +148,6 @@ module.exports = {
 	 * Service stopped lifecycle event handler
 	 */
 	async stopped() {
-        await this.driver.quit();
+        
 	}
 };
