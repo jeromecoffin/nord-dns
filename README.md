@@ -8,6 +8,9 @@ NordDNS is an advanced [recursive DNS](https://www.cloudflare.com/learning/dns/w
 NordDNS enhance your privacy by filtering advertising hosts from well-know filtering host-lists such as [1Hosts](https://badmojr.github.io/1Hosts/) & [EasyList](https://easylist.to/).  
 NordDNS is user oriented, and therefore provide a beautiful Dashboard that includes wonderful graphs and metrics.
 
+![Nord DNS Architecture diagram](./artefacts/diagram-Nord-DNS.svg)
+
+
 ## Features
 
 ### DNS-over-HTTPS
