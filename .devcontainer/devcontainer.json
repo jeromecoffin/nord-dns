@@ -25,21 +25,18 @@
 	],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "npm i && npm install -g npm && npm i moleculer-cli -g",
+	"postCreateCommand": "npm install -g npm && npm i moleculer-cli -g",
+
+	"postStartCommand": "npm i",
 
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "node",
 
+	// Adding environment variables. More info: https://code.visualstudio.com/docs/remote/containers-advanced#_option-2-use-an-env-file
+	"runArgs": ["--env-file",".devcontainer/devcontainer.env"],
+
 	// Adding environment variables. More info: https://code.visualstudio.com/docs/remote/containers-advanced#_adding-environment-variables
 	"containerEnv": {
-		"NODE_ENV": "development",
-		"NAMESPACE": "dev.nord-dns",
-		"APP_DOMAIN_ROOT": "localhost.local.ndns.cf",
-		"PORT": "3000",
-		"REDIS_URI": "redis://172.17.0.1:6379",
-		"JAEGER_HOST": "172.17.0.1",
-		"JAEGER_PORT": "6832",
-		"SELENIUM_SERVER_ENDPOINT": "http://172.17.0.1:4444/wd/hub",
-		"USE_HTTP2": "false"
+		
 	}
 }
