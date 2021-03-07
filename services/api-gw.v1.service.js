@@ -1,15 +1,8 @@
 "use strict";
 
 const ApiGateway = require("moleculer-web");
-const fs = require("fs");
 const bodyParser = require("body-parser");
 const rawParser = bodyParser.raw({ type: "application/dns-message" });
-
-const domain = process.env.DOMAIN || "localhost.local.ndns.cf";
-const certFolder = (domain == "ndns.cf") ? domain : "local.ndns.cf";
-
-const keyPath = `./certificates/${certFolder}/privkey1.pem`;
-const certPath = `./certificates/${certFolder}/fullchain1.pem`;
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -41,8 +34,7 @@ module.exports = {
 		/**
 		 * HTTPS server with certificate
 		 * 
-		 * Willbe passed as first argument to 
-		 * 
+		 * Will be passed as first argument to
 		 * https.createSecureServer()
 		 * 
 		 * More info: https://nodejs.org/api/http2.html#http2_http2_createsecureserver_options_onrequesthandler
@@ -331,7 +323,7 @@ module.exports = {
 		 * - HTTP2 over HTTPS
 		 * - HTTP2 over HTTP without TLS
 		 */
-		const protocol = (this.settings.https) ? "https": "h2c";
+		const protocol = (this.settings.http2) ? (this.settings.https) ? "https": "h2c" : "http";
 		this.logger.info(`API gateway stated and listening on ${protocol}://${this.settings.ip}:${this.settings.port}!`);
 	},
 
