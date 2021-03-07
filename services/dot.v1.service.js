@@ -147,7 +147,7 @@ module.exports = {
 	created() {
 		// Create a span to measure the initialization
 		const host = "0.0.0.0";
-		const port = 853;
+		const port = process.env.PORT || 853;
 		const span = this.broker.tracer.startSpan("initializing TLS socket", {
 			tags: {
 				host: host,
