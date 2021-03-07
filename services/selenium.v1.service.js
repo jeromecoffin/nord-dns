@@ -1,9 +1,7 @@
-/* eslint-disable indent */
 "use strict";
 
 const {Builder, Key, By} = require("selenium-webdriver");
 const firefox = require("selenium-webdriver/firefox");
-let fs = require("fs");
 
 
 /**
@@ -37,7 +35,7 @@ module.exports = {
 	 */
 	actions: {
 
-        /**
+		/**
          * checkSite
          * 
          * This methods is used to check a specific website (url)
@@ -48,10 +46,10 @@ module.exports = {
 		 * @returns {String} encodedString: base64 encoded screenshot of the page
 		 * 
          */
-        "checkSite": {
+		"checkSite": {
             
 			params: {
-                /**
+				/**
                  * url
                  * 
                  * Url of the page that should be tested
@@ -60,34 +58,34 @@ module.exports = {
 				url: "string",
 			},
 
-            /**
+			/**
              * Disable cache
              */
-            cache: false,
+			cache: false,
 
-            /** @param {Context} ctx  */
-            async handler(ctx) {
-                const pageUri = ctx.params.url;
-                console.log(`Loading page ${pageUri}...`);
-                const driver = await new Builder()
-                    .forBrowser("firefox")
-                    .setFirefoxOptions(this.options)
-                    .usingServer(this.server)
-                    .build();
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				const pageUri = ctx.params.url;
+				console.log(`Loading page ${pageUri}...`);
+				const driver = await new Builder()
+					.forBrowser("firefox")
+					.setFirefoxOptions(this.options)
+					.usingServer(this.server)
+					.build();
 
-                await driver.get(pageUri);
-                await driver.actions().sendKeys(Key.END).perform();
-                let body = await driver.findElement(By.css("body"));
-                let encodedString = await body.takeScreenshot();
+				await driver.get(pageUri);
+				await driver.actions().sendKeys(Key.END).perform();
+				let body = await driver.findElement(By.css("body"));
+				let encodedString = await body.takeScreenshot();
 
-                await this.driver.quit();
+				await this.driver.quit();
 
-                // let now = (new Date()).toISOString().replace("T", " ").replace(/:/g,"-").split(".")[0];
-                // await fs.writeFileSync(`screenshots/${now}_${index}.png`, encodedString, "base64");
+				// let now = (new Date()).toISOString().replace("T", " ").replace(/:/g,"-").split(".")[0];
+				// await fs.writeFileSync(`screenshots/${now}_${index}.png`, encodedString, "base64");
                 
-                return encodedString;
-            }
-        }
+				return encodedString;
+			}
+		}
 	},
 
 	/**
@@ -115,33 +113,33 @@ module.exports = {
 	 * Service started lifecycle event handler
 	 */
 	async started() {
-        this.options = new firefox.Options();
+		this.options = new firefox.Options();
 
-        const rootDomain = process.env.APP_DOMAIN_ROOT || "ndns.cf";
-        const port = process.env.APP_PORTS_HTTPS || 8443;
-        const baseUrl = `https://${rootDomain}:${port}/l/1Hosts`;
-        this.server = process.env.SELENIUM_SERVER_ENDPOINT || "http://172.17.0.1:4444/wd/hub";
+		const rootDomain = process.env.APP_DOMAIN_ROOT || "ndns.cf";
+		const port = process.env.APP_PORTS_HTTPS || 8443;
+		const baseUrl = `https://${rootDomain}:${port}/l/1Hosts`;
+		this.server = process.env.SELENIUM_SERVER_ENDPOINT || "http://172.17.0.1:4444/wd/hub";
 
-        this.options.setPreference("network.trr.custom_uri", baseUrl);
-        this.options.setPreference("network.trr.mode", 3);
-        this.options.setPreference("network.trr.uri", baseUrl);
+		this.options.setPreference("network.trr.custom_uri", baseUrl);
+		this.options.setPreference("network.trr.mode", 3);
+		this.options.setPreference("network.trr.uri", baseUrl);
 
-        /**
+		/**
          * Force the use of GET request (vs POST)
          * 
          * This will help to cache request at the CDN level.
          */
-        this.options.setPreference("network.trr.useGET", true);
+		this.options.setPreference("network.trr.useGET", true);
 
 
-        this.driver = await new Builder()
-            .forBrowser("firefox")
-            .setFirefoxOptions(this.options)
-            .usingServer(this.server)
-            .build();
+		this.driver = await new Builder()
+			.forBrowser("firefox")
+			.setFirefoxOptions(this.options)
+			.usingServer(this.server)
+			.build();
         
-        this.logger.info("Connected to selenium-firefox server");
-        await this.driver.quit();
+		this.logger.info("Connected to selenium-firefox server");
+		await this.driver.quit();
 	},
 
 	/**

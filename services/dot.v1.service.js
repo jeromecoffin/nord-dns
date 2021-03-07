@@ -91,7 +91,7 @@ module.exports = {
 		 * 
 		 * This method is used to decode a TLS (TCP) packet to a base64 UDP packet
 		 */
-        parsePacket: {
+		parsePacket: {
 
 			/**
 			 * Disable action cache
@@ -148,13 +148,13 @@ module.exports = {
 		// Create a span to measure the initialization
 		const host = "0.0.0.0";
 		const port = 853;
-        const span = this.broker.tracer.startSpan("initializing TLS socket", {
-            tags: {
-                host: host,
+		const span = this.broker.tracer.startSpan("initializing TLS socket", {
+			tags: {
+				host: host,
 				port: port,
 				service: `v${this.version}.${this.name}`
-            }
-        });
+			}
+		});
 		this.server = tls.createServer({
 			host: host,
 			port: port,

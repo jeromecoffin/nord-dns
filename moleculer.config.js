@@ -433,6 +433,7 @@ module.exports = {
 			}
 		};
 		if (process.env.NODE_ENV == "development") {
+			// Not working
 			this.tracing.exporter.push(consoleTraceExporter);
 		}
 	},
