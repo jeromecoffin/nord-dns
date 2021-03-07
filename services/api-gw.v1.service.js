@@ -55,7 +55,7 @@ module.exports = {
 		 * You can turn it on with http2: true in service settings.
 		 * more info: https://moleculer.services/docs/0.14/moleculer-web.html#HTTP2-Server
 		 */
-		http2: (process.env.APP_USE_HTTP2 === true),
+		http2: (process.env.APP_USE_HTTP2 === "true"),
 
 		// Exposed IP
 		ip: "0.0.0.0",

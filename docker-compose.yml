@@ -11,6 +11,7 @@ services:
     environment:
       SERVICES: api-gw.v1
       PORT: 3000
+      APP_USE_HTTP2: "true"
     depends_on:
       - nats # service registry
     labels:
@@ -69,17 +70,26 @@ services:
     env_file: docker-compose.env
     environment:
       SERVICES: dot.v1
+      PORT: 853
     depends_on:
       - nats
       - redis
     labels:
       - traefik.enable=true
-      # TCP config (working, but the service is unavailable (HTTP/503 Service unavailable))
+      # TCP config (working, but the service is really slow
       - traefik.tcp.routers.dot.entrypoints=dot-socket
       - traefik.tcp.routers.dot.rule=HostSNI(`*`)
       - traefik.tcp.routers.dot.service=dotService
       - traefik.tcp.services.dotService.loadbalancer.server.port=853
-      - traefik.tcp.routers.dot.tls.passthrough=true
+      # - traefik.tcp.routers.dot.tls.passthrough=true
+
+      # - traefik.enable=true
+      # - traefik.http.routers.dot_Router.entrypoints=dot-socket
+      # - traefik.http.routers.dot_Router.rule=HostRegexp(`${APP_DOMAIN_ROOT}`, `{subdomain:[a-z]+}.local.ndns.cf`)
+      # - traefik.http.routers.dot_Router.tls=true
+      # - traefik.http.routers.dot_Router.service=dot_Service
+      # - traefik.http.services.dot_Service.loadbalancer.server.port=853
+      # - traefik.http.services.dot_Service.loadbalancer.server.scheme=https
     networks:
       - internal
 
