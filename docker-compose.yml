@@ -99,6 +99,22 @@ services:
     networks:
       - internal
 
+  resolver:
+    build:
+      context: .
+      dockerfile: Dockerfile-resolver-v1
+    image: ghcr.io/iamfrench/nord-dns_resolver:latest
+    env_file: docker-compose.env
+    environment:
+      SERVICES: resolver.v1
+    depends_on:
+      - nats
+      - redis
+    labels:
+      - traefik.enable=false
+    networks:
+      - internal
+
   selenium:
     build:
       context: .

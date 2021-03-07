@@ -1,0 +1,18 @@
+FROM node:current-alpine
+
+ENV NODE_ENV=production
+
+RUN mkdir /app
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm install --production
+
+COPY . .
+
+LABEL org.opencontainers.image.source https://github.com/IAmFrench/nord-dns
+LABEL org.opencontainers.image.title "Resolver Service"
+LABEL org.opencontainers.image.description "Used to queries request to a Trusted Recursive Resolver (TRR) such as Google or Cloudflare"
+
+CMD ["npm", "start"]
