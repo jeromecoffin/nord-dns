@@ -36,8 +36,8 @@ services:
     deploy:
       resources:
         limits:
-          # cpu: 0.25
-          memory: 0.5Gb
+          cpus: 0.25
+          memory: 100M
     networks:
       - internal
   
@@ -256,16 +256,16 @@ services:
   traefik-forward-auth:
     image: thomseddon/traefik-forward-auth:2
     environment:
-      - PROVIDERS_GOOGLE_CLIENT_ID=${TRAEFIK_AUTH_PROVIDERS_GOOGLE_CLIENT_ID}
-      - PROVIDERS_GOOGLE_CLIENT_SECRET=${TRAEFIK_AUTH_PROVIDERS_GOOGLE_CLIENT_SECRET}
-      - SECRET=LnfbuvGezhdP4yRxrdIQ
-      - COOKIE_DOMAIN=${APP_DOMAIN_ROOT}
-      - URL_PATH=/_oauth
-      - AUTH_HOST=${APP_SUBDOMAIN_AUTH}.${APP_DOMAIN_ROOT}:${APP_PORTS_HTTPS}
-      # - WHITELIST=
-      - DEFAULT_ACTION=auth
-      - DEFAULT_PROVIDER=${TRAEFIK_AUTH_DEFAULT_PROVIDER}
-      - LOG_LEVEL=debug
+      PROVIDERS_GOOGLE_CLIENT_ID: ${TRAEFIK_AUTH_PROVIDERS_GOOGLE_CLIENT_ID}
+      PROVIDERS_GOOGLE_CLIENT_SECRET: ${TRAEFIK_AUTH_PROVIDERS_GOOGLE_CLIENT_SECRET}
+      SECRET: LnfbuvGezhdP4yRxrdIQ
+      COOKIE_DOMAIN: ${APP_DOMAIN_ROOT}
+      URL_PATH: /_oauth
+      AUTH_HOST: ${APP_SUBDOMAIN_AUTH}.${APP_DOMAIN_ROOT}:${APP_PORTS_HTTPS}
+      # WHITELIST:
+      DEFAULT_ACTION: auth
+      DEFAULT_PROVIDER: ${TRAEFIK_AUTH_DEFAULT_PROVIDER}
+      LOG_LEVEL: debug
     labels:
       - traefik.enable=true
       - traefik.http.routers.traefik-forward-auth.entrypoints=https
@@ -275,6 +275,10 @@ services:
       - traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181
       - traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User
       - traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181
+    deploy:
+      resources:
+        limits:
+          memory: 50M
     depends_on:
       - traefik
     networks:
@@ -284,6 +288,8 @@ services:
     image: jaegertracing/all-in-one:latest
     environment:
       COLLECTOR_ZIPKIN_HTTP_PORT: 9411
+      SPAN_STORAGE_TYPE: elasticsearch
+      ES_SERVER_URLS: http://elasticsearch:9200
     labels:
       - traefik.enable=true
       - traefik.http.routers.jaeger_Router.entrypoints=https
@@ -292,9 +298,31 @@ services:
       - traefik.http.routers.jaeger_Router.tls=true
       - traefik.http.routers.jaeger_Router.service=jaeger_Service
       - traefik.http.services.jaeger_Service.loadbalancer.server.port=16686
+    depends_on:
+      - elasticsearch
+    restart: on-failure
     networks:
       - internal
   
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    environment: 
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms256m -Xmx256m
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+    labels:
+      - traefik.enable=false
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+    networks:
+      - internal
+  
+
+
+
   dohjs:
     build:
       context: ./dohjs
@@ -311,11 +339,6 @@ services:
       - traefik.http.services.dohjs_Service.loadbalancer.passhostheader=false
       - traefik.http.services.dohjs_Service.loadbalancer.server.port=3000
       - traefik.http.services.dohjs_Service.loadbalancer.server.scheme=http
-      
-      # Open Containers Annotations (used for GitHub packages and GitHub Container Registry)
-      - org.opencontainers.image.source=https://github.com/IAmFrench/nord-dns
-      - org.opencontainers.image.title="DoHjs Web Interface"
-      - org.opencontainers.image.description="Provides a Web Interface to test DoH services"
     networks:
       - internal
 
@@ -323,7 +346,6 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    
     networks:
       - internal
       
@@ -352,5 +374,8 @@ networks:
   default:
     driver: bridge
 
+volumes:
+  elasticsearch:
+    driver: local
 # volumes:
 #   data:
