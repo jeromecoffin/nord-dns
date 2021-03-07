@@ -42,6 +42,8 @@ or you can simply use the following command:
 docker-compose up -d
 ```
 
+![docker-compose up -d command](./artefacts/docker-compose-up.gif)
+
 To scale in or out a service just use this command:
 
 ```bash
@@ -54,10 +56,24 @@ Such as:
 docker-compose up -d --scale api-gw=2 --scale doh=3 --scale filter=3
 ```
 
+
+![docker-compose up -d --scale api-gw=2 command](./artefacts/docker-compose-up-scale-api-gw.gif)
+
+Note that you can check running container using the following command:
+
+```bash
+docker-compose ps
+```
+
+![docker-compose ps command](./artefacts/docker-compose-ps.gif)
+
 Finally to clean the deployment use this command:
+
 ```bash
 docker-compose down -v
 ```
+
+![docker-compose down -v command](./artefacts/docker-compose-down.gif)
 
 More info: [Use Compose in production](https://docs.docker.com/compose/production/)
 
@@ -67,6 +83,8 @@ You may need to login, in that case please see this tutorial to [Authenticating 
 ```bash
 docker-compose pull
 ```
+
+![docker-compose pull command](./artefacts/docker-compose-pull.gif)
 
 ### Development deployment
 
