@@ -32,6 +32,14 @@
 
 	// Adding environment variables. More info: https://code.visualstudio.com/docs/remote/containers-advanced#_adding-environment-variables
 	"containerEnv": {
-		"NODE_ENV": "development"
+		"NODE_ENV": "development",
+		"NAMESPACE": "dev.nord-dns",
+		"APP_DOMAIN_ROOT": "localhost.local.ndns.cf",
+		"PORT": "3000",
+		"REDIS_URI": "redis://172.17.0.1:6379",
+		"JAEGER_HOST": "172.17.0.1",
+		"JAEGER_PORT": "6832",
+		"SELENIUM_SERVER_ENDPOINT": "http://172.17.0.1:4444/wd/hub",
+		"USE_HTTP2": "false"
 	}
 }

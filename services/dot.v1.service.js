@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 "use strict";
 
 
@@ -6,7 +5,7 @@ const fs = require("fs");
 const dnsPacket = require("dns-packet");
 const tls = require("tls");
 
-const domain = process.env.DOMAIN || "localhost.local.ndns.cf";
+const domain = process.env.APP_DOMAIN_ROOT || "localhost.local.ndns.cf";
 const certFolder = (domain == "ndns.cf") ? domain : "local.ndns.cf";
 
 const keyPath = `./certificates/${certFolder}/privkey1.pem`;
