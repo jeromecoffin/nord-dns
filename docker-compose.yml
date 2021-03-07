@@ -28,11 +28,9 @@ services:
       - traefik.http.routers.api-gw_Router.tls=true
       
       # Tell Traefik to use the port 3000 to connect to `api` service
-      # When Traefik Connecting to the Wrong Port: HTTP/502 Gateway Error
-      # Even if we use a valid certificate, it doesn't includes an IP SANs
-      # We have to disable traefik SSL verification (see traefic service command)
       - traefik.http.services.api-gw_Service.loadbalancer.server.port=3000
-      - traefik.http.services.api-gw_Service.loadbalancer.server.scheme=https
+      # Tell Traefik to use HTTP2 on HTTP without TLS
+      - traefik.http.services.api-gw_Service.loadbalancer.server.scheme=h2c
     deploy:
       resources:
         limits:

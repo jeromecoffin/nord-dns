@@ -36,16 +36,27 @@ module.exports = {
 		/**
 		 * Exposed port
 		 */
-		port: process.env.PORT || 8443,
+		port: process.env.PORT || 3000,
 
 		/**
 		 * HTTPS server with certificate
+		 * 
+		 * Willbe passed as first argument to 
+		 * 
+		 * https.createSecureServer()
+		 * 
+		 * More info: https://nodejs.org/api/http2.html#http2_http2_createsecureserver_options_onrequesthandler
+		 * 
+		 * or https.createServer()
+		 * 
+		 * More info: https://nodejs.org/api/http2.html#http2_http2_createserver_options_onrequesthandler
 		 */
-		https: {
-			key: fs.readFileSync(keyPath),
-			cert: fs.readFileSync(certPath),
-			allowHTTP1: true,
-		},
+		// https: {
+		// 	key: fs.readFileSync(keyPath),
+		// 	cert: fs.readFileSync(certPath),
+		// 	allowHTTP1: true,
+		// },
+		https: false,
 
 		/**
 		 * API Gateway provides an experimental support for HTTP2.
@@ -313,7 +324,15 @@ module.exports = {
 	 * Service started lifecycle event handler
 	 */
 	async started() {
-		this.logger.info(`API gateway stated and listening on https://${this.settings.ip}:${this.settings.port}!`);
+		/**
+		 * protocol used to serve this service
+		 * 
+		 * Could be:
+		 * - HTTP2 over HTTPS
+		 * - HTTP2 over HTTP without TLS
+		 */
+		const protocol = (this.settings.https) ? "https": "h2c";
+		this.logger.info(`API gateway stated and listening on ${protocol}://${this.settings.ip}:${this.settings.port}!`);
 	},
 
 	/**
