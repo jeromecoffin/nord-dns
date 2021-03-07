@@ -171,6 +171,7 @@ module.exports = {
 					ctx.meta.$responseHeaders = {
 						"Cache-Control": `public, max-age=${isInList.ttl}`
 					};
+					ctx.emit("filter.count", {domain: ctx.params.domain});
 				}
 				return isInList.data ? true : false;
 			}
@@ -419,6 +420,18 @@ module.exports = {
 			/** @param {Context} ctx  */
 			async handler(ctx) {
 				await ctx.call("v1.filter.getDefaultList");
+			}
+		},
+
+		"filter.count": {
+
+			params: {
+				domain: "string",
+			},
+
+			/** @param {Context} ctx  */
+			async handler(ctx) {
+				this.logger.info(`Domain ${ctx.params.domain} has been blocked!`)
 			}
 		}
 	},
