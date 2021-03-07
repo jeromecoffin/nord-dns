@@ -4,7 +4,6 @@
  * @typedef {import('moleculer').Context} Context Moleculer's Context
  */
 const dnsPacket = require("dns-packet");
-const doh = require("dohjs");
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -29,17 +28,6 @@ module.exports = {
 	 */
 	settings: {
 
-		/**
-		 * Resolver
-		 * 
-		 * Where to send the DNS query
-		 * 
-		 * https://dns.google/dns-query
-		 * https://cloudflare-dns.com/dns-query
-		 * https://doh.opendns.com/dns-query
-		 * https://dns.quad9.net/dns-query
-		 */
-		resolver: "https://dns.google/dns-query"
 	},
 
 	/**
@@ -128,7 +116,13 @@ module.exports = {
 					ctx.cachedResult = true; // Display the action as yellow in Tracer
 					response = cachedResponse.data;
 				} else {
-					response = await ctx.call("v1.doh.lookup", {query: query});
+					response = await ctx.call(
+						"v1.resolver.query", {
+							name: query.name,
+							type: query.type,
+							class: query.class
+						}
+					);
 					ttl = Math.min(...response.answers.map(answer => answer.ttl));
 					ctx.emit("doh.response", {response: response});
 				}
@@ -192,25 +186,6 @@ module.exports = {
 				ctx.meta.queryType = decodedMessage.type;
 				ctx.meta.queryClass = decodedMessage.class;
 				return decodedMessage;
-			}
-		},
-
-
-		/**
-		 * lookup
-		 * 
-		 * This action is used to query a question using
-		 * the default resolver.
-		 */
-		lookup: {
-			params: {
-				query: "object"
-			},
-			cache: false,
-
-			/** @param {Context} ctx  */
-			async handler(ctx) {
-				return await this.lookup(ctx.params.query);
 			}
 		},
 
@@ -488,41 +463,6 @@ module.exports = {
 			const buf = await Buffer.from(msg, "base64");
 			const decoded = await dnsPacket.decode(buf);
 			return decoded.questions[0];
-		},
-
-		/**
-		 * lookup
-		 * 
-		 * This method take a question object, make a
-		 * DoH query using the default service resolver
-		 * and return a response object
-		 * 
-		 * @param {Object} question
-		 * 
-		 * @returns {Object}
-		 */
-		async lookup(question) {
-			/**
-			 * Sample Question
-			 * {
-			 *		type: 'A', // or SRV, AAAA, etc
-			 *		class: 'IN', // one of IN, CS, CH, HS, ANY. Default: IN
-			 *		name: 'google.com' // which record are you looking for
-			 *	}
-			 */
-			// this.logger.info("Question:", question);
-
-			/**
-			 * Sample Response
-			 * {
-			 *		type: 'A', // or SRV, AAAA, etc
-			 *		class: 'IN', // one of IN, CS, CH, HS
-			 *		name: 'google.com', // which name is this record for
-			 *		ttl: optionalTimeToLiveInSeconds,
-			 *		(record specific data, see below): https://www.npmjs.com/package/dns-packet#supported-record-types
-			 *	}
-			 */
-			return await this.resolver.query(question.name, question.type, "GET", {Accept: "application/dns-message"});
 		}
 	},
 
@@ -537,7 +477,7 @@ module.exports = {
 	 * Service started lifecycle event handler
 	 */
 	async started() {
-		this.resolver = new doh.DohResolver(this.settings.resolver);
+
 	},
 
 	/**
