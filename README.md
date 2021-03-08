@@ -7,6 +7,7 @@
 [![Jaeger](https://badgen.net/badge/Powered%20by/Jaeger/60d0e4)](https://www.jaegertracing.io/)
 [![Grafana](https://badgen.net/badge/Powered%20by/Grafana/f58126)](https://grafana.com/)
 [![Traefik](https://badgen.net/badge/Powered%20by/Traefik/37abc8)](https://traefik.io/)
+[![prometheus](https://badgen.net/badge/Powered%20by/prometheus/da4e31)](https://prometheus.io/)
 [![Elasticsearch](https://badgen.net/badge/Powered%20by/Elasticsearch/343741)](https://www.elastic.co/elasticsearch/)
 
 ---
