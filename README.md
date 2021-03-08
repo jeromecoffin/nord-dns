@@ -1,6 +1,15 @@
+[![Build and push images to GitHub Container Registry](https://github.com/IAmFrench/nord-dns/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/IAmFrench/nord-dns/actions/workflows/docker-publish.yml)
+
+--- 
+
 [![Moleculer](https://badgen.net/badge/Powered%20by/Moleculer/0e83cd)](https://moleculer.services)
 [![Redis](https://badgen.net/badge/Powered%20by/Redis/d92a21)](https://redis.io/) 
 [![Jaeger](https://badgen.net/badge/Powered%20by/Jaeger/60d0e4)](https://www.jaegertracing.io/)
+[![Grafana](https://badgen.net/badge/Powered%20by/Grafana/f58126)](https://grafana.com/)
+[![Traefik](https://badgen.net/badge/Powered%20by/Traefik/37abc8)](https://traefik.io/)
+[![Elasticsearch](https://badgen.net/badge/Powered%20by/Elasticsearch/343741)](https://www.elastic.co/elasticsearch/)
+
+---
 
 # NordDNS
 > NordDNS encrypts your DNS traffic and hides your IP and physical location. Works on any devices at once, on every major platform.  
