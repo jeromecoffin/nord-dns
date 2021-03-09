@@ -232,10 +232,6 @@ services:
       # DoT (DNS-over-TLS on port 853)
       - ${APP_PORTS_DOT}:853
     volumes:
-      # Bin the certificate folder to use custom certificates
-      - ./certificates/:/certificates/:ro
-      # Add certificate config for traefik
-      - ./certificates/certificates.toml:/configuration/certificates.toml
       - ./traefik.toml:/configuration/traefik.toml
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock:ro
