@@ -81,6 +81,15 @@ module.exports = {
 				// this.logger.info("Question:", question);
 
 				/**
+				 * method
+				 * 
+				 * Method used to fetch a response from
+				 * the TRR.
+				 * GET or POST 
+				 */
+				const method = "GET";
+
+				/**
 				 * Sample Response
 				 * {
 				 *		type: 'A', // or SRV, AAAA, etc
@@ -90,7 +99,7 @@ module.exports = {
 				*		(record specific data, see below): https://www.npmjs.com/package/dns-packet#supported-record-types
 				*	}
 				*/
-				return await this.resolver.query(ctx.params.name, ctx.params.type, "GET", {Accept: "application/dns-message"});
+				return await this.resolver.query(ctx.params.name, ctx.params.type, method, {Accept: "application/dns-message"});
 			}
 		}
 	},

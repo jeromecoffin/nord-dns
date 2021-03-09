@@ -142,7 +142,7 @@ module.exports = {
 	created() {
 		// Create a span to measure the initialization
 		const host = "0.0.0.0";
-		const port = process.env.PORT || 853;
+		const port = (process.env.NODE_ENV == "development") ? 853 : process.env.PORT || 853;
 		const span = this.broker.tracer.startSpan("initializing TCP socket", {
 			tags: {
 				host: host,
