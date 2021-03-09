@@ -54,7 +54,8 @@ module.exports = {
 			},
 			params: {
 				name: "string",
-				type: "string"
+				type: "string",
+				list: "string|optional"
 			},
 
 			/**
@@ -73,6 +74,13 @@ module.exports = {
 						name: ctx.params.name
 					}]
 				}).toString("base64");
+				const listName = ctx.params.list;
+				if (listName) {
+					/**
+					 * Set listId and pass-it to the resolveDoH using meta
+					 */
+					ctx.meta.listId = listName;
+				}
 				return await ctx.call("v1.doh.resolveDoH", {dns: packet});
 			}
 		},
