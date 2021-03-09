@@ -1,15 +1,10 @@
 "use strict";
 
 
-const fs = require("fs");
 const dnsPacket = require("dns-packet");
-const tls = require("tls");
+const net = require("net");
 
 const domain = process.env.APP_DOMAIN_ROOT || "localhost.local.ndns.cf";
-const certFolder = (domain == "ndns.cf") ? domain : "local.ndns.cf";
-
-const keyPath = `./certificates/${certFolder}/privkey1.pem`;
-const certPath = `./certificates/${certFolder}/fullchain1.pem`;
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -148,21 +143,21 @@ module.exports = {
 		// Create a span to measure the initialization
 		const host = "0.0.0.0";
 		const port = process.env.PORT || 853;
-		const span = this.broker.tracer.startSpan("initializing TLS socket", {
+		const span = this.broker.tracer.startSpan("initializing TCP socket", {
 			tags: {
 				host: host,
 				port: port,
 				service: `v${this.version}.${this.name}`
 			}
 		});
-		this.server = tls.createServer({
+		this.server = net.createServer({
 			host: host,
 			port: port,
 
 			// Necessary only if the server requires client certificate authentication.
-			key: fs.readFileSync(keyPath),
-			cert: fs.readFileSync(certPath),
-			checkServerIdentity: () => { return null; },
+			// key: fs.readFileSync(keyPath),
+			// cert: fs.readFileSync(certPath),
+			// checkServerIdentity: () => { return null; },
 			// enableTrace: true,
 			rejectUnauthorized: false,
 			servername: domain,
@@ -180,7 +175,7 @@ module.exports = {
 			throw err;
 		});
 		this.server.listen(port, () => {
-			this.logger.info(`DoT server listening on tls://${host}:${port}, (servername: ${domain})`);
+			this.logger.info(`DoT server listening on tcp://${host}:${port}, (servername: ${domain})`);
 			// Finish the main span.
 			span.finish();
 		});		

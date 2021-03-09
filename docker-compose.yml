@@ -83,6 +83,7 @@ services:
       # TCP config (working, but the service is really slow
       - traefik.tcp.routers.dot.entrypoints=dot-socket
       - traefik.tcp.routers.dot.rule=HostSNI(`*`)
+      - traefik.tcp.routers.dot.tls=true
       - traefik.tcp.routers.dot.service=dotService
       - traefik.tcp.services.dotService.loadbalancer.server.port=853
       # - traefik.tcp.routers.dot.tls.passthrough=true
