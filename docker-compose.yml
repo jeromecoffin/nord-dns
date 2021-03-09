@@ -348,6 +348,13 @@ services:
       
   grafana:
     image: grafana/grafana:latest
+    environment:
+      GF_PATHS_CONFIG: /var/lib/grafana/grafana.ini
+      GF_PATHS_DATA: /var/lib/grafana
+      GF_PATHS_HOME: /usr/share/grafana
+      GF_PATHS_LOGS: /var/log/grafana
+      GF_PATHS_PLUGINS: /var/lib/grafana/plugins
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
     labels:
       - traefik.enable=true
       - traefik.http.routers.graphana_Router.entrypoints=https
