@@ -2,8 +2,8 @@
 
 --- 
 
-[![Moleculer](https://badgen.net/badge/Powered%20by/Moleculer/0e83cd)](https://moleculer.services)
-[![Redis](https://badgen.net/badge/Powered%20by/Redis/d92a21)](https://redis.io/) 
+[![MoleculerJS](https://badgen.net/badge/Powered%20by/MoleculerJS/0e83cd)](https://moleculer.services)
+[![Redis](https://badgen.net/badge/Powered%20by/Redis/d92a21)](https://redis.io/)
 [![Jaeger](https://badgen.net/badge/Powered%20by/Jaeger/60d0e4)](https://www.jaegertracing.io/)
 [![Grafana](https://badgen.net/badge/Powered%20by/Grafana/f58126)](https://grafana.com/)
 [![Traefik](https://badgen.net/badge/Powered%20by/Traefik/37abc8)](https://traefik.io/)
@@ -18,8 +18,13 @@ NordDNS is an advanced [recursive DNS](https://www.cloudflare.com/learning/dns/w
 NordDNS enhance your privacy by filtering advertising hosts from well-know filtering host-lists such as [1Hosts](https://badmojr.github.io/1Hosts/) & [EasyList](https://easylist.to/).  
 NordDNS is user oriented, and therefore provide a beautiful Dashboard that includes wonderful graphs and metrics.
 
-![Nord DNS Architecture diagram](./artefacts/diagram-Nord-DNS.svg)
+## Technical architectures
 
+![Nord DNS Technical Light Architecture diagram](./artefacts/technical-light-diagram-Nord-DNS.svg)
+
+![Nord DNS Technical Detailed Architecture diagram](./artefacts/technical-detailed-diagram-Nord-DNS.svg)
+
+![Nord DNS Technical Full Architecture diagram](./artefacts/technical-full-diagram-Nord-DNS.svg)
 
 ## Features
 
@@ -39,7 +44,7 @@ Nord DNS is able to filter DNS queries using filter lists such as [1Hosts](https
 ![Filter Architecture diagram](./artefacts/diagram-Filter.svg)
 
 ## Technical Architecture
-Nord DNS relies on [Moleculer](https://moleculer.services/), a progressive microservices framework for Node.js.
+Nord DNS relies on [MoleculerJS](https://moleculer.services/), a progressive microservices framework for Node.js.
 
 ## Deployment
 
