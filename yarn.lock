@@ -3527,9 +3527,9 @@ nanomatch@^1.2.9:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-nats@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/nats/-/nats-2.0.1.tgz#4468a09b6fd0f463bd2dfc5995c0dfb1f8eacb44"
+nats@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/nats/-/nats-2.0.2.tgz#ee1e32e51124ce533077b98b4370b1b81455233b"
   dependencies:
     nkeys.js "^1.0.0-9"
 
