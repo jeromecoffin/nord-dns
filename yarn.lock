@@ -4282,9 +4282,9 @@ saxes@^5.0.0:
   dependencies:
     xmlchars "^2.2.0"
 
-selenium-webdriver@^4.0.0-beta.2:
-  version "4.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.0.0-beta.2.tgz#a481c1ebcebd167c5d842982db85dd8ee930cbce"
+selenium-webdriver@^4.0.0-beta.3:
+  version "4.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.0.0-beta.3.tgz#8c29512a27ca9c1f95a96a9a8f488304c894390e"
   dependencies:
     jszip "^3.5.0"
     rimraf "^2.7.1"
