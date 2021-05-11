@@ -3418,9 +3418,9 @@ moleculer-db-adapter-mongo@^0.4.11:
     fakerator "^0.3.1"
     mongodb "^3.6.2"
 
-moleculer-db@^0.8.12:
-  version "0.8.12"
-  resolved "https://registry.npmjs.org/moleculer-db/-/moleculer-db-0.8.12.tgz"
+moleculer-db@^0.8.13:
+  version "0.8.13"
+  resolved "https://registry.yarnpkg.com/moleculer-db/-/moleculer-db-0.8.13.tgz#a4f2bd8eb6fa25f2509e9cef666e42c87ed8b259"
   dependencies:
     bluebird "^3.7.2"
     flat "^5.0.2"
