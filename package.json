@@ -36,7 +36,7 @@
     "covid-19-phishing"
   ],
   "devDependencies": {
-    "eslint": "^7.25.0",
+    "eslint": "^7.26.0",
     "jest": "^26.4.2",
     "jest-cli": "^26.4.2",
     "moleculer-repl": "^0.6.4"
