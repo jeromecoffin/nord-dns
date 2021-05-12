@@ -1594,9 +1594,9 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
-dohjs@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/dohjs/-/dohjs-0.3.1.tgz"
+dohjs@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/dohjs/-/dohjs-0.3.2.tgz#a7901340240a4a516b98276be30b3e79252b8744"
   dependencies:
     argparse "^1.0.10"
     base32-encode "^1.1.1"
