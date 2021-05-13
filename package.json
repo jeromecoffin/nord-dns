@@ -58,7 +58,7 @@
     "swagger-stats": "^0.95.18"
   },
   "engines": {
-    "node": ">= 10.x.x"
+    "node": ">= 14.x.x"
   },
   "jest": {
     "coverageDirectory": "../coverage",
