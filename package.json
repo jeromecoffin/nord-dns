@@ -39,7 +39,7 @@
     "eslint": "^7.26.0",
     "jest": "^26.4.2",
     "jest-cli": "^26.4.2",
-    "moleculer-repl": "^0.6.4"
+    "moleculer-repl": "^0.6.5"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
