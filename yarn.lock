@@ -3414,13 +3414,13 @@ moleculer-db-adapter-mongo@^0.4.11:
     fakerator "^0.3.1"
     mongodb "^3.6.2"
 
-moleculer-db@^0.8.13:
-  version "0.8.13"
-  resolved "https://registry.npmjs.org/moleculer-db/-/moleculer-db-0.8.13.tgz"
+moleculer-db@^0.8.14:
+  version "0.8.14"
+  resolved "https://registry.yarnpkg.com/moleculer-db/-/moleculer-db-0.8.14.tgz#2158eff3952484062e84366dc8e4353830cd5f2e"
   dependencies:
     bluebird "^3.7.2"
     flat "^5.0.2"
-    lodash "^4.17.20"
+    lodash "^4.17.21"
     nedb "^1.8.0"
 
 moleculer-repl@^0.6.4:
