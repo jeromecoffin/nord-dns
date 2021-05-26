@@ -2042,9 +2042,9 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
-dns-packet@^5.2.1, dns-packet@^5.2.2:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/dns-packet/-/dns-packet-5.2.2.tgz#e4c7d12974cc320b0c0d4b9bbbf68ac151cfe81e"
+dns-packet@^5.2.1, dns-packet@^5.2.4:
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/dns-packet/-/dns-packet-5.2.4.tgz#e004f409eadfa8ec861964dcb9eb395884fcf67d"
   dependencies:
     ip "^1.1.5"
 
