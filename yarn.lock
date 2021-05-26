@@ -2429,9 +2429,9 @@ insert-module-globals@^7.0.0:
     undeclared-identifiers "^1.1.2"
     xtend "^4.0.0"
 
-ioredis@^4.27.2:
-  version "4.27.2"
-  resolved "https://registry.npmjs.org/ioredis/-/ioredis-4.27.2.tgz"
+ioredis@^4.27.3:
+  version "4.27.3"
+  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-4.27.3.tgz#4a020c9056bf4e016c476910fb59620a0d899654"
   dependencies:
     cluster-key-slot "^1.1.0"
     debug "^4.3.1"
