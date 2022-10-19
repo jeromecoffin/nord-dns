@@ -38,7 +38,7 @@
   "devDependencies": {
     "eslint": "^7.27.0",
     "jest": "^26.4.2",
-    "jest-cli": "^27.0.1",
+    "jest-cli": "^29.2.1",
     "moleculer-repl": "^0.6.5"
   },
   "dependencies": {
